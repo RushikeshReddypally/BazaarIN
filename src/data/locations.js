@@ -1,0 +1,18 @@
+export const locations = [
+  { city: 'Mumbai',        state: 'Maharashtra',    icon: '🌆', count: '3.8L ads' },
+  { city: 'Delhi',         state: 'Delhi NCR',      icon: '🏛️', count: '4.2L ads' },
+  { city: 'Bangalore',     state: 'Karnataka',      icon: '🌿', count: '2.9L ads' },
+  { city: 'Chennai',       state: 'Tamil Nadu',     icon: '🌊', count: '1.8L ads' },
+  { city: 'Hyderabad',     state: 'Telangana',      icon: '🏯', count: '2.1L ads' },
+  { city: 'Kolkata',       state: 'West Bengal',    icon: '🎨', count: '1.5L ads' },
+  { city: 'Pune',          state: 'Maharashtra',    icon: '🎓', count: '1.3L ads' },
+  { city: 'Ahmedabad',     state: 'Gujarat',        icon: '🕌', count: '1.1L ads' },
+  { city: 'Jaipur',        state: 'Rajasthan',      icon: '🏰', count: '0.9L ads' },
+  { city: 'Surat',         state: 'Gujarat',        icon: '💎', count: '0.7L ads' },
+  { city: 'Lucknow',       state: 'Uttar Pradesh',  icon: '🌹', count: '0.6L ads' },
+  { city: 'Kochi',         state: 'Kerala',         icon: '⛵', count: '0.5L ads' },
+  { city: 'Chandigarh',    state: 'Punjab',         icon: '🌺', count: '0.4L ads' },
+  { city: 'Indore',        state: 'Madhya Pradesh', icon: '🍲', count: '0.5L ads' },
+  { city: 'Nagpur',        state: 'Maharashtra',    icon: '🍊', count: '0.4L ads' },
+  { city: 'Visakhapatnam', state: 'Andhra Pradesh', icon: '⚓', count: '0.3L ads' },
+]

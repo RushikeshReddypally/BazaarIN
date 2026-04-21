@@ -1,0 +1,16 @@
+export const categories = [
+  { id: 'all',         emoji: '🏪', label: 'All',         count: '24L ads' },
+  { id: 'vehicles',   emoji: '🚗', label: 'Cars',        count: '3.2L' },
+  { id: 'bikes',      emoji: '🏍️', label: 'Bikes',       count: '1.8L' },
+  { id: 'mobiles',    emoji: '📱', label: 'Mobiles',     count: '4.1L' },
+  { id: 'electronics',emoji: '💻', label: 'Electronics', count: '2.7L' },
+  { id: 'property',   emoji: '🏠', label: 'Property',    count: '5.3L' },
+  { id: 'furniture',  emoji: '🛋️', label: 'Furniture',   count: '1.2L' },
+  { id: 'fashion',    emoji: '👗', label: 'Fashion',     count: '2.9L' },
+  { id: 'books',      emoji: '📚', label: 'Books',       count: '0.9L' },
+  { id: 'sports',     emoji: '🏏', label: 'Sports',      count: '0.5L' },
+  { id: 'pets',       emoji: '🐕', label: 'Pets',        count: '0.4L' },
+  { id: 'gaming',     emoji: '🎮', label: 'Gaming',      count: '0.7L' },
+  { id: 'services',   emoji: '🔧', label: 'Services',    count: '1.6L' },
+  { id: 'kids',       emoji: '👶', label: 'Kids',        count: '1.1L' },
+]
