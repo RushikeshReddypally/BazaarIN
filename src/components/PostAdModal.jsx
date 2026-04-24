@@ -195,7 +195,7 @@ export default function PostAdModal() {
     })
   }
 
-  async function uploadImages(listingId) {
+  async function uploadImages(listingId, showToast) {
     const urls = []
     for (let i = 0; i < images.length; i++) {
       const file = images[i]
@@ -204,6 +204,7 @@ export default function PostAdModal() {
       const { error } = await supabase.storage.from('listing-images').upload(path, file, { upsert: true })
       if (error) {
         console.error(`Upload failed for image ${i}:`, error.message)
+        showToast(`Photo upload failed: ${error.message}`, '✕')
       } else {
         const { data } = supabase.storage.from('listing-images').getPublicUrl(path)
         urls.push(data.publicUrl)
@@ -254,7 +255,7 @@ export default function PostAdModal() {
 
     let imageUrls = []
     if (images.length > 0) {
-      imageUrls = await uploadImages(inserted.id)
+      imageUrls = await uploadImages(inserted.id, showToast)
       if (imageUrls.length > 0) {
         await supabase.from('listings').update({ images: imageUrls }).eq('id', inserted.id)
       }
