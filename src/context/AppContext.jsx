@@ -16,7 +16,6 @@ export function AppProvider({ children }) {
   const [toast, setToast] = useState({ show: false, msg: '', icon: '✓' })
   const [activeCategory, setActiveCategory] = useState('all')
   const [activeLocation, setActiveLocation] = useState('all')
-  const [search, setSearch] = useState('')
   const [user, setUser] = useState(null)
   const [unreadCount, setUnreadCount] = useState(0)
 
@@ -99,7 +98,6 @@ export function AppProvider({ children }) {
       toast, showToast,
       activeCategory, setActiveCategory,
       activeLocation, setActiveLocation,
-      search, setSearch,
       user, logout,
       unreadCount, clearUnread,
     }}>

@@ -283,7 +283,8 @@ const SUB_FILTERS = {
 const INLINE_COUNT = 3
 
 export default function Listings() {
-  const { activeCategory, showToast, search, setSearch, activeLocation, setPostOpen, user, setLoginOpen, setPendingAction } = useApp()
+  const { activeCategory, showToast, activeLocation, setPostOpen, user, setLoginOpen, setPendingAction } = useApp()
+  const [search, setSearch] = useState('')
   const [sort, setSort] = useState('newest')
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(true)
