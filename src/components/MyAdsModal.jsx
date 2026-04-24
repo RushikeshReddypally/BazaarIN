@@ -2,7 +2,61 @@ import { useState, useEffect, useRef } from 'react'
 import { useApp } from '../context/AppContext'
 import { supabase } from '../lib/supabase'
 import { formatPriceFull } from '../utils/format'
-import { categories } from '../data/categories'
+import { states } from '../data/locations'
+
+function LocationInput({ value, onChange }) {
+  const [query, setQuery] = useState(value || '')
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef(null)
+
+  useEffect(() => {
+    function onMouseDown(e) {
+      if (!wrapRef.current?.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onMouseDown)
+    return () => document.removeEventListener('mousedown', onMouseDown)
+  }, [])
+
+  const results = query.trim().length >= 2
+    ? states.flatMap(s =>
+        s.cities.filter(c => c.toLowerCase().includes(query.toLowerCase()))
+          .map(c => ({ city: c, state: s.state, icon: s.icon }))
+      ).slice(0, 20)
+    : []
+
+  function select(city) { setQuery(city); onChange(city); setOpen(false) }
+
+  return (
+    <div ref={wrapRef} style={{ position: 'relative' }}>
+      <input
+        value={query}
+        onChange={e => { setQuery(e.target.value); onChange(e.target.value); setOpen(true) }}
+        onFocus={() => setOpen(true)}
+        placeholder="Type your city…"
+        autoComplete="off"
+        style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid #e5e7eb', fontSize: 13.5, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+      />
+      {open && results.length > 0 && (
+        <div style={{
+          position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 9999,
+          background: '#fff', border: '1.5px solid #e5e7eb', borderRadius: 10,
+          boxShadow: '0 8px 24px rgba(0,0,0,0.1)', maxHeight: 200, overflowY: 'auto', marginTop: 4,
+        }}>
+          {results.map(({ city, state, icon }) => (
+            <div key={`${state}-${city}`} onMouseDown={() => select(city)}
+              style={{ padding: '9px 14px', cursor: 'pointer', fontSize: 13, display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f3f4f6' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
+              onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+            >
+              <span style={{ fontWeight: 500 }}>{city}</span>
+              <span style={{ fontSize: 11, color: '#9ca3af' }}>{icon} {state}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 /* ── Edit panel (slides in over the list) ── */
 function EditPanel({ ad, onSave, onCancel }) {
@@ -134,7 +188,7 @@ function EditPanel({ ad, onSave, onCancel }) {
         {/* Location */}
         <div>
           <label style={labelStyle}>Location</label>
-          <input value={form.location} onChange={set('location')} style={inputStyle} />
+          <LocationInput value={form.location} onChange={val => setForm(f => ({ ...f, location: val }))} />
         </div>
 
         {/* Description */}

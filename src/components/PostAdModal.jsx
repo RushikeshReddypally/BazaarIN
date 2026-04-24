@@ -1,7 +1,8 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
 import { categories } from '../data/categories'
 import { supabase } from '../lib/supabase'
+import { states } from '../data/locations'
 
 function getSellerName(user) {
   return user?.user_metadata?.full_name
@@ -77,6 +78,73 @@ const EXTRA_FIELDS = {
     { key: 'age_group', label: 'Age Group', type: 'select', options: ['0–1 Year','1–3 Years','3–5 Years','5–8 Years','8–12 Years','12+ Years'] },
     { key: 'condition', label: 'Condition', type: 'select', options: ['Brand New','Like New','Good'] },
   ],
+}
+
+/* ── Searchable city autocomplete ── */
+function LocationInput({ value, onChange }) {
+  const [query, setQuery] = useState(value || '')
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef(null)
+
+  useEffect(() => {
+    function onMouseDown(e) {
+      if (!wrapRef.current?.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onMouseDown)
+    return () => document.removeEventListener('mousedown', onMouseDown)
+  }, [])
+
+  const results = query.trim().length >= 2
+    ? states.flatMap(s =>
+        s.cities
+          .filter(c => c.toLowerCase().includes(query.toLowerCase()))
+          .map(c => ({ city: c, state: s.state, icon: s.icon }))
+      ).slice(0, 20)
+    : []
+
+  function select(city) {
+    setQuery(city)
+    onChange(city)
+    setOpen(false)
+  }
+
+  return (
+    <div ref={wrapRef} style={{ position: 'relative' }}>
+      <input
+        value={query}
+        onChange={e => { setQuery(e.target.value); onChange(e.target.value); setOpen(true) }}
+        onFocus={() => setOpen(true)}
+        placeholder="Type your city…"
+        required
+        autoComplete="off"
+      />
+      {open && results.length > 0 && (
+        <div style={{
+          position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 9999,
+          background: '#fff', border: '1.5px solid #e5e7eb', borderRadius: 10,
+          boxShadow: '0 8px 24px rgba(0,0,0,0.1)', maxHeight: 220, overflowY: 'auto',
+          marginTop: 4,
+        }}>
+          {results.map(({ city, state, icon }) => (
+            <div
+              key={`${state}-${city}`}
+              onMouseDown={() => select(city)}
+              style={{
+                padding: '10px 14px', cursor: 'pointer', fontSize: 13,
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                borderBottom: '1px solid #f3f4f6',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
+              onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+            >
+              <span style={{ fontWeight: 500, color: '#1a1a2e' }}>{city}</span>
+              <span style={{ fontSize: 11, color: '#9ca3af' }}>{icon} {state}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 const emptyForm = { title: '', category: '', price: '', original_price: '', location: '', description: '' }
@@ -281,7 +349,7 @@ export default function PostAdModal() {
 
           <div className="fr">
             <label>Location</label>
-            <input value={form.location} onChange={set('location')} placeholder="e.g. Andheri West, Mumbai" required />
+            <LocationInput value={form.location} onChange={val => setForm(f => ({ ...f, location: val }))} />
           </div>
 
           {/* Category-specific extra fields */}
