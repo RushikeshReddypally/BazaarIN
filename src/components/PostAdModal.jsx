@@ -3,8 +3,17 @@ import { useApp } from '../context/AppContext'
 import { categories } from '../data/categories'
 import { supabase } from '../lib/supabase'
 
-function getInitials(str) {
-  return str ? str.replace('+', '').slice(0, 2).toUpperCase() : 'AN'
+function getSellerName(user) {
+  return user?.user_metadata?.full_name
+    || user?.user_metadata?.name
+    || user?.email?.split('@')[0]
+    || user?.phone
+    || 'Anonymous'
+}
+
+function getInitials(user) {
+  const name = getSellerName(user)
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'AN'
 }
 
 const GRADIENTS = ['li1', 'li2', 'li3', 'li4', 'li5', 'li6']
@@ -144,15 +153,16 @@ export default function PostAdModal() {
       badge: null, badge_class: null,
       tags,
       verified: false,
-      seller_name: user?.phone ?? 'Anonymous',
-      seller_initials: getInitials(user?.phone),
+      seller_name: getSellerName(user),
+      seller_initials: getInitials(user),
       seller_color: '#4a4e69',
       images: [],
-      user_id: user?.id ?? null,
+      user_id: user?.id,
     }).select().single()
 
     if (insertErr) {
-      showToast('Failed to post ad. Try again.', '✕')
+      console.error('Post ad error:', insertErr)
+      showToast(insertErr.message || 'Failed to post ad. Try again.', '✕')
       setSubmitting(false)
       return
     }
