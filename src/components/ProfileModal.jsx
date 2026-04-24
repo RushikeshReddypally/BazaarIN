@@ -47,14 +47,20 @@ export default function ProfileModal() {
     e.preventDefault()
     setSaving(true)
 
-    const { error } = await supabase.from('profiles').upsert({
-      id: user.id,
+    const payload = {
       full_name: form.full_name,
       city: form.city,
       phone: displayPhone,
       email: user.email ?? null,
       avatar_color: selectedColor,
-    }, { onConflict: 'id' })
+    }
+
+    const { data: existing } = await supabase
+      .from('profiles').select('id').eq('id', user.id).single()
+
+    const { error } = existing
+      ? await supabase.from('profiles').update(payload).eq('id', user.id)
+      : await supabase.from('profiles').insert({ id: user.id, ...payload })
 
     setSaving(false)
     if (error) {
