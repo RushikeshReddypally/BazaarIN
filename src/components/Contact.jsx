@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext'
 
 const contactCards = [
   { icon: '💬', title: 'In-App Chat',    sub: 'Message sellers directly from any listing', href: '#listings' },
-  { icon: '📧', title: 'Email Support',  sub: 'support@bazaarin.in',                       href: 'mailto:support@bazaarin.in' },
+  { icon: '📧', title: 'Email Support',  sub: 'support.bazaartrade@gmail.com',              href: 'mailto:support.bazaartrade@gmail.com' },
   { icon: '🛡️', title: 'Safety Center', sub: 'Tips to trade safely across India',          href: '#' },
 ]
 
