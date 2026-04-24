@@ -213,6 +213,12 @@ export default function PostAdModal() {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    if (!user) {
+      setPostOpen(false)
+      setPendingAction(() => () => setPostOpen(true))
+      setLoginOpen(true)
+      return
+    }
     setSubmitting(true)
     setUploadProgress(0)
 

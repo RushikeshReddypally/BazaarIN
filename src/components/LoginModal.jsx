@@ -19,20 +19,38 @@ export default function LoginModal() {
     setSubmitting(false)
   }
 
+  function normalizePhone(raw) {
+    // Strip spaces, dashes, brackets
+    const digits = raw.replace(/[\s\-()]/g, '')
+    // If starts with 0, replace with +91
+    if (digits.startsWith('0')) return '+91' + digits.slice(1)
+    // If 10-digit Indian number, prepend +91
+    if (/^\d{10}$/.test(digits)) return '+91' + digits
+    // If starts with 91 (no +), add +
+    if (/^91\d{10}$/.test(digits)) return '+' + digits
+    return digits
+  }
+
   async function handleSendOtp(e) {
     e.preventDefault()
+    const normalized = normalizePhone(phone)
+    if (!/^\+\d{10,15}$/.test(normalized)) {
+      showToast('Enter a valid mobile number (e.g. 98765 43210)', '✕')
+      return
+    }
+    setPhone(normalized)
     setSubmitting(true)
-    const { error } = await supabase.auth.signInWithOtp({ phone })
+    const { error } = await supabase.auth.signInWithOtp({ phone: normalized })
     setSubmitting(false)
     if (error) { showToast(error.message, '✕'); return }
     setMode('otp')
-    showToast('OTP sent to your number 📱', '✓')
+    showToast('OTP sent to ' + normalized + ' 📱', '✓')
   }
 
   async function handleVerifyOtp(e) {
     e.preventDefault()
     setSubmitting(true)
-    const { error } = await supabase.auth.verifyOtp({ phone, token: otp, type: 'sms' })
+    const { error } = await supabase.auth.verifyOtp({ phone, token: otp.trim(), type: 'sms' })
     setSubmitting(false)
     if (error) { showToast(error.message, '✕'); return }
     close()
@@ -118,7 +136,7 @@ export default function LoginModal() {
             <form onSubmit={handleSendOtp}>
               <div className="fr">
                 <label>Mobile Number</label>
-                <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91 XXXXX XXXXX" required />
+                <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="98765 43210" required />
               </div>
               <button type="submit" className="fr-submit" disabled={submitting}>
                 {submitting ? 'Sending OTP…' : 'Send OTP'}
