@@ -150,7 +150,7 @@ function LocationInput({ value, onChange }) {
 const emptyForm = { title: '', category: '', price: '', original_price: '', location: '', description: '' }
 
 export default function PostAdModal() {
-  const { postOpen, setPostOpen, showToast, user } = useApp()
+  const { postOpen, setPostOpen, showToast, user, setLoginOpen, setPendingAction } = useApp()
   const [form, setForm] = useState(emptyForm)
   const [extras, setExtras] = useState({})
   const [images, setImages] = useState([])
@@ -158,6 +158,15 @@ export default function PostAdModal() {
   const [submitting, setSubmitting] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const fileRef = useRef(null)
+
+  // Redirect anonymous users to login; re-open Post Ad after login
+  useEffect(() => {
+    if (postOpen && !user) {
+      setPostOpen(false)
+      setPendingAction(() => () => setPostOpen(true))
+      setLoginOpen(true)
+    }
+  }, [postOpen, user])
 
   function set(key) {
     return e => setForm(f => ({ ...f, [key]: e.target.value }))

@@ -283,7 +283,7 @@ const SUB_FILTERS = {
 const INLINE_COUNT = 3
 
 export default function Listings() {
-  const { activeCategory, showToast, search, setSearch, activeLocation, setPostOpen } = useApp()
+  const { activeCategory, showToast, search, setSearch, activeLocation, setPostOpen, user, setLoginOpen, setPendingAction } = useApp()
   const [sort, setSort] = useState('newest')
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(true)
@@ -305,6 +305,19 @@ export default function Listings() {
       setLoading(false)
     }
     fetchListings()
+
+    // Real-time: new listings appear instantly, image updates sync without refresh
+    const channel = supabase
+      .channel('listings-live')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'listings' },
+        payload => setListings(prev => [payload.new, ...prev])
+      )
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'listings' },
+        payload => setListings(prev => prev.map(l => l.id === payload.new.id ? payload.new : l))
+      )
+      .subscribe()
+
+    return () => { supabase.removeChannel(channel) }
   }, [])
 
   function setSubFilter(group, val) {
@@ -499,7 +512,14 @@ export default function Listings() {
                 No listings yet in this category. Post your first ad — it's completely free and takes under 2 minutes.
               </div>
               <button
-                onClick={() => setPostOpen(true)}
+                onClick={() => {
+                  if (!user) {
+                    setPendingAction(() => () => setPostOpen(true))
+                    setLoginOpen(true)
+                  } else {
+                    setPostOpen(true)
+                  }
+                }}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   padding: '13px 28px', borderRadius: 99,

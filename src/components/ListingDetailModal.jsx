@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { formatPriceFull, formatPrice } from '../utils/format'
 import { useFavourite } from '../hooks/useFavourite'
+import { supabase } from '../lib/supabase'
 
 function InfoRow({ icon, label, value }) {
   return (
@@ -18,7 +19,26 @@ function InfoRow({ icon, label, value }) {
 export default function ListingDetailModal() {
   const { activeListing, setActiveListing, user, setLoginOpen, showToast, setChatListing, setPendingAction } = useApp()
   const { saved, toggle: toggleFav } = useFavourite(activeListing?.id, user)
+  const [currentImg, setCurrentImg] = useState(0)
+  const [listing, setListing] = useState(null)
   const open = !!activeListing
+
+  // Sync base listing from context
+  useEffect(() => {
+    if (activeListing) {
+      setListing(activeListing)
+      setCurrentImg(0)
+    } else {
+      setListing(null)
+    }
+  }, [activeListing?.id])
+
+  // Re-fetch to get latest images (e.g. uploaded just after insert)
+  useEffect(() => {
+    if (!activeListing?.id) return
+    supabase.from('listings').select('*').eq('id', activeListing.id).single()
+      .then(({ data }) => { if (data) setListing(data) })
+  }, [activeListing?.id])
 
   useEffect(() => {
     function onKey(e) { if (e.key === 'Escape') setActiveListing(null) }
@@ -31,14 +51,17 @@ export default function ListingDetailModal() {
     return () => { document.body.style.overflow = '' }
   }, [open])
 
-  if (!activeListing) return null
+  if (!activeListing || !listing) return null
 
   const {
     title, price, original_price, emoji, gradient,
     badge, badge_class, location, tags, description,
     seller_name, seller_initials, seller_color, verified,
     category, created_at, images,
-  } = activeListing
+  } = listing
+
+  const hasImages = images?.length > 0
+  const total = images?.length ?? 0
 
   const discount = original_price && price
     ? Math.round((1 - price / original_price) * 100)
@@ -47,6 +70,9 @@ export default function ListingDetailModal() {
   const postedDate = created_at
     ? new Date(created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
     : null
+
+  function prev() { setCurrentImg(i => (i - 1 + total) % total) }
+  function next() { setCurrentImg(i => (i + 1) % total) }
 
   function handleContact() {
     if (!user) {
@@ -67,8 +93,19 @@ export default function ListingDetailModal() {
     showToast(nowSaved ? 'Saved to wishlist!' : 'Removed from wishlist', nowSaved ? '❤️' : '🤍')
   }
 
+  const arrowBtn = {
+    position: 'absolute', top: '50%', transform: 'translateY(-50%)',
+    width: 34, height: 34, borderRadius: '50%',
+    background: 'rgba(255,255,255,0.88)', border: '1px solid rgba(0,0,0,0.08)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    cursor: 'pointer', fontSize: 18, fontWeight: 700, color: '#1a1a2e',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.14)', zIndex: 5,
+    transition: 'background 0.15s',
+  }
+
   return (
     <div
+      className="ldm-overlay"
       style={{
         position: 'fixed', inset: 0, zIndex: 1100,
         background: 'rgba(22,22,40,0.62)',
@@ -79,7 +116,7 @@ export default function ListingDetailModal() {
       }}
       onClick={e => e.target === e.currentTarget && setActiveListing(null)}
     >
-      <div style={{
+      <div className="ldm-inner" style={{
         background: '#fff',
         borderRadius: 24,
         width: '100%',
@@ -106,11 +143,11 @@ export default function ListingDetailModal() {
         >✕</button>
 
         {/* Left — image area */}
-        <div style={{
+        <div className="ldm-left" style={{
           width: '42%', flexShrink: 0,
           display: 'flex', flexDirection: 'column',
         }}>
-          {/* Main image */}
+          {/* Main image with carousel */}
           <div className={`lc-img ${gradient || 'li1'}`} style={{
             flex: 1, minHeight: 280, borderRadius: 0,
             fontSize: 96, position: 'relative',
@@ -120,20 +157,87 @@ export default function ListingDetailModal() {
                 {badge}
               </div>
             )}
-            {images?.length > 0 ? (
-              <img src={images[0]} alt={title}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
+
+            {hasImages ? (
+              <>
+                <img
+                  key={currentImg}
+                  src={images[currentImg]}
+                  alt={title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }}
+                />
+                {total > 1 && (
+                  <>
+                    <button
+                      onClick={prev}
+                      style={{ ...arrowBtn, left: 10 }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#fff'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.88)'}
+                    >‹</button>
+                    <button
+                      onClick={next}
+                      style={{ ...arrowBtn, right: 10 }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#fff'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.88)'}
+                    >›</button>
+                    {/* Dot indicators */}
+                    <div style={{
+                      position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+                      display: 'flex', gap: 5, zIndex: 4,
+                    }}>
+                      {images.map((_, i) => (
+                        <div
+                          key={i}
+                          onClick={() => setCurrentImg(i)}
+                          style={{
+                            width: i === currentImg ? 18 : 6,
+                            height: 6, borderRadius: 99,
+                            background: i === currentImg ? '#fff' : 'rgba(255,255,255,0.55)',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                          }}
+                        />
+                      ))}
+                    </div>
+                    {/* Counter */}
+                    <div style={{
+                      position: 'absolute', top: 10, right: 10,
+                      background: 'rgba(0,0,0,0.45)', color: '#fff',
+                      fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 99,
+                      zIndex: 4,
+                    }}>
+                      {currentImg + 1} / {total}
+                    </div>
+                  </>
+                )}
+              </>
             ) : (
               <span>{emoji}</span>
             )}
           </div>
 
-          {/* Thumbnail strip */}
-          {images?.length > 1 && (
-            <div style={{ display: 'flex', gap: 6, padding: '10px 12px', overflowX: 'auto', background: '#fafafa' }}>
+          {/* Thumbnail strip — clickable */}
+          {total > 1 && (
+            <div style={{
+              display: 'flex', gap: 6, padding: '10px 12px',
+              overflowX: 'auto', background: '#fafafa',
+              scrollbarWidth: 'none',
+            }}>
               {images.map((img, i) => (
-                <img key={i} src={img} alt=""
-                  style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 8, flexShrink: 0, border: '2px solid #e5e7eb' }} />
+                <img
+                  key={i}
+                  src={img}
+                  alt=""
+                  onClick={() => setCurrentImg(i)}
+                  style={{
+                    width: 56, height: 56, objectFit: 'cover',
+                    borderRadius: 8, flexShrink: 0, cursor: 'pointer',
+                    border: `2px solid ${i === currentImg ? '#1d3a6e' : '#e5e7eb'}`,
+                    opacity: i === currentImg ? 1 : 0.65,
+                    transition: 'all 0.15s ease',
+                  }}
+                />
               ))}
             </div>
           )}
@@ -151,7 +255,7 @@ export default function ListingDetailModal() {
         </div>
 
         {/* Right — details */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '28px 28px 24px' }}>
+        <div className="ldm-right" style={{ flex: 1, overflowY: 'auto', padding: '28px 28px 24px' }}>
           {/* Title */}
           <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1a1a2e', lineHeight: 1.25, marginBottom: 12 }}>
             {title}
@@ -300,10 +404,6 @@ export default function ListingDetailModal() {
       <style>{`
         @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
         @keyframes slideUp { from { transform: translateY(20px) scale(0.97); opacity: 0 } to { transform: none; opacity: 1 } }
-        @media (max-width: 640px) {
-          .detail-inner { flex-direction: column !important; }
-          .detail-left { width: 100% !important; min-height: 220px !important; }
-        }
       `}</style>
     </div>
   )

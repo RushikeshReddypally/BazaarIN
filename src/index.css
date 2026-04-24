@@ -33,7 +33,7 @@
    RESET + BASE
 ═══════════════════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;touch-action:manipulation}
 body{
   font-family:var(--font);
   background:var(--silk-xlight);
@@ -994,25 +994,158 @@ footer{
 /* ═══════════════════════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════════════════════ */
+
+/* ── Tablet (≤960px) ── */
 @media(max-width:960px){
-  .hero-inner{grid-template-columns:1fr}
+  /* Section spacing */
+  .section{padding:72px 0}
+
+  /* Nav */
+  #nav{padding:0 3%;gap:12px}
+  .nav-search{max-width:260px}
+
+  /* Hero */
+  .hero-inner{grid-template-columns:1fr;text-align:center;gap:40px}
   .hero-right{display:none}
+  .hero-desc{max-width:100%}
+  .hero-actions{justify-content:center}
+  .hero-trust{justify-content:center}
+  .hero-eyebrow{justify-content:center}
+
+  /* Features */
   .features-grid{grid-template-columns:1fr 1fr}
-  .how-grid{grid-template-columns:1fr}
-  .contact-wrap{grid-template-columns:1fr}
-  .footer-top{grid-template-columns:1fr 1fr;gap:32px}
-  .sell-inner{flex-direction:column}
+
+  /* How it works */
+  .how-grid{grid-template-columns:1fr;gap:40px}
+
+  /* Sell CTA */
+  .sell-inner{flex-direction:column;text-align:center;align-items:center}
   .sell-steps{max-width:100%}
+
+  /* Contact */
+  .contact-wrap{grid-template-columns:1fr;gap:40px}
+
+  /* Footer */
+  .footer-top{grid-template-columns:1fr 1fr;gap:32px}
+
+  /* Listings grid */
+  .lg{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
 }
+
+/* ── Large Mobile (≤768px) ── */
+@media(max-width:768px){
+  /* Nav — hide search bar, keep icons */
+  .nav-search{display:none}
+  #nav{gap:8px}
+
+  /* Listing cards 2-column */
+  .lg{grid-template-columns:1fr 1fr;gap:14px}
+
+  /* Listings bar wrapping */
+  .listings-bar{gap:6px}
+  .sort-wrap{margin-left:0;width:100%}
+  .sort-select{width:100%}
+
+  /* Modals go wider */
+  .modal{max-width:100%;border-radius:var(--r-xl)}
+  .modal.modal-wide{max-width:100%}
+}
+
+/* ── Mobile (≤640px) ── */
 @media(max-width:640px){
-  .features-grid{grid-template-columns:1fr}
-  .footer-top{grid-template-columns:1fr}
-  #nav .nav-city{display:none}
+  /* Section spacing */
+  .section{padding:56px 0}
+  .container{padding:0 4%}
+
+  /* Nav */
+  #nav{padding:0 4%;height:56px;gap:6px}
+  .nav-logo{font-size:16px}
+  .nav-city{display:none}
   .nav-right{gap:4px}
-  h1.hero-h{letter-spacing:-2px}
+  /* Hide My Ads and Sign Out on mobile — sign out accessible via Profile modal */
+  .nav-hide-mobile{display:none}
+  .nav-icon-btn{width:32px;height:32px;font-size:13px}
+
+  /* Hero */
+  #hero{padding:72px 4% 48px}
+  h1.hero-h{font-size:clamp(34px,9vw,52px);letter-spacing:-2px}
+  .hero-desc{font-size:15px}
+  .hero-actions{flex-direction:column;align-items:stretch}
+  .hero-actions .btn{justify-content:center}
+  .hero-trust{flex-wrap:wrap;gap:8px;margin-top:28px;padding-top:24px}
+
+  /* Category strip */
+  #categories{padding:28px 0}
+  .cat-chip{padding:12px 14px;min-width:68px}
+  .cat-e{font-size:18px}
+  .cat-n{font-size:10px}
+
+  /* Listings section */
+  #listings .sec-head{flex-direction:column;align-items:flex-start;gap:10px;margin-bottom:20px}
+  h2.sec-h{font-size:clamp(22px,6vw,30px)}
+  .listings-bar{gap:6px}
+  .lg{grid-template-columns:1fr;gap:12px}
+
+  /* Listing card */
+  .lc-img{height:160px}
+  .lc-price{font-size:18px}
+
+  /* Sell CTA */
+  #sell-cta{padding:48px 4%}
+  h2.sell-h{font-size:clamp(24px,7vw,36px);letter-spacing:-1px}
+  .sell-sub{font-size:14px}
+
+  /* Features */
+  .features-grid{grid-template-columns:1fr}
+  .feat{padding:28px 24px}
+
+  /* Contact */
+  .contact-form{padding:28px 20px}
   .fr-row{grid-template-columns:1fr}
-  .footer-bottom{flex-direction:column;text-align:center}
-  #toast{bottom:16px;right:16px;left:16px;max-width:none}
-  .modal{padding:28px 24px}
-  .contact-form{padding:28px 24px}
+
+  /* Footer */
+  .footer-top{grid-template-columns:1fr;gap:28px}
+  .footer-bottom{flex-direction:column;text-align:center;gap:12px}
+  footer{padding:48px 4% 32px}
+
+  /* Modals — full screen on mobile */
+  .overlay{padding:0;align-items:flex-end}
+  .modal{
+    border-radius:var(--r-xl) var(--r-xl) 0 0;
+    padding:28px 20px 32px;
+    max-height:92vh;
+    width:100%;
+    max-width:100%;
+  }
+  .modal.modal-wide{max-width:100%}
+
+  /* Toast */
+  #toast{bottom:16px;right:12px;left:12px;max-width:none}
+}
+
+/* ── Listing Detail Modal responsive ── */
+@media(max-width:640px){
+  .ldm-overlay{padding:0!important;align-items:flex-end!important}
+  .ldm-inner{
+    flex-direction:column!important;
+    border-radius:20px 20px 0 0!important;
+    max-height:95vh!important;
+    overflow-y:auto!important;
+  }
+  .ldm-left{width:100%!important}
+  .ldm-left .lc-img{min-height:220px!important;font-size:64px!important}
+  .ldm-right{padding:20px 16px 28px!important;overflow-y:visible!important}
+}
+
+/* ── Small Mobile (≤400px) ── */
+@media(max-width:400px){
+  #nav{padding:0 3%}
+  .nav-logo{font-size:15px;letter-spacing:-.5px}
+  h1.hero-h{font-size:clamp(30px,10vw,44px)}
+  .cat-chip{padding:10px 12px;min-width:60px}
+  .cat-e{font-size:16px}
+  .lg{gap:10px}
+  .btn-lg{padding:13px 24px;font-size:15px}
+  .sell-steps .sell-step{padding:16px 10px}
+  .ss-label{font-size:11px}
 }

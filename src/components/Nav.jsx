@@ -69,9 +69,9 @@ export default function Nav() {
 
         {user ? (
           <>
-            <button className="btn btn-ghost btn-sm" onClick={() => setMyAdsOpen(true)}>My Ads</button>
+            <button className="btn btn-ghost btn-sm nav-hide-mobile" onClick={() => setMyAdsOpen(true)}>My Ads</button>
             <button className="btn btn-ghost btn-sm" onClick={() => setProfileOpen(true)}>Profile</button>
-            <button className="btn btn-ghost btn-sm" onClick={logout}>Sign Out</button>
+            <button className="btn btn-ghost btn-sm nav-hide-mobile" onClick={logout}>Sign Out</button>
           </>
         ) : (
           <button className="btn btn-ghost btn-sm" onClick={() => setLoginOpen(true)}>Sign In</button>
