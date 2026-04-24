@@ -7,12 +7,6 @@ const heroCards = [
   { cls: 'hcard-4', thumb: 'h4', badge: null,        badgeCls: null,        emoji: '💻', title: 'MacBook Air M2',       price: '₹82,000',   meta: '📍 Delhi · 8 months' },
 ]
 
-const faces = [
-  ['RS', '#4a4e69'],
-  ['PK', '#9a8c98'],
-  ['AM', '#c9ada7'],
-  ['DV', '#22223b'],
-]
 
 export default function Hero() {
   const { setPostOpen } = useApp()
@@ -48,17 +42,17 @@ export default function Hero() {
             <a href="#listings" className="btn btn-ghost btn-lg">Browse Listings</a>
           </div>
 
-          <div className="hero-trust">
-            <div className="trust-faces">
-              {faces.map(([initials, color]) => (
-                <div key={initials} className="trust-face" style={{ background: color }}>{initials}</div>
-              ))}
-            </div>
-            <div className="trust-text"><strong>24 lakh+</strong> happy traders across India</div>
-            <div style={{ display: 'flex', gap: 4, marginLeft: 'auto' }}>
-              <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: '-.5px' }}>2.4M+</span>
-              <span style={{ fontSize: 11, color: 'var(--lilac)', paddingTop: 3 }}>Listings</span>
-            </div>
+          <div className="hero-trust" style={{ gap: 16 }}>
+            {[
+              { icon: '🆓', text: 'Free to post' },
+              { icon: '✅', text: 'OTP verified' },
+              { icon: '💬', text: 'Direct chat' },
+              { icon: '📍', text: 'All India' },
+            ].map(({ icon, text }) => (
+              <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, fontWeight: 500, color: 'var(--grape)' }}>
+                <span style={{ fontSize: 15 }}>{icon}</span> {text}
+              </div>
+            ))}
           </div>
         </div>
 

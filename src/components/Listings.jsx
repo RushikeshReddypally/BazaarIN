@@ -283,7 +283,7 @@ const SUB_FILTERS = {
 const INLINE_COUNT = 3
 
 export default function Listings() {
-  const { activeCategory, showToast, search, setSearch, activeLocation } = useApp()
+  const { activeCategory, showToast, search, setSearch, activeLocation, setPostOpen } = useApp()
   const [sort, setSort] = useState('newest')
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(true)
@@ -475,30 +475,60 @@ export default function Listings() {
         {/* Listings Grid */}
         <div className="lg reveal reveal-d2">
           {loading ? (
-            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '60px 0', color: 'var(--lilac)', fontSize: 15 }}>
-              Loading listings…
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '80px 0' }}>
+              <div style={{ fontSize: 32, marginBottom: 12 }}>⏳</div>
+              <div style={{ color: 'var(--lilac)', fontSize: 15 }}>Loading listings…</div>
+            </div>
+          ) : filtered.length === 0 && hasAnyFilter ? (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '80px 0' }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
+              <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--indigo)', marginBottom: 6 }}>No listings found</div>
+              <div style={{ color: 'var(--lilac)', fontSize: 14, marginBottom: 20 }}>Try different filters or search terms</div>
+              <button
+                onClick={() => { setActiveSubFilters({}); setSearch('') }}
+                style={{ padding: '10px 24px', borderRadius: 99, background: '#1d3a6e', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600 }}
+              >Clear Filters</button>
             </div>
           ) : filtered.length === 0 ? (
-            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '60px 0', color: 'var(--lilac)', fontSize: 15 }}>
-              No listings found. Try different filters.
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '80px 0' }}>
+              <div style={{ fontSize: 52, marginBottom: 16 }}>🛍️</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--indigo)', marginBottom: 8 }}>
+                Be the first to post!
+              </div>
+              <div style={{ color: 'var(--lilac)', fontSize: 14, marginBottom: 24, maxWidth: 340, margin: '0 auto 24px' }}>
+                No listings yet in this category. Post your first ad — it's completely free and takes under 2 minutes.
+              </div>
+              <button
+                onClick={() => setPostOpen(true)}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                  padding: '13px 28px', borderRadius: 99,
+                  background: '#1d3a6e', color: '#fff',
+                  border: 'none', cursor: 'pointer', fontSize: 15, fontWeight: 700,
+                }}
+              >
+                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                Post Free Ad
+              </button>
             </div>
           ) : (
             filtered.map(l => <ListingCard key={l.id} listing={l} />)
           )}
         </div>
 
-        <div className="load-more reveal reveal-d3">
-          <button
-            className="btn btn-ghost"
-            style={{ fontSize: 15, padding: '13px 36px' }}
-            onClick={() => showToast('Loading more listings…', '⏳')}
-          >
-            Load More
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path d="m6 9 6 6 6-6" />
-            </svg>
-          </button>
-        </div>
+        {filtered.length > 0 && (
+          <div className="load-more reveal reveal-d3">
+            <button
+              className="btn btn-ghost"
+              style={{ fontSize: 15, padding: '13px 36px' }}
+              onClick={() => showToast('All listings loaded', 'ℹ️')}
+            >
+              {filtered.length} listing{filtered.length !== 1 ? 's' : ''} shown
+            </button>
+          </div>
+        )}
       </div>
     </section>
   )
