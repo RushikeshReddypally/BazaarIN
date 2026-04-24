@@ -1,5 +1,5 @@
 import { useApp } from '../context/AppContext'
-import { categories } from '../data/categories'
+import { categories, categoryIcons } from '../data/categories.jsx'
 
 export default function CategoryStrip() {
   const { activeCategory, setActiveCategory } = useApp()
@@ -16,7 +16,7 @@ export default function CategoryStrip() {
               document.getElementById('listings')?.scrollIntoView({ behavior: 'smooth' })
             }}
           >
-            <span className="cat-e">{cat.emoji}</span>
+            <span className="cat-e">{categoryIcons[cat.id]}</span>
             <span className="cat-n">{cat.label}</span>
             <span className="cat-c">{cat.count}</span>
           </div>

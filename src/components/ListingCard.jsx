@@ -1,15 +1,26 @@
 import { useApp } from '../context/AppContext'
 import { formatPriceFull, formatPrice } from '../utils/format'
 import { useFavourite } from '../hooks/useFavourite'
+import { categoryIcons } from '../data/categories.jsx'
+
+const HeartIcon = ({ filled }) => (
+  <svg width="14" height="14" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+  </svg>
+)
 
 export default function ListingCard({ listing }) {
   const { showToast, setActiveListing, user, setLoginOpen } = useApp()
   const { saved, toggle } = useFavourite(listing.id, user)
   const {
-    title, price, original_price, emoji, gradient,
+    title, price, original_price, category, gradient,
     badge, badge_class, location, tags,
     seller_name, seller_initials, seller_color, verified,
+    images,
   } = listing
+
+  const thumb = images?.[0] ?? null
+  const catIcon = categoryIcons[category] ?? categoryIcons['all']
 
   async function handleSave(e) {
     e.stopPropagation()
@@ -20,12 +31,20 @@ export default function ListingCard({ listing }) {
 
   return (
     <div className="lc" onClick={() => setActiveListing(listing)} style={{ cursor: 'pointer' }}>
-      <div className={`lc-img ${gradient}`}>
+      <div className={`lc-img ${gradient}`} style={{ overflow: 'hidden', position: 'relative' }}>
         {badge && <div className={`lc-badge ${badge_class}`}>{badge}</div>}
-        <button className="lc-save" onClick={handleSave} title={saved ? 'Remove from wishlist' : 'Save'}>
-          {saved ? '❤️' : '🤍'}
+        <button
+          className="lc-save"
+          onClick={handleSave}
+          title={saved ? 'Remove from wishlist' : 'Save'}
+          style={{ color: saved ? '#e8473f' : 'rgba(0,0,0,0.45)' }}
+        >
+          <HeartIcon filled={saved} />
         </button>
-        {emoji}
+        {thumb
+          ? <img src={thumb} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
+          : <span style={{ color: 'rgba(0,0,0,0.3)', display: 'flex' }}>{catIcon}</span>
+        }
       </div>
 
       <div className="lc-body">

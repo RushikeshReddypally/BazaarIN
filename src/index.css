@@ -305,7 +305,7 @@ h1.hero-h span{
 .hcard-body{padding:14px}
 .hcard-title{font-size:13px;font-weight:700;color:var(--indigo);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hcard-price{font-size:16px;font-weight:800;color:var(--indigo);letter-spacing:-.5px}
-.hcard-meta{font-size:11px;color:var(--lilac);margin-top:3px}
+.hcard-meta{font-size:11px;color:var(--lilac);margin-top:3px;display:flex;align-items:center;gap:3px}
 .hcard-badge{
   position:absolute;top:10px;left:10px;
   padding:4px 9px;border-radius:99px;
@@ -390,7 +390,7 @@ h1.hero-h span{
 .cat-chip:hover .cat-e,.cat-chip.active .cat-e{transform:scale(1.15)}
 .cat-chip:hover .cat-n,.cat-chip.active .cat-n{color:var(--white)}
 .cat-chip:hover .cat-c,.cat-chip.active .cat-c{color:rgba(255,255,255,.6)}
-.cat-e{font-size:22px;transition:transform var(--t) var(--spring)}
+.cat-e{font-size:22px;display:flex;align-items:center;justify-content:center;transition:transform var(--t) var(--spring)}
 .cat-n{font-size:11px;font-weight:700;color:var(--grape);white-space:nowrap;transition:color var(--t) var(--ease)}
 .cat-c{font-size:10px;color:var(--lilac);transition:color var(--t) var(--ease)}
 

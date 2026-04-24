@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
-import { categories } from '../data/categories'
+import { categories } from '../data/categories.jsx'
 import { supabase } from '../lib/supabase'
 import { states } from '../data/locations'
 
