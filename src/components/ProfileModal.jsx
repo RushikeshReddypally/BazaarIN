@@ -21,19 +21,20 @@ export default function ProfileModal() {
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
+        const googleName = user?.user_metadata?.full_name || user?.user_metadata?.name || ''
         if (data) {
           setForm({
-            full_name: data.full_name ?? '',
+            full_name: data.full_name || googleName,
             city: data.city ?? '',
-            phone: data.phone ?? user.phone ?? '',
+            phone: data.phone ?? user?.phone ?? '',
           })
           setSelectedColor(data.avatar_color ?? '#4a4e69')
         } else {
-          setForm(f => ({
-            ...f,
-            full_name: user?.user_metadata?.full_name || user?.user_metadata?.name || '',
+          setForm({
+            full_name: googleName,
+            city: '',
             phone: user?.phone ?? '',
-          }))
+          })
         }
       })
   }, [user, profileOpen])

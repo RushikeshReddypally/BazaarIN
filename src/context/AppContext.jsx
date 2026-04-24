@@ -25,8 +25,15 @@ export function AppProvider({ children }) {
       setUser(session?.user ?? null)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null)
+      if (event === 'SIGNED_IN' && session?.user?.app_metadata?.provider === 'google') {
+        const name = session.user.user_metadata?.full_name || session.user.user_metadata?.name || ''
+        setTimeout(() => {
+          setToast({ show: true, msg: `Welcome${name ? ', ' + name.split(' ')[0] : ''}! 👋`, icon: '✓' })
+          setTimeout(() => setToast(t => ({ ...t, show: false })), 3500)
+        }, 500)
+      }
     })
 
     return () => subscription.unsubscribe()
