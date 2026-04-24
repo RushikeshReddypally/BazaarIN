@@ -18,7 +18,6 @@ function getInitials(user) {
 }
 
 const GRADIENTS = ['li1', 'li2', 'li3', 'li4', 'li5', 'li6']
-const CATEGORY_EMOJI = Object.fromEntries(categories.map(c => [c.id, c.emoji]))
 
 /* Category-specific extra fields */
 const EXTRA_FIELDS = {
@@ -182,9 +181,10 @@ export default function PostAdModal() {
   }
 
   function handleFiles(e) {
-    const files = Array.from(e.target.files).slice(0, 10)
-    setImages(files)
-    setPreviews(files.map(f => URL.createObjectURL(f)))
+    const newFiles = Array.from(e.target.files)
+    e.target.value = ''
+    setImages(prev => [...prev, ...newFiles].slice(0, 10))
+    setPreviews(prev => [...prev, ...newFiles.map(f => URL.createObjectURL(f))].slice(0, 10))
   }
 
   function removeImage(i) {
@@ -199,10 +199,12 @@ export default function PostAdModal() {
     const urls = []
     for (let i = 0; i < images.length; i++) {
       const file = images[i]
-      const ext = file.name.split('.').pop()
+      const ext = file.name.split('.').pop().toLowerCase()
       const path = `listings/${listingId}/${Date.now()}_${i}.${ext}`
-      const { error } = await supabase.storage.from('listing-images').upload(path, file)
-      if (!error) {
+      const { error } = await supabase.storage.from('listing-images').upload(path, file, { upsert: true })
+      if (error) {
+        console.error(`Upload failed for image ${i}:`, error.message)
+      } else {
         const { data } = supabase.storage.from('listing-images').getPublicUrl(path)
         urls.push(data.publicUrl)
       }
@@ -231,7 +233,7 @@ export default function PostAdModal() {
       original_price: form.original_price ? Number(form.original_price) : null,
       location: form.location,
       description: form.description,
-      emoji: CATEGORY_EMOJI[form.category] ?? '🏷️',
+      emoji: null,
       gradient: GRADIENTS[Math.floor(Math.random() * GRADIENTS.length)],
       badge: null, badge_class: null,
       tags,
