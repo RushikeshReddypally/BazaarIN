@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext'
 import { supabase } from '../lib/supabase'
 
 export default function LoginModal() {
-  const { loginOpen, setLoginOpen, showToast } = useApp()
+  const { loginOpen, setLoginOpen, showToast, pendingAction, setPendingAction } = useApp()
   const [step, setStep] = useState('phone') // 'phone' | 'otp'
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
@@ -42,6 +42,9 @@ export default function LoginModal() {
     } else {
       close()
       showToast('Welcome to BazaarIN! 👋', '✓')
+      if (pendingAction) {
+        setTimeout(() => { pendingAction(); setPendingAction(null) }, 300)
+      }
     }
   }
 
@@ -53,7 +56,7 @@ export default function LoginModal() {
   }
 
   return (
-    <div className={`overlay${loginOpen ? ' open' : ''}`} onClick={e => e.target === e.currentTarget && close()}>
+    <div className={`overlay${loginOpen ? ' open' : ''}`} style={{ zIndex: 1300 }} onClick={e => e.target === e.currentTarget && close()}>
       <div className="modal">
         <button className="modal-x" onClick={close}>✕</button>
 

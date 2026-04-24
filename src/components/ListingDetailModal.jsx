@@ -16,7 +16,7 @@ function InfoRow({ icon, label, value }) {
 }
 
 export default function ListingDetailModal() {
-  const { activeListing, setActiveListing, user, setLoginOpen, showToast, setChatListing } = useApp()
+  const { activeListing, setActiveListing, user, setLoginOpen, showToast, setChatListing, setPendingAction } = useApp()
   const { saved, toggle: toggleFav } = useFavourite(activeListing?.id, user)
   const open = !!activeListing
 
@@ -49,12 +49,20 @@ export default function ListingDetailModal() {
     : null
 
   function handleContact() {
-    if (!user) { setLoginOpen(true); return }
+    if (!user) {
+      setPendingAction(() => () => setChatListing(activeListing))
+      setLoginOpen(true)
+      return
+    }
     setChatListing(activeListing)
   }
 
   async function handleSave() {
-    if (!user) { setLoginOpen(true); return }
+    if (!user) {
+      setPendingAction(() => () => toggleFav())
+      setLoginOpen(true)
+      return
+    }
     const nowSaved = await toggleFav()
     showToast(nowSaved ? 'Saved to wishlist!' : 'Removed from wishlist', nowSaved ? '❤️' : '🤍')
   }

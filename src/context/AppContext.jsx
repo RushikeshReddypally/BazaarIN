@@ -12,6 +12,7 @@ export function AppProvider({ children }) {
   const [favouritesOpen, setFavouritesOpen] = useState(false)
   const [activeListing, setActiveListing] = useState(null)
   const [chatListing, setChatListing] = useState(null)
+  const [pendingAction, setPendingAction] = useState(null) // action to run after login
   const [toast, setToast] = useState({ show: false, msg: '', icon: '✓' })
   const [activeCategory, setActiveCategory] = useState('all')
   const [activeLocation, setActiveLocation] = useState('all')
@@ -87,6 +88,7 @@ export function AppProvider({ children }) {
       favouritesOpen, setFavouritesOpen,
       activeListing, setActiveListing,
       chatListing, setChatListing,
+      pendingAction, setPendingAction,
       toast, showToast,
       activeCategory, setActiveCategory,
       activeLocation, setActiveLocation,
