@@ -47,7 +47,7 @@ export default function LocationPicker() {
     ? states.flatMap(s =>
         s.cities
           .filter(c => c.toLowerCase().includes(query.toLowerCase()))
-          .map(c => ({ city: c, state: s.state, icon: s.icon }))
+          .map(c => ({ city: c, state: s.state }))
       ).slice(0, 30)
     : null
 
@@ -104,12 +104,12 @@ export default function LocationPicker() {
                   borderBottom: '1px solid #f5f3f9',
                 }}
               >
-                🌏 All Cities
+                All Cities
               </div>
             )}
 
             {/* Search results across all states */}
-            {query && !selectedState && searchResults?.map(({ city, state, icon }) => (
+            {query && !selectedState && searchResults?.map(({ city, state }) => (
               <div
                 key={`${state}-${city}`}
                 onClick={() => selectCity(city)}
@@ -121,7 +121,7 @@ export default function LocationPicker() {
                 }}
               >
                 <span>{city}</span>
-                <span style={{ color: '#aaa', fontSize: 11 }}>{icon} {state}</span>
+                <span style={{ color: '#aaa', fontSize: 11 }}>{state}</span>
               </div>
             ))}
 
@@ -136,7 +136,7 @@ export default function LocationPicker() {
                   background: '#f9f7ff',
                 }}
               >
-                ← {selectedState.icon} {selectedState.state}
+                ← {selectedState.state}
               </div>
             )}
 
@@ -150,7 +150,7 @@ export default function LocationPicker() {
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 }}
               >
-                <span>{s.icon} {s.state}</span>
+                <span>{s.state}</span>
                 <span style={{ color: '#aaa', fontSize: 11 }}>{s.cities.length} →</span>
               </div>
             ))}
