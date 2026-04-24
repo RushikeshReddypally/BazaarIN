@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { useApp } from '../context/AppContext'
 
 const contactCards = [
-  { icon: '💬', title: 'Live Chat',      sub: 'Typically replies in minutes',           href: '#' },
-  { icon: '📧', title: 'Email Support',  sub: 'support@bazaarin.in',                   href: 'mailto:support@bazaarin.in' },
-  { icon: '📞', title: 'Phone Support',  sub: '1800-000-0000 · Mon–Sat 9am–6pm',       href: 'tel:18000000000' },
+  { icon: '💬', title: 'In-App Chat',    sub: 'Message sellers directly from any listing', href: '#listings' },
+  { icon: '📧', title: 'Email Support',  sub: 'support@bazaarin.in',                       href: 'mailto:support@bazaarin.in' },
+  { icon: '🛡️', title: 'Safety Center', sub: 'Tips to trade safely across India',          href: '#' },
 ]
 
 const emptyForm = { name: '', email: '', subject: '', message: '' }

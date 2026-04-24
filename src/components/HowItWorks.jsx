@@ -1,7 +1,7 @@
 const steps = [
   {
     title: 'Create a free account',
-    desc: 'Sign up with your mobile number or Google. Takes under 60 seconds.',
+    desc: 'Sign up with your mobile number. OTP verified in seconds.',
   },
   {
     title: 'Browse or post a listing',

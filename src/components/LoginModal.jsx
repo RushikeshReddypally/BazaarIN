@@ -1,25 +1,56 @@
 import { useState } from 'react'
 import { useApp } from '../context/AppContext'
-
-const emptyForm = { name: '', phone: '', password: '' }
+import { supabase } from '../lib/supabase'
 
 export default function LoginModal() {
   const { loginOpen, setLoginOpen, showToast } = useApp()
-  const [tab, setTab] = useState('login')
-  const [form, setForm] = useState(emptyForm)
+  const [step, setStep] = useState('phone') // 'phone' | 'otp'
+  const [phone, setPhone] = useState('')
+  const [otp, setOtp] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
-  function set(key) {
-    return e => setForm(f => ({ ...f, [key]: e.target.value }))
-  }
-
-  function handleSubmit(e) {
+  async function handleSendOtp(e) {
     e.preventDefault()
-    setLoginOpen(false)
-    setForm(emptyForm)
-    showToast(tab === 'login' ? 'Welcome back! 👋' : 'Account created! 🎉', '✓')
+    setSubmitting(true)
+
+    const { error } = await supabase.auth.signInWithOtp({ phone })
+
+    setSubmitting(false)
+
+    if (error) {
+      showToast(error.message, '✕')
+    } else {
+      setStep('otp')
+      showToast('OTP sent to your number 📱', '✓')
+    }
   }
 
-  function close() { setLoginOpen(false) }
+  async function handleVerifyOtp(e) {
+    e.preventDefault()
+    setSubmitting(true)
+
+    const { error } = await supabase.auth.verifyOtp({
+      phone,
+      token: otp,
+      type: 'sms',
+    })
+
+    setSubmitting(false)
+
+    if (error) {
+      showToast(error.message, '✕')
+    } else {
+      close()
+      showToast('Welcome to BazaarIN! 👋', '✓')
+    }
+  }
+
+  function close() {
+    setLoginOpen(false)
+    setStep('phone')
+    setPhone('')
+    setOtp('')
+  }
 
   return (
     <div className={`overlay${loginOpen ? ' open' : ''}`} onClick={e => e.target === e.currentTarget && close()}>
@@ -28,43 +59,52 @@ export default function LoginModal() {
 
         <div className="modal-logo">Bazaar<span className="nav-logo-dot" />IN</div>
         <p className="modal-sub">
-          {tab === 'login' ? 'Welcome back! Sign in to continue.' : 'Create your free account.'}
+          {step === 'phone'
+            ? 'Enter your mobile number to continue.'
+            : `Enter the OTP sent to ${phone}`}
         </p>
 
-        <div className="tab-row">
-          <button className={`tab${tab === 'login' ? ' on' : ''}`} onClick={() => setTab('login')}>Sign In</button>
-          <button className={`tab${tab === 'register' ? ' on' : ''}`} onClick={() => setTab('register')}>Register</button>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          {tab === 'register' && (
+        {step === 'phone' ? (
+          <form onSubmit={handleSendOtp}>
             <div className="fr">
-              <label>Full Name</label>
-              <input value={form.name} onChange={set('name')} placeholder="Your full name" required />
+              <label>Mobile Number</label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
+                placeholder="+91 XXXXX XXXXX"
+                required
+              />
             </div>
-          )}
-          <div className="fr">
-            <label>Mobile Number</label>
-            <input value={form.phone} onChange={set('phone')} placeholder="+91 XXXXX XXXXX" required />
-          </div>
-          <div className="fr">
-            <label>Password</label>
-            <input type="password" value={form.password} onChange={set('password')} placeholder="••••••••" required />
-          </div>
-          <button type="submit" className="fr-submit">
-            {tab === 'login' ? 'Sign In' : 'Create Account'}
-          </button>
-        </form>
-
-        <div className="divider">or continue with</div>
-        <div className="social-btns">
-          <button className="social-btn" onClick={() => { close(); showToast('Google sign-in coming soon!', 'G') }}>
-            G &nbsp;Google
-          </button>
-          <button className="social-btn" onClick={() => { close(); showToast('OTP login coming soon!', '📱') }}>
-            📱 &nbsp;OTP
-          </button>
-        </div>
+            <button type="submit" className="fr-submit" disabled={submitting}>
+              {submitting ? 'Sending OTP…' : 'Send OTP'}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleVerifyOtp}>
+            <div className="fr">
+              <label>Enter OTP</label>
+              <input
+                type="text"
+                value={otp}
+                onChange={e => setOtp(e.target.value)}
+                placeholder="6-digit code"
+                maxLength={6}
+                required
+              />
+            </div>
+            <button type="submit" className="fr-submit" disabled={submitting}>
+              {submitting ? 'Verifying…' : 'Verify & Continue'}
+            </button>
+            <button
+              type="button"
+              style={{ marginTop: 12, width: '100%', background: 'none', border: 'none', color: 'var(--lilac)', cursor: 'pointer', fontSize: 14 }}
+              onClick={() => { setStep('phone'); setOtp('') }}
+            >
+              ← Change number
+            </button>
+          </form>
+        )}
       </div>
     </div>
   )

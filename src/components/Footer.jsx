@@ -20,7 +20,7 @@ export default function Footer() {
             <div className="nav-logo" style={{ color: 'var(--white)' }}>
               Bazaar<span className="nav-logo-dot" />IN
             </div>
-            <p>India's most trusted marketplace for buying and selling preloved goods across 18+ cities.</p>
+            <p>India's trusted marketplace for buying and selling preloved goods across every city.</p>
             <div className="footer-social">
               {socials.map(s => (
                 <a key={s.label} href={s.href} className="fs-btn">{s.label}</a>

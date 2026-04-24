@@ -1,15 +1,15 @@
 const features = [
   {
     icon: '🛡️',
-    title: 'Secure Payments',
-    desc: 'Escrow-protected transactions keep your money safe until the deal is confirmed by both parties.',
-    tag: 'Buyer Protection',
+    title: 'Safe Trading',
+    desc: 'Meet sellers in public places and inspect items before paying. Our safety tips guide every transaction.',
+    tag: 'Buyer Safety',
   },
   {
     icon: '✅',
     title: 'Verified Sellers',
-    desc: 'Aadhaar-linked profiles and community ratings help you trade with complete confidence.',
-    tag: '2-Step Verify',
+    desc: 'Phone-verified profiles and community ratings help you trade with confidence.',
+    tag: 'Phone Verified',
   },
   {
     icon: '🆓',
@@ -20,19 +20,19 @@ const features = [
   {
     icon: '💬',
     title: 'In-App Chat',
-    desc: 'Negotiate directly with buyers or sellers — no phone number ever exposed.',
-    tag: 'E2E Encrypted',
+    desc: 'Negotiate directly with buyers or sellers through our built-in messaging system.',
+    tag: 'Direct Chat',
   },
   {
     icon: '📍',
-    title: 'Hyperlocal Search',
-    desc: 'Find listings within walking distance or search the whole country in one click.',
-    tag: '18+ Cities',
+    title: 'All India Search',
+    desc: 'Filter by city, category, and budget to find exactly what you need anywhere in India.',
+    tag: 'Pan India',
   },
   {
     icon: '⚡',
     title: 'Instant Alerts',
-    desc: 'Get notified the moment a matching listing is posted near you. Never miss a deal.',
+    desc: 'Get notified the moment someone messages you about your listing. Never miss a deal.',
     tag: 'Real-time',
   },
 ]

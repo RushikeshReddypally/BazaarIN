@@ -11,7 +11,10 @@ export default function CategoryStrip() {
           <div
             key={cat.id}
             className={`cat-chip${activeCategory === cat.id ? ' active' : ''}`}
-            onClick={() => setActiveCategory(cat.id)}
+            onClick={() => {
+              setActiveCategory(cat.id)
+              document.getElementById('listings')?.scrollIntoView({ behavior: 'smooth' })
+            }}
           >
             <span className="cat-e">{cat.emoji}</span>
             <span className="cat-n">{cat.label}</span>

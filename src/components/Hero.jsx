@@ -35,7 +35,7 @@ export default function Hero() {
           </h1>
 
           <p className="hero-desc">
-            From preloved smartphones to classic cars — discover millions of listings across 18 cities. Free to post, free to buy.
+            From preloved smartphones to classic cars — discover listings across every city in India. Free to post, free to buy.
           </p>
 
           <div className="hero-actions">
@@ -46,24 +46,6 @@ export default function Hero() {
               Post Free Ad
             </button>
             <a href="#listings" className="btn btn-ghost btn-lg">Browse Listings</a>
-          </div>
-
-          <div className="hero-search-bar">
-            <select className="hsb-select">
-              <option>All</option>
-              <option>Vehicles</option>
-              <option>Mobiles</option>
-              <option>Property</option>
-              <option>Furniture</option>
-              <option>Electronics</option>
-            </select>
-            <input className="hsb-input" type="text" placeholder="e.g. iPhone 14 Pro, Maruti Swift…" />
-            <button className="hsb-btn">
-              <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-              </svg>
-              Search
-            </button>
           </div>
 
           <div className="hero-trust">
