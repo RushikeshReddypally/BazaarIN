@@ -98,7 +98,7 @@ function LocationInput({ value, onChange }) {
     ? states.flatMap(s =>
         s.cities
           .filter(c => c.toLowerCase().includes(query.toLowerCase()))
-          .map(c => ({ city: c, state: s.state, icon: s.icon }))
+          .map(c => ({ city: c, state: s.state }))
       ).slice(0, 20)
     : []
 
@@ -125,7 +125,7 @@ function LocationInput({ value, onChange }) {
           boxShadow: '0 8px 24px rgba(0,0,0,0.1)', maxHeight: 220, overflowY: 'auto',
           marginTop: 4,
         }}>
-          {results.map(({ city, state, icon }) => (
+          {results.map(({ city, state }) => (
             <div
               key={`${state}-${city}`}
               onMouseDown={() => select(city)}
@@ -138,7 +138,7 @@ function LocationInput({ value, onChange }) {
               onMouseLeave={e => e.currentTarget.style.background = '#fff'}
             >
               <span style={{ fontWeight: 500, color: '#1a1a2e' }}>{city}</span>
-              <span style={{ fontSize: 11, color: '#9ca3af' }}>{icon} {state}</span>
+              <span style={{ fontSize: 11, color: '#9ca3af' }}>{state}</span>
             </div>
           ))}
         </div>
@@ -150,7 +150,7 @@ function LocationInput({ value, onChange }) {
 const emptyForm = { title: '', category: '', price: '', original_price: '', location: '', description: '' }
 
 export default function PostAdModal() {
-  const { postOpen, setPostOpen, showToast, user, setLoginOpen, setPendingAction } = useApp()
+  const { postOpen, setPostOpen, showToast, user, setLoginOpen, setPendingAction, bumpListings } = useApp()
   const [form, setForm] = useState(emptyForm)
   const [extras, setExtras] = useState({})
   const [images, setImages] = useState([])
@@ -264,7 +264,8 @@ export default function PostAdModal() {
     setExtras({})
     setImages([])
     setPreviews([])
-    showToast('Ad posted! Going live shortly 🎉', '✓')
+    bumpListings()
+    showToast('Ad posted successfully!', '✓')
   }
 
   function close() {

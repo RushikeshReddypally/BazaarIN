@@ -6,6 +6,7 @@ const AppContext = createContext(null)
 export function AppProvider({ children }) {
   const [loginOpen, setLoginOpen] = useState(false)
   const [postOpen, setPostOpen] = useState(false)
+  const [listingsKey, setListingsKey] = useState(0)
   const [profileOpen, setProfileOpen] = useState(false)
   const [myAdsOpen, setMyAdsOpen] = useState(false)
   const [messagesOpen, setMessagesOpen] = useState(false)
@@ -26,12 +27,17 @@ export function AppProvider({ children }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null)
-      if (event === 'SIGNED_IN' && session?.user?.app_metadata?.provider === 'google') {
-        const name = session.user.user_metadata?.full_name || session.user.user_metadata?.name || ''
-        setTimeout(() => {
-          setToast({ show: true, msg: `Welcome${name ? ', ' + name.split(' ')[0] : ''}! 👋`, icon: '✓' })
-          setTimeout(() => setToast(t => ({ ...t, show: false })), 3500)
-        }, 500)
+      if (event === 'SIGNED_IN') {
+        const userId = session?.user?.id
+        const key = `welcomed_${userId}`
+        if (userId && !localStorage.getItem(key)) {
+          localStorage.setItem(key, '1')
+          const name = session.user.user_metadata?.full_name || session.user.user_metadata?.name || ''
+          setTimeout(() => {
+            setToast({ show: true, msg: `Welcome to BazaarTrade${name ? ', ' + name.split(' ')[0] : ''}!`, icon: '✓' })
+            setTimeout(() => setToast(t => ({ ...t, show: false })), 3500)
+          }, 500)
+        }
       }
     })
 
@@ -67,6 +73,8 @@ export function AppProvider({ children }) {
     return () => { supabase.removeChannel(channel) }
   }, [user?.phone])
 
+  const bumpListings = useCallback(() => setListingsKey(k => k + 1), [])
+
   const showToast = useCallback((msg, icon = '✓') => {
     setToast({ show: true, msg, icon })
     setTimeout(() => setToast(t => ({ ...t, show: false })), 3000)
@@ -100,6 +108,7 @@ export function AppProvider({ children }) {
       activeLocation, setActiveLocation,
       user, logout,
       unreadCount, clearUnread,
+      listingsKey, bumpListings,
     }}>
       {children}
     </AppContext.Provider>

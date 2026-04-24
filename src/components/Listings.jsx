@@ -283,7 +283,7 @@ const SUB_FILTERS = {
 const INLINE_COUNT = 3
 
 export default function Listings() {
-  const { activeCategory, showToast, activeLocation, setPostOpen, user, setLoginOpen, setPendingAction } = useApp()
+  const { activeCategory, showToast, activeLocation, setPostOpen, user, setLoginOpen, setPendingAction, listingsKey } = useApp()
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState('newest')
   const [listings, setListings] = useState([])
@@ -319,7 +319,7 @@ export default function Listings() {
       .subscribe()
 
     return () => { supabase.removeChannel(channel) }
-  }, [])
+  }, [listingsKey])
 
   function setSubFilter(group, val) {
     setActiveSubFilters(prev => {
