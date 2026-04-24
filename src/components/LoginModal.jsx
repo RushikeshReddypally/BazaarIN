@@ -15,7 +15,7 @@ export default function LoginModal() {
   // modes: 'options' | 'email' | 'email-sent' | 'phone' | 'otp'
   const [mode, setMode] = useState('options')
   const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
+  const [phone, setPhone] = useState('+91 ')
   const [otp, setOtp] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -53,10 +53,15 @@ export default function LoginModal() {
 
   /* ── Phone OTP ── */
   function normalizePhone(raw) {
-    const digits = raw.replace(/[\s\-()]/g, '')
+    const cleaned = raw.trim()
+    const digits = cleaned.replace(/[\s\-()]/g, '')
+    if (digits.startsWith('+91') && digits.length === 13) return digits
     if (digits.startsWith('0')) return '+91' + digits.slice(1)
     if (/^\d{10}$/.test(digits)) return '+91' + digits
     if (/^91\d{10}$/.test(digits)) return '+' + digits
+    // handle "+91 XXXXX XXXXX" with spaces already stripped
+    const noPlus = digits.replace(/^\+/, '')
+    if (/^91\d{10}$/.test(noPlus)) return '+' + noPlus
     return digits
   }
 
@@ -89,7 +94,7 @@ export default function LoginModal() {
     setLoginOpen(false)
     setMode('options')
     setEmail('')
-    setPhone('')
+    setPhone('+91 ')
     setOtp('')
   }
 
@@ -186,7 +191,7 @@ export default function LoginModal() {
               <div className="fr">
                 <label>Mobile Number</label>
                 <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-                  placeholder="98765 43210" required autoFocus />
+                  placeholder="+91 98765 43210" required autoFocus />
               </div>
               <button type="submit" className="fr-submit" disabled={submitting}>
                 {submitting ? 'Sending OTP…' : 'Send OTP'}
