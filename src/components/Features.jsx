@@ -42,7 +42,7 @@ export default function Features() {
     <section id="features" className="section">
       <div className="container">
         <div className="sec-head reveal">
-          <h2 className="sec-h"><small>Why BazaarIN</small>Built for India</h2>
+          <h2 className="sec-h"><small>Why BazaarTrade</small>Built for India</h2>
         </div>
         <div className="features-grid reveal reveal-d1">
           {features.map(f => (

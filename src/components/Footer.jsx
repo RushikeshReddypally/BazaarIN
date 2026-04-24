@@ -18,9 +18,9 @@ export default function Footer() {
         <div className="footer-top">
           <div className="footer-brand">
             <div className="nav-logo" style={{ color: 'var(--white)' }}>
-              Bazaar<span className="nav-logo-dot" />IN
+              BazaarTrade<span className="nav-logo-dot" />in
             </div>
-            <p>India's trusted marketplace for buying and selling preloved goods across every city.</p>
+            <p>India's trusted marketplace for buying and selling preloved goods across every city in India.</p>
             <div className="footer-social">
               {socials.map(s => (
                 <a key={s.label} href={s.href} className="fs-btn">{s.label}</a>
@@ -39,7 +39,7 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <div>© 2026 BazaarIN Technologies Pvt. Ltd. · Made with ❤️ in India</div>
+          <div>© 2026 BazaarTrade.in · Made with ❤️ in India</div>
           <div className="footer-badges">
             <div className="app-badge">📱 App Store</div>
             <div className="app-badge">▶ Play Store</div>

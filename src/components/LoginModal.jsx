@@ -36,7 +36,7 @@ export default function LoginModal() {
     setSubmitting(false)
     if (error) { showToast(error.message, '✕'); return }
     close()
-    showToast('Welcome to BazaarIN! 👋', '✓')
+    showToast('Welcome to BazaarTrade! 👋', '✓')
     if (pendingAction) {
       setTimeout(() => { pendingAction(); setPendingAction(null) }, 300)
     }
@@ -54,7 +54,7 @@ export default function LoginModal() {
       <div className="modal">
         <button className="modal-x" onClick={close}>✕</button>
 
-        <div className="modal-logo">Bazaar<span className="nav-logo-dot" />IN</div>
+        <div className="modal-logo">BazaarTrade<span className="nav-logo-dot" />in</div>
 
         {mode === 'options' && (
           <>

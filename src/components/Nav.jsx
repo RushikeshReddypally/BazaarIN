@@ -14,7 +14,7 @@ export default function Nav() {
   return (
     <nav id="nav">
       <a href="#" className="nav-logo">
-        Bazaar<span className="nav-logo-dot" />IN
+        BazaarTrade<span className="nav-logo-dot" />in
       </a>
 
       <div className="nav-search">
