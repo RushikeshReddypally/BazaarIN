@@ -256,8 +256,15 @@ export default function PostAdModal() {
     let imageUrls = []
     if (images.length > 0) {
       imageUrls = await uploadImages(inserted.id, showToast)
+      console.log('Uploaded URLs:', imageUrls)
       if (imageUrls.length > 0) {
-        await supabase.from('listings').update({ images: imageUrls }).eq('id', inserted.id)
+        const { error: imgErr } = await supabase.from('listings').update({ images: imageUrls }).eq('id', inserted.id)
+        if (imgErr) {
+          console.error('Failed to save image URLs:', imgErr.message)
+          showToast(`Failed to save images: ${imgErr.message}`, '✕')
+        }
+      } else {
+        showToast('Photos did not upload — check storage permissions', '✕')
       }
     }
 
