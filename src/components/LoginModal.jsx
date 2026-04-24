@@ -12,11 +12,8 @@ const BTN = {
 
 export default function LoginModal() {
   const { loginOpen, setLoginOpen, showToast, pendingAction, setPendingAction } = useApp()
-  // modes: 'options' | 'email' | 'email-sent' | 'phone' | 'otp'
-  const [mode, setMode] = useState('options')
+  const [mode, setMode] = useState('options') // 'options' | 'email' | 'email-sent'
   const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('+91 ')
-  const [otp, setOtp] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   function afterLogin() {
@@ -34,7 +31,7 @@ export default function LoginModal() {
       provider: 'google',
       options: { redirectTo: window.location.origin },
     })
-    if (error) showToast('Google login not configured yet. Use email instead.', '✕')
+    if (error) showToast('Google login failed. Try email instead.', '✕')
     setSubmitting(false)
   }
 
@@ -51,51 +48,10 @@ export default function LoginModal() {
     setMode('email-sent')
   }
 
-  /* ── Phone OTP ── */
-  function normalizePhone(raw) {
-    const cleaned = raw.trim()
-    const digits = cleaned.replace(/[\s\-()]/g, '')
-    if (digits.startsWith('+91') && digits.length === 13) return digits
-    if (digits.startsWith('0')) return '+91' + digits.slice(1)
-    if (/^\d{10}$/.test(digits)) return '+91' + digits
-    if (/^91\d{10}$/.test(digits)) return '+' + digits
-    // handle "+91 XXXXX XXXXX" with spaces already stripped
-    const noPlus = digits.replace(/^\+/, '')
-    if (/^91\d{10}$/.test(noPlus)) return '+' + noPlus
-    return digits
-  }
-
-  async function handleSendOtp(e) {
-    e.preventDefault()
-    const normalized = normalizePhone(phone)
-    if (!/^\+\d{10,15}$/.test(normalized)) {
-      showToast('Enter a valid 10-digit mobile number', '✕')
-      return
-    }
-    setPhone(normalized)
-    setSubmitting(true)
-    const { error } = await supabase.auth.signInWithOtp({ phone: normalized })
-    setSubmitting(false)
-    if (error) { showToast(error.message, '✕'); return }
-    setMode('otp')
-    showToast('OTP sent to ' + normalized + ' 📱', '✓')
-  }
-
-  async function handleVerifyOtp(e) {
-    e.preventDefault()
-    setSubmitting(true)
-    const { error } = await supabase.auth.verifyOtp({ phone, token: otp.trim(), type: 'sms' })
-    setSubmitting(false)
-    if (error) { showToast(error.message, '✕'); return }
-    afterLogin()
-  }
-
   function close() {
     setLoginOpen(false)
     setMode('options')
     setEmail('')
-    setPhone('+91 ')
-    setOtp('')
   }
 
   return (
@@ -105,13 +61,13 @@ export default function LoginModal() {
         <button className="modal-x" onClick={close}>✕</button>
         <div className="modal-logo">BazaarTrade<span className="nav-logo-dot" />in</div>
 
-        {/* ── Options screen ── */}
+        {/* ── Options ── */}
         {mode === 'options' && (
           <>
             <p className="modal-sub">Sign in to buy, sell and chat with sellers across India.</p>
 
             {/* Google */}
-            <button onClick={handleGoogle} disabled={submitting} style={BTN}
+            <button onClick={handleGoogle} disabled={submitting} style={{ ...BTN, marginBottom: 12 }}
               onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.1)'}
               onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}>
               <svg width="18" height="18" viewBox="0 0 48 48">
@@ -123,20 +79,15 @@ export default function LoginModal() {
               Continue with Google
             </button>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '12px 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
               <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
               <span style={{ fontSize: 12, color: '#9ca3af' }}>or</span>
               <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
             </div>
 
             {/* Email */}
-            <button onClick={() => setMode('email')} style={{ ...BTN, marginBottom: 10, background: '#f9fafb' }}>
+            <button onClick={() => setMode('email')} style={{ ...BTN, background: '#f9fafb' }}>
               ✉️ Continue with Email
-            </button>
-
-            {/* Phone */}
-            <button onClick={() => setMode('phone')} style={{ ...BTN, background: '#f9fafb' }}>
-              📱 Continue with Mobile OTP
             </button>
 
             <p style={{ fontSize: 11.5, color: '#9ca3af', textAlign: 'center', marginTop: 16, lineHeight: 1.6 }}>
@@ -165,7 +116,7 @@ export default function LoginModal() {
           </>
         )}
 
-        {/* ── Email sent confirmation ── */}
+        {/* ── Email sent ── */}
         {mode === 'email-sent' && (
           <div style={{ textAlign: 'center', padding: '12px 0' }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>📬</div>
@@ -178,47 +129,6 @@ export default function LoginModal() {
               Use a different email
             </button>
           </div>
-        )}
-
-        {/* ── Phone form ── */}
-        {mode === 'phone' && (
-          <>
-            <p className="modal-sub">Enter your mobile number to receive an OTP.</p>
-            <button onClick={() => setMode('options')} style={{ background: 'none', border: 'none', color: 'var(--lilac)', cursor: 'pointer', fontSize: 13, marginBottom: 16, padding: 0 }}>
-              ← Back
-            </button>
-            <form onSubmit={handleSendOtp}>
-              <div className="fr">
-                <label>Mobile Number</label>
-                <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-                  placeholder="+91 98765 43210" required autoFocus />
-              </div>
-              <button type="submit" className="fr-submit" disabled={submitting}>
-                {submitting ? 'Sending OTP…' : 'Send OTP'}
-              </button>
-            </form>
-          </>
-        )}
-
-        {/* ── OTP verify ── */}
-        {mode === 'otp' && (
-          <>
-            <p className="modal-sub">Enter the 6-digit OTP sent to {phone}</p>
-            <form onSubmit={handleVerifyOtp}>
-              <div className="fr">
-                <label>Enter OTP</label>
-                <input type="text" inputMode="numeric" value={otp}
-                  onChange={e => setOtp(e.target.value)} placeholder="000000" maxLength={6} required autoFocus />
-              </div>
-              <button type="submit" className="fr-submit" disabled={submitting}>
-                {submitting ? 'Verifying…' : 'Verify & Sign In'}
-              </button>
-              <button type="button" style={{ marginTop: 12, width: '100%', background: 'none', border: 'none', color: 'var(--lilac)', cursor: 'pointer', fontSize: 14 }}
-                onClick={() => { setMode('phone'); setOtp('') }}>
-                ← Change number
-              </button>
-            </form>
-          </>
         )}
       </div>
     </div>
