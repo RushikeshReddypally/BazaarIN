@@ -54,11 +54,12 @@ export default function ProfileModal() {
       phone: displayPhone,
       email: user.email ?? null,
       avatar_color: selectedColor,
-    })
+    }, { onConflict: 'id' })
 
     setSaving(false)
     if (error) {
-      showToast('Failed to save profile', '✕')
+      showToast(error.message || 'Failed to save profile', '✕')
+      console.error('Profile save error:', error)
     } else {
       setProfileOpen(false)
       showToast('Profile saved! ✓', '✓')
