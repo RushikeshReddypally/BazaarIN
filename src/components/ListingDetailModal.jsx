@@ -375,12 +375,12 @@ export default function ListingDetailModal() {
                       <div style={{
                         padding: '10px 14px', borderRadius: 10,
                         background: '#fef3c7', border: '1px solid #fde68a',
-                        fontSize: 12.5, color: '#92400e', display: 'flex', alignItems: 'center', gap: 7,
+                        fontSize: 12.5, color: '#92400e', display: 'flex', alignItems: 'flex-start', gap: 8,
                       }}>
-                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 1 }}>
                           <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
                         </svg>
-                        This listing is marked as <strong>Sold</strong> and will be removed in 48 hrs.
+                        <span>This listing is marked as <strong>Sold</strong> and will be removed in 48 hrs.</span>
                       </div>
                       <button onClick={handleUnmarkSold} style={{
                         width: '100%', padding: '13px', borderRadius: 10,
