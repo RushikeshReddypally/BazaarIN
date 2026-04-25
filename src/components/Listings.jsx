@@ -302,7 +302,14 @@ export default function Listings() {
         .select('*')
         .order('created_at', { ascending: false })
       if (error) showToast('Failed to load listings', '✕')
-      else setListings(data ?? [])
+      else {
+        const now = Date.now()
+        const LIMIT = 48 * 3600 * 1000
+        setListings((data ?? []).filter(l => {
+          if (l.badge !== 'Sold' || !l.sold_at) return true
+          return (now - new Date(l.sold_at).getTime()) < LIMIT
+        }))
+      }
       setLoading(false)
     }
     fetchListings()
@@ -314,7 +321,19 @@ export default function Listings() {
         payload => setListings(prev => [payload.new, ...prev])
       )
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'listings' },
-        payload => setListings(prev => prev.map(l => l.id === payload.new.id ? payload.new : l))
+        payload => {
+          const l = payload.new
+          const LIMIT = 48 * 3600 * 1000
+          const expired = l.badge === 'Sold' && l.sold_at && (Date.now() - new Date(l.sold_at).getTime()) >= LIMIT
+          if (expired) {
+            setListings(prev => prev.filter(x => x.id !== l.id))
+          } else {
+            setListings(prev => prev.map(x => x.id === l.id ? l : x))
+          }
+        }
+      )
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'listings' },
+        payload => setListings(prev => prev.filter(l => l.id !== payload.old.id))
       )
       .subscribe()
 

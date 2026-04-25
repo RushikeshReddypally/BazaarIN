@@ -121,9 +121,12 @@ export default function ListingDetailModal() {
 
   async function handleMarkSold() {
     const { error } = await supabase.from('listings')
-      .update({ badge: 'Sold', badge_class: 'badge-sold' }).eq('id', listing.id)
+      .update({ badge: 'Sold', badge_class: 'badge-sold', sold_at: new Date().toISOString() })
+      .eq('id', listing.id)
     if (error) { showToast('Failed to update', '✕'); return }
-    bumpListings(); setActiveListing(null); showToast('Marked as sold')
+    bumpListings()
+    setActiveListing(null)
+    showToast('Marked as Sold — listing removes in 48 hrs. Unmark from My Ads to keep it.', '✓')
   }
 
   return (

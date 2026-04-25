@@ -20,7 +20,7 @@ function LocationInput({ value, onChange }) {
   const results = query.trim().length >= 2
     ? states.flatMap(s =>
         s.cities.filter(c => c.toLowerCase().includes(query.toLowerCase()))
-          .map(c => ({ city: c, state: s.state, icon: s.icon }))
+          .map(c => ({ city: c, state: s.state }))
       ).slice(0, 20)
     : []
 
@@ -42,14 +42,14 @@ function LocationInput({ value, onChange }) {
           background: '#fff', border: '1.5px solid #e5e7eb', borderRadius: 10,
           boxShadow: '0 8px 24px rgba(0,0,0,0.1)', maxHeight: 200, overflowY: 'auto', marginTop: 4,
         }}>
-          {results.map(({ city, state, icon }) => (
+          {results.map(({ city, state }) => (
             <div key={`${state}-${city}`} onMouseDown={() => select(city)}
               style={{ padding: '9px 14px', cursor: 'pointer', fontSize: 13, display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f3f4f6' }}
               onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
               onMouseLeave={e => e.currentTarget.style.background = '#fff'}
             >
               <span style={{ fontWeight: 500 }}>{city}</span>
-              <span style={{ fontSize: 11, color: '#9ca3af' }}>{icon} {state}</span>
+              <span style={{ fontSize: 11, color: '#9ca3af' }}>{state}</span>
             </div>
           ))}
         </div>
@@ -58,7 +58,16 @@ function LocationInput({ value, onChange }) {
   )
 }
 
-/* ── Edit panel (slides in over the list) ── */
+function timeLeft(soldAt) {
+  if (!soldAt) return null
+  const ms = 48 * 3600 * 1000 - (Date.now() - new Date(soldAt).getTime())
+  if (ms <= 0) return 'expired'
+  const h = Math.floor(ms / 3600000)
+  const m = Math.floor((ms % 3600000) / 60000)
+  return h > 0 ? `${h}h ${m}m` : `${m}m`
+}
+
+/* ── Edit panel ── */
 function EditPanel({ ad, onSave, onCancel }) {
   const [form, setForm] = useState({
     title: ad.title ?? '',
@@ -131,14 +140,12 @@ function EditPanel({ ad, onSave, onCancel }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
         <button onClick={onCancel} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: '#9ca3af', padding: 0, lineHeight: 1 }}>←</button>
         <div style={{ fontSize: 18, fontWeight: 800, color: '#1a1a2e' }}>Edit Ad</div>
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
-        {/* Photos */}
         <div>
           <label style={labelStyle}>Photos</label>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -167,13 +174,11 @@ function EditPanel({ ad, onSave, onCancel }) {
           </div>
         </div>
 
-        {/* Title */}
         <div>
           <label style={labelStyle}>Title</label>
           <input value={form.title} onChange={set('title')} style={inputStyle} />
         </div>
 
-        {/* Price row */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           <div>
             <label style={labelStyle}>Price (₹)</label>
@@ -185,20 +190,17 @@ function EditPanel({ ad, onSave, onCancel }) {
           </div>
         </div>
 
-        {/* Location */}
         <div>
           <label style={labelStyle}>Location</label>
           <LocationInput value={form.location} onChange={val => setForm(f => ({ ...f, location: val }))} />
         </div>
 
-        {/* Description */}
         <div>
           <label style={labelStyle}>Description</label>
           <textarea value={form.description} onChange={set('description')} rows={4}
             style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.5 }} />
         </div>
 
-        {/* Upload progress */}
         {saving && images.length > 0 && uploadProgress > 0 && uploadProgress < 100 && (
           <div>
             <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>Uploading photos… {uploadProgress}%</div>
@@ -209,7 +211,6 @@ function EditPanel({ ad, onSave, onCancel }) {
         )}
       </div>
 
-      {/* Footer */}
       <div style={{ display: 'flex', gap: 10, paddingTop: 16, borderTop: '1px solid #f3f4f6', marginTop: 16 }}>
         <button onClick={onCancel} style={{
           flex: 1, padding: '11px', borderRadius: 10, fontSize: 13.5, fontWeight: 600,
@@ -225,16 +226,17 @@ function EditPanel({ ad, onSave, onCancel }) {
   )
 }
 
-/* ── Ad list item ── */
+/* ── Ad row ── */
 function AdRow({ ad, onView, onEdit, onToggleSold, onDelete, deleting }) {
   const isSold = ad.badge === 'Sold'
+  const remaining = isSold ? timeLeft(ad.sold_at) : null
+
   return (
     <div style={{
-      display: 'flex', gap: 14, alignItems: 'center',
+      display: 'flex', gap: 14, alignItems: 'flex-start',
       padding: '14px 16px', borderRadius: 14,
-      border: `1.5px solid ${isSold ? '#e5e7eb' : '#f3f4f6'}`,
-      background: isSold ? '#fafafa' : '#fff',
-      opacity: isSold ? 0.75 : 1,
+      border: `1.5px solid ${isSold ? '#fde68a' : '#f3f4f6'}`,
+      background: isSold ? '#fffbeb' : '#fff',
       transition: 'opacity 0.15s',
     }}>
       {/* Thumbnail */}
@@ -255,11 +257,27 @@ function AdRow({ ad, onView, onEdit, onToggleSold, onDelete, deleting }) {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 3 }}>
           <span style={{ fontSize: 15, fontWeight: 900, color: '#1d3a6e' }}>{formatPriceFull(ad.price)}</span>
-          {isSold && <span style={{ fontSize: 10, fontWeight: 700, background: '#6b7280', color: '#fff', padding: '2px 7px', borderRadius: 99 }}>SOLD</span>}
+          {isSold && <span style={{ fontSize: 10, fontWeight: 700, background: '#d97706', color: '#fff', padding: '2px 7px', borderRadius: 99 }}>SOLD</span>}
         </div>
         <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>
-          📍 {ad.location} · {new Date(ad.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+          {ad.location} · {new Date(ad.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
         </div>
+        {isSold && remaining && (
+          <div style={{
+            marginTop: 6, padding: '5px 10px', borderRadius: 7,
+            background: remaining === 'expired' ? '#fee2e2' : '#fef3c7',
+            border: `1px solid ${remaining === 'expired' ? '#fca5a5' : '#fde68a'}`,
+            fontSize: 11, color: remaining === 'expired' ? '#dc2626' : '#92400e',
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+          }}>
+            <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+            </svg>
+            {remaining === 'expired'
+              ? 'Expired — you can delete this now'
+              : `Auto-removes in ${remaining} · Unmark to keep`}
+          </div>
+        )}
       </div>
 
       {/* Actions */}
@@ -267,18 +285,18 @@ function AdRow({ ad, onView, onEdit, onToggleSold, onDelete, deleting }) {
         <button onClick={onEdit} style={{
           padding: '5px 11px', borderRadius: 7, fontSize: 11.5, fontWeight: 600,
           border: '1.5px solid #dbeafe', background: '#eff6ff', cursor: 'pointer', color: '#1d4ed8',
-        }}>✏️ Edit</button>
+        }}>Edit</button>
         <button onClick={onToggleSold} style={{
           padding: '5px 11px', borderRadius: 7, fontSize: 11.5, fontWeight: 600,
           border: `1.5px solid ${isSold ? '#d1fae5' : '#e5e7eb'}`,
           background: isSold ? '#ecfdf5' : '#fff',
           cursor: 'pointer', color: isSold ? '#059669' : '#6b7280',
-        }}>{isSold ? '✓ Active' : 'Mark Sold'}</button>
+        }}>{isSold ? 'Unmark' : 'Mark Sold'}</button>
         <button onClick={onDelete} disabled={deleting} style={{
           padding: '5px 11px', borderRadius: 7, fontSize: 11.5, fontWeight: 600,
           border: '1.5px solid #fca5a5', background: '#fff5f5',
           cursor: 'pointer', color: '#dc2626',
-        }}>{deleting ? '…' : '🗑️ Delete'}</button>
+        }}>{deleting ? '…' : 'Delete'}</button>
       </div>
     </div>
   )
@@ -286,11 +304,12 @@ function AdRow({ ad, onView, onEdit, onToggleSold, onDelete, deleting }) {
 
 /* ── Main modal ── */
 export default function MyAdsModal() {
-  const { myAdsOpen, setMyAdsOpen, user, setActiveListing, showToast } = useApp()
+  const { myAdsOpen, setMyAdsOpen, user, setActiveListing, showToast, bumpListings } = useApp()
   const [ads, setAds] = useState([])
   const [loading, setLoading] = useState(false)
   const [deleting, setDeleting] = useState(null)
-  const [editing, setEditing] = useState(null) // ad being edited
+  const [editing, setEditing] = useState(null)
+  const [soldConfirm, setSoldConfirm] = useState(null) // ad pending sold confirmation
 
   useEffect(() => {
     if (!myAdsOpen || !user) return
@@ -311,18 +330,45 @@ export default function MyAdsModal() {
     if (!confirm('Delete this ad? This cannot be undone.')) return
     setDeleting(id)
     const { error } = await supabase.from('listings').delete().eq('id', id)
-    if (error) showToast('Failed to delete. Try again.', '✕')
-    else { setAds(prev => prev.filter(a => a.id !== id)); showToast('Ad deleted.', '🗑️') }
+    if (error) {
+      showToast('Failed to delete. Try again.', '✕')
+    } else {
+      setAds(prev => prev.filter(a => a.id !== id))
+      bumpListings()
+      showToast('Ad deleted', '🗑️')
+    }
     setDeleting(null)
   }
 
-  async function toggleSold(ad) {
-    const newBadge = ad.badge === 'Sold' ? null : 'Sold'
-    const newClass = newBadge ? 'badge-sold' : null
-    const { error } = await supabase.from('listings').update({ badge: newBadge, badge_class: newClass }).eq('id', ad.id)
+  async function confirmMarkSold(ad) {
+    const nowSold = ad.badge !== 'Sold'
+
+    if (nowSold) {
+      // Show inline confirmation before marking sold
+      setSoldConfirm(ad)
+      return
+    }
+
+    // Unmark sold — no confirmation needed
+    await applyToggleSold(ad, false)
+  }
+
+  async function applyToggleSold(ad, markAsSold) {
+    setSoldConfirm(null)
+    const newBadge = markAsSold ? 'Sold' : null
+    const newClass = markAsSold ? 'badge-sold' : null
+    const soldAt = markAsSold ? new Date().toISOString() : null
+
+    const { error } = await supabase.from('listings').update({
+      badge: newBadge, badge_class: newClass, sold_at: soldAt,
+    }).eq('id', ad.id)
+
     if (!error) {
-      setAds(prev => prev.map(a => a.id === ad.id ? { ...a, badge: newBadge, badge_class: newClass } : a))
-      showToast(newBadge ? 'Marked as Sold' : 'Marked as Active', '✓')
+      setAds(prev => prev.map(a =>
+        a.id === ad.id ? { ...a, badge: newBadge, badge_class: newClass, sold_at: soldAt } : a
+      ))
+      bumpListings()
+      showToast(markAsSold ? 'Marked as Sold — removes in 48 hrs' : 'Unmarked — listing is active again', '✓')
     }
   }
 
@@ -332,20 +378,53 @@ export default function MyAdsModal() {
     showToast('Ad updated!', '✓')
   }
 
-  function close() { setMyAdsOpen(false); setEditing(null) }
+  function close() { setMyAdsOpen(false); setEditing(null); setSoldConfirm(null) }
 
   return (
     <div className={`overlay${myAdsOpen ? ' open' : ''}`} onClick={e => e.target === e.currentTarget && close()}>
       <div className="modal modal-wide" style={{ maxWidth: 620, padding: '32px 28px 28px', minHeight: 420, display: 'flex', flexDirection: 'column' }}>
         <button className="modal-x" onClick={close}>✕</button>
 
-        {/* Edit mode */}
+        {/* Mark as Sold confirmation */}
+        {soldConfirm && (
+          <div style={{
+            position: 'absolute', inset: 0, zIndex: 10, borderRadius: 20,
+            background: 'rgba(255,255,255,0.97)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            padding: 32, textAlign: 'center',
+          }}>
+            <div style={{
+              width: 52, height: 52, borderRadius: '50%',
+              background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginBottom: 16,
+            }}>
+              <svg width="24" height="24" fill="none" stroke="#d97706" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                <line x1="7" y1="7" x2="7.01" y2="7" strokeWidth="3" />
+              </svg>
+            </div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: '#1a1a2e', marginBottom: 10 }}>
+              Mark as Sold?
+            </div>
+            <p style={{ fontSize: 13.5, color: '#6b7280', lineHeight: 1.7, marginBottom: 24, maxWidth: 320 }}>
+              Your listing will stay visible for <strong>48 hours</strong>, then be automatically removed.<br />
+              You can come back and <strong>Unmark</strong> it within that time if needed.
+            </p>
+            <div style={{ display: 'flex', gap: 10, width: '100%', maxWidth: 300 }}>
+              <button onClick={() => setSoldConfirm(null)} style={{
+                flex: 1, padding: '12px', borderRadius: 10, fontSize: 14, fontWeight: 600,
+                border: '1.5px solid #e5e7eb', background: '#fff', cursor: 'pointer', color: '#6b7280',
+              }}>Cancel</button>
+              <button onClick={() => applyToggleSold(soldConfirm, true)} style={{
+                flex: 2, padding: '12px', borderRadius: 10, fontSize: 14, fontWeight: 700,
+                border: 'none', background: '#1d3a6e', color: '#fff', cursor: 'pointer',
+              }}>Yes, Mark as Sold</button>
+            </div>
+          </div>
+        )}
+
         {editing ? (
-          <EditPanel
-            ad={editing}
-            onSave={handleSaved}
-            onCancel={() => setEditing(null)}
-          />
+          <EditPanel ad={editing} onSave={handleSaved} onCancel={() => setEditing(null)} />
         ) : (
           <>
             <div className="modal-logo">My Ads</div>
@@ -368,7 +447,7 @@ export default function MyAdsModal() {
                     ad={ad}
                     onView={() => { close(); setActiveListing(ad) }}
                     onEdit={() => setEditing(ad)}
-                    onToggleSold={() => toggleSold(ad)}
+                    onToggleSold={() => confirmMarkSold(ad)}
                     onDelete={() => deleteAd(ad.id)}
                     deleting={deleting === ad.id}
                   />
