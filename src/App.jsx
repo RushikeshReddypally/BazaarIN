@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { AppProvider } from './context/AppContext'
+import { useApp } from './context/AppContext'
 import { useScrollReveal } from './hooks/useScrollReveal'
 import Nav from './components/Nav'
 import CategoryStrip from './components/CategoryStrip'
@@ -21,6 +22,23 @@ import Toast from './components/Toast'
 
 function AppInner() {
   useScrollReveal()
+  const { restoringListing, activeListing } = useApp()
+
+  // Show opaque screen while restoring listing from URL — prevents home page flash
+  if (restoringListing && !activeListing) {
+    return (
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 1300,
+        background: '#f5f6f7', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <div style={{ textAlign: 'center', color: '#9ca3af' }}>
+          <div style={{ width: 32, height: 32, border: '3px solid #e5e7eb', borderTopColor: '#1d3a6e', borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 12px' }} />
+          <div style={{ fontSize: 13 }}>Loading listing…</div>
+        </div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      </div>
+    )
+  }
 
   return (
     <>

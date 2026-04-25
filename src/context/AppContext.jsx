@@ -13,12 +13,18 @@ export function AppProvider({ children }) {
   const [favouritesOpen, setFavouritesOpen] = useState(false)
   const [activeListing, setActiveListingRaw] = useState(null)
   const [chatListing, setChatListing] = useState(null)
-  const [pendingAction, setPendingAction] = useState(null) // action to run after login
+  const [pendingAction, setPendingAction] = useState(null)
   const [toast, setToast] = useState({ show: false, msg: '', icon: '✓' })
   const [activeCategory, setActiveCategory] = useState('all')
   const [activeLocation, setActiveLocation] = useState('all')
   const [user, setUser] = useState(null)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [savedCount, setSavedCount] = useState(0)
+
+  // Synchronously detect if we need to restore a listing from URL — prevents home page flash
+  const [restoringListing, setRestoringListing] = useState(
+    () => !!new URLSearchParams(window.location.search).get('listing')
+  )
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -44,11 +50,41 @@ export function AppProvider({ children }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  /* ── Real-time: listen for new incoming messages ── */
+  // Restore listing from URL param on mount
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('listing')
+    if (!id) return
+    supabase.from('listings').select('*').eq('id', id).single()
+      .then(({ data }) => {
+        if (data) setActiveListingRaw(data)
+        setRestoringListing(false)
+      })
+  }, [])
+
+  // Browser back/forward — sync state from URL
+  useEffect(() => {
+    function onPop() {
+      const id = new URLSearchParams(window.location.search).get('listing')
+      if (!id) setActiveListingRaw(null)
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
+
+  // Fetch saved (favourites) count when user changes
+  useEffect(() => {
+    if (!user?.id) { setSavedCount(0); return }
+    supabase
+      .from('favourites')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .then(({ count }) => setSavedCount(count ?? 0))
+  }, [user?.id])
+
+  // Real-time: listen for new incoming messages
   useEffect(() => {
     if (!user?.phone) { setUnreadCount(0); return }
 
-    // Fetch initial unread count
     supabase
       .from('messages')
       .select('id', { count: 'exact' })
@@ -56,7 +92,6 @@ export function AppProvider({ children }) {
       .eq('is_read', false)
       .then(({ count }) => setUnreadCount(count ?? 0))
 
-    // Subscribe to new rows
     const channel = supabase
       .channel('incoming-messages')
       .on(
@@ -73,33 +108,18 @@ export function AppProvider({ children }) {
     return () => { supabase.removeChannel(channel) }
   }, [user?.phone])
 
-  // Sync activeListing ↔ URL so refresh restores the listing
+  // URL-synced setActiveListing
   const setActiveListing = useCallback((listing) => {
     setActiveListingRaw(listing)
     if (listing?.id) {
       window.history.pushState(null, '', `?listing=${listing.id}`)
     } else {
-      const clean = window.location.pathname
-      window.history.pushState(null, '', clean)
+      window.history.pushState(null, '', window.location.pathname)
     }
   }, [])
 
-  // On mount: restore listing from URL param
-  useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get('listing')
-    if (!id) return
-    supabase.from('listings').select('*').eq('id', id).single()
-      .then(({ data }) => { if (data) setActiveListingRaw(data) })
-  }, [])
-
-  // Browser back/forward: sync state from URL
-  useEffect(() => {
-    function onPop() {
-      const id = new URLSearchParams(window.location.search).get('listing')
-      if (!id) setActiveListingRaw(null)
-    }
-    window.addEventListener('popstate', onPop)
-    return () => window.removeEventListener('popstate', onPop)
+  const changeSavedCount = useCallback((delta) => {
+    setSavedCount(n => Math.max(0, n + delta))
   }, [])
 
   const bumpListings = useCallback(() => setListingsKey(k => k + 1), [])
@@ -129,7 +149,7 @@ export function AppProvider({ children }) {
       myAdsOpen, setMyAdsOpen,
       messagesOpen, setMessagesOpen,
       favouritesOpen, setFavouritesOpen,
-      activeListing, setActiveListing, /* URL-synced */
+      activeListing, setActiveListing,
       chatListing, setChatListing,
       pendingAction, setPendingAction,
       toast, showToast,
@@ -137,7 +157,9 @@ export function AppProvider({ children }) {
       activeLocation, setActiveLocation,
       user, logout,
       unreadCount, clearUnread,
+      savedCount, changeSavedCount,
       listingsKey, bumpListings,
+      restoringListing,
     }}>
       {children}
     </AppContext.Provider>
