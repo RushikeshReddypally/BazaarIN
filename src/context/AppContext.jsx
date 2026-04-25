@@ -16,7 +16,12 @@ export function AppProvider({ children }) {
   const [pendingAction, setPendingAction] = useState(null)
   const [toast, setToast] = useState({ show: false, msg: '', icon: '✓' })
   const [activeCategory, setActiveCategory] = useState('all')
-  const [activeLocation, setActiveLocation] = useState('all')
+  const [activeLocationRaw, setActiveLocationRaw] = useState(
+    () => localStorage.getItem('bt_location') || 'all'
+  )
+  const [welcomeOpen, setWelcomeOpen] = useState(
+    () => !localStorage.getItem('bt_location')
+  )
   const [user, setUser] = useState(null)
   const [unreadCount, setUnreadCount] = useState(0)
   const [savedCount, setSavedCount] = useState(0)
@@ -118,6 +123,12 @@ export function AppProvider({ children }) {
     }
   }, [])
 
+  const setActiveLocation = useCallback((loc) => {
+    setActiveLocationRaw(loc)
+    if (loc && loc !== 'all') localStorage.setItem('bt_location', loc)
+    else localStorage.removeItem('bt_location')
+  }, [])
+
   const changeSavedCount = useCallback((delta) => {
     setSavedCount(n => Math.max(0, n + delta))
   }, [])
@@ -154,7 +165,8 @@ export function AppProvider({ children }) {
       pendingAction, setPendingAction,
       toast, showToast,
       activeCategory, setActiveCategory,
-      activeLocation, setActiveLocation,
+      activeLocation: activeLocationRaw, setActiveLocation,
+      welcomeOpen, setWelcomeOpen,
       user, logout,
       unreadCount, clearUnread,
       savedCount, changeSavedCount,
