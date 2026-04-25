@@ -165,44 +165,41 @@ export default function ListingDetailModal() {
 
   return (
     <div style={{
-      position: 'fixed', inset: 0, zIndex: 1300,
-      background: '#f5f6f7', overflowY: 'auto',
+      position: 'fixed', top: 62, left: 0, right: 0, bottom: 0,
+      zIndex: 1300, background: '#f5f6f7', overflowY: 'auto',
       animation: 'ldpIn 0.18s ease',
     }}>
-      {/* ── Top nav bar ── */}
+      {/* ── Secondary bar: breadcrumb + back ── */}
       <div style={{
         position: 'sticky', top: 0, zIndex: 20,
         background: '#fff', borderBottom: '1px solid #e5e7eb',
       }}>
         <div style={{
           maxWidth: 1080, margin: '0 auto',
-          padding: '0 24px', height: 52,
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0 24px', height: 44,
+          display: 'flex', alignItems: 'center', gap: 8,
         }}>
           <button
             onClick={() => setActiveListing(null)}
             style={{
-              display: 'flex', alignItems: 'center', gap: 7,
-              fontSize: 14, fontWeight: 600, color: '#1d3a6e',
-              background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+              display: 'flex', alignItems: 'center', gap: 6,
+              fontSize: 13, fontWeight: 600, color: '#1d3a6e',
+              background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0,
             }}
           >
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
-            Back to Listings
+            Back
           </button>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#9ca3af' }}>
-            <span onClick={() => setActiveListing(null)} style={{ cursor: 'pointer', color: '#6b7280' }}>All Listings</span>
+          <span style={{ color: '#d1d5db' }}>|</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#9ca3af', overflow: 'hidden' }}>
+            <span onClick={() => setActiveListing(null)} style={{ cursor: 'pointer', color: '#6b7280', flexShrink: 0 }}>All Listings</span>
             <span>›</span>
-            <span style={{ textTransform: 'capitalize', color: '#6b7280' }}>{category}</span>
+            <span style={{ textTransform: 'capitalize', color: '#6b7280', flexShrink: 0 }}>{category}</span>
             <span>›</span>
-            <span style={{ color: '#374151', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</span>
+            <span style={{ color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</span>
           </div>
-
-          {/* placeholder to keep breadcrumb centered */}
-          <div style={{ width: 120 }} />
         </div>
       </div>
 
