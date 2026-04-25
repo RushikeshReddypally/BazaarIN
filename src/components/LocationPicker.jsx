@@ -3,12 +3,33 @@ import { createPortal } from 'react-dom'
 import { useApp } from '../context/AppContext'
 import { states } from '../data/locations'
 
+const NOMINATIM = 'https://nominatim.openstreetmap.org/reverse'
+
+function findCityInData(name) {
+  if (!name) return null
+  const lc = name.toLowerCase().trim()
+  for (const s of states) {
+    for (const c of s.cities) {
+      if (c.toLowerCase() === lc) return c
+    }
+  }
+  for (const s of states) {
+    for (const c of s.cities) {
+      const cl = c.toLowerCase()
+      if (lc.includes(cl) || cl.includes(lc)) return c
+    }
+  }
+  return null
+}
+
 export default function LocationPicker() {
   const { activeLocation, setActiveLocation } = useApp()
   const [open, setOpen] = useState(false)
   const [selectedState, setSelectedState] = useState(null)
   const [query, setQuery] = useState('')
   const [pos, setPos] = useState({ top: 0, left: 0 })
+  const [geoLocating, setGeoLocating] = useState(false)
+  const [geoError, setGeoError] = useState('')
   const btnRef = useRef(null)
   const dropRef = useRef(null)
 
@@ -16,15 +37,18 @@ export default function LocationPicker() {
     function handleMouseDown(e) {
       const inBtn = btnRef.current?.contains(e.target)
       const inDrop = dropRef.current?.contains(e.target)
-      if (!inBtn && !inDrop) {
-        setOpen(false)
-        setSelectedState(null)
-        setQuery('')
-      }
+      if (!inBtn && !inDrop) close()
     }
     document.addEventListener('mousedown', handleMouseDown)
     return () => document.removeEventListener('mousedown', handleMouseDown)
   }, [])
+
+  function close() {
+    setOpen(false)
+    setSelectedState(null)
+    setQuery('')
+    setGeoError('')
+  }
 
   function toggle() {
     if (!open && btnRef.current) {
@@ -34,13 +58,58 @@ export default function LocationPicker() {
     setOpen(o => !o)
     setSelectedState(null)
     setQuery('')
+    setGeoError('')
   }
 
   function selectCity(city) {
     setActiveLocation(city)
-    setOpen(false)
-    setSelectedState(null)
-    setQuery('')
+    close()
+    setGeoLocating(false)
+  }
+
+  async function handleGeolocate(e) {
+    e.stopPropagation()
+    if (!navigator.geolocation) {
+      setGeoError('Geolocation not supported by your browser.')
+      return
+    }
+    setGeoLocating(true)
+    setGeoError('')
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords: { latitude, longitude } }) => {
+        try {
+          const res = await fetch(
+            `${NOMINATIM}?lat=${latitude}&lon=${longitude}&format=json&zoom=10`,
+            { headers: { 'Accept-Language': 'en-IN,en', 'User-Agent': 'BazaarTrade/1.0' } }
+          )
+          const data = await res.json()
+          const a = data.address || {}
+          const candidates = [a.city, a.town, a.municipality, a.village, a.suburb, a.county]
+          let matched = null
+          for (const name of candidates) {
+            matched = findCityInData(name)
+            if (matched) break
+          }
+          if (matched) {
+            selectCity(matched)
+          } else {
+            const raw = candidates.find(Boolean) || ''
+            setGeoError(`Detected "${raw}" — not in our list. Search manually below.`)
+            setGeoLocating(false)
+          }
+        } catch {
+          setGeoError('Could not fetch location. Try searching manually.')
+          setGeoLocating(false)
+        }
+      },
+      (err) => {
+        setGeoError(err.code === 1
+          ? 'Location access denied. Search manually below.'
+          : 'Could not get location. Try again or search manually.')
+        setGeoLocating(false)
+      },
+      { timeout: 12000, maximumAge: 600000 }
+    )
   }
 
   const searchResults = query.trim()
@@ -74,15 +143,60 @@ export default function LocationPicker() {
             position: 'absolute', top: pos.top, left: pos.left,
             background: '#fff', borderRadius: 14, border: '1.5px solid #e8e4f0',
             boxShadow: '0 8px 32px rgba(74,78,105,0.18)',
-            width: 280, zIndex: 9999, overflow: 'hidden',
+            width: 290, zIndex: 9999, overflow: 'hidden',
           }}
         >
-          {/* Search */}
+          {/* ── Use my location ── */}
+          <div
+            onClick={handleGeolocate}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '11px 14px', cursor: geoLocating ? 'default' : 'pointer',
+              borderBottom: '1px solid #f0edf7',
+              background: '#f9f7ff',
+              transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => { if (!geoLocating) e.currentTarget.style.background = '#f0edf7' }}
+            onMouseLeave={e => e.currentTarget.style.background = '#f9f7ff'}
+          >
+            {geoLocating ? (
+              <div style={{
+                width: 16, height: 16, border: '2px solid #c9b8f0',
+                borderTopColor: '#4a4e69', borderRadius: '50%',
+                animation: 'spin 0.7s linear infinite', flexShrink: 0,
+              }} />
+            ) : (
+              <svg width="16" height="16" fill="none" stroke="#4a4e69" strokeWidth="2.2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+                <circle cx="12" cy="12" r="8" strokeOpacity=".25"/>
+              </svg>
+            )}
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#22223b' }}>
+                {geoLocating ? 'Detecting your location…' : 'Use my location'}
+              </div>
+              {!geoLocating && (
+                <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 1 }}>
+                  Auto-detect via GPS
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ── Geo error ── */}
+          {geoError && (
+            <div style={{ padding: '8px 14px', background: '#fff7ed', fontSize: 12, color: '#92400e', borderBottom: '1px solid #fed7aa' }}>
+              {geoError}
+            </div>
+          )}
+
+          {/* ── Search ── */}
           <div style={{ padding: '10px 12px', borderBottom: '1px solid #f0edf7' }}>
             <input
               autoFocus
               value={query}
-              onChange={e => setQuery(e.target.value)}
+              onChange={e => { setQuery(e.target.value); setSelectedState(null) }}
               placeholder={selectedState ? `Search in ${selectedState.state}…` : 'Search any city…'}
               style={{
                 width: '100%', border: '1.5px solid #e8e4f0', borderRadius: 8,
@@ -91,7 +205,7 @@ export default function LocationPicker() {
             />
           </div>
 
-          <div style={{ maxHeight: 340, overflowY: 'auto', padding: '6px 0' }}>
+          <div style={{ maxHeight: 300, overflowY: 'auto', padding: '4px 0' }}>
 
             {/* All Cities */}
             {!selectedState && !query && (
@@ -108,7 +222,7 @@ export default function LocationPicker() {
               </div>
             )}
 
-            {/* Search results across all states */}
+            {/* Search results */}
             {query && !selectedState && searchResults?.map(({ city, state }) => (
               <div
                 key={`${state}-${city}`}
@@ -119,13 +233,15 @@ export default function LocationPicker() {
                   fontWeight: activeLocation === city ? 700 : 400,
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}
+                onMouseEnter={e => e.currentTarget.style.background = '#f9f7ff'}
+                onMouseLeave={e => e.currentTarget.style.background = activeLocation === city ? '#f5f3ff' : 'transparent'}
               >
                 <span>{city}</span>
                 <span style={{ color: '#aaa', fontSize: 11 }}>{state}</span>
               </div>
             ))}
 
-            {/* Back button */}
+            {/* Back to state list */}
             {selectedState && (
               <div
                 onClick={() => { setSelectedState(null); setQuery('') }}
@@ -149,13 +265,15 @@ export default function LocationPicker() {
                   padding: '9px 16px', cursor: 'pointer', fontSize: 13,
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 }}
+                onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 <span>{s.state}</span>
                 <span style={{ color: '#aaa', fontSize: 11 }}>{s.cities.length} →</span>
               </div>
             ))}
 
-            {/* City list after selecting state */}
+            {/* City list */}
             {selectedState && cityList.map(city => (
               <div
                 key={city}
@@ -165,12 +283,16 @@ export default function LocationPicker() {
                   background: activeLocation === city ? '#f5f3ff' : 'transparent',
                   fontWeight: activeLocation === city ? 700 : 400,
                 }}
+                onMouseEnter={e => e.currentTarget.style.background = '#f9f7ff'}
+                onMouseLeave={e => e.currentTarget.style.background = activeLocation === city ? '#f5f3ff' : 'transparent'}
               >
                 {city}
               </div>
             ))}
 
           </div>
+
+          <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
         </div>,
         document.body
       )}

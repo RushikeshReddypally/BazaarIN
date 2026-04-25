@@ -138,12 +138,63 @@ function HamburgerMenu() {
 
   const [open, setOpen] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [geoLocating, setGeoLocating] = useState(false)
+  const [geoError, setGeoError] = useState('')
 
   function close() { setOpen(false); setConfirmDelete(false) }
 
   function act(fn) { close(); setTimeout(fn, 50) }
 
   const MOBILE_NAV_H = 56
+
+  async function handleGeolocate() {
+    if (!navigator.geolocation) { setGeoError('Geolocation not supported.'); return }
+    setGeoLocating(true); setGeoError('')
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords: { latitude, longitude } }) => {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=10`,
+            { headers: { 'Accept-Language': 'en-IN,en', 'User-Agent': 'BazaarTrade/1.0' } }
+          )
+          const data = await res.json()
+          const a = data.address || {}
+          const candidates = [a.city, a.town, a.municipality, a.village, a.suburb, a.county]
+          // find in locations data
+          const { states: locationStates } = await import('../data/locations')
+          let matched = null
+          for (const name of candidates) {
+            if (!name) continue
+            const lc = name.toLowerCase().trim()
+            for (const s of locationStates) {
+              for (const c of s.cities) {
+                if (c.toLowerCase() === lc || lc.includes(c.toLowerCase()) || c.toLowerCase().includes(lc)) {
+                  matched = c; break
+                }
+              }
+              if (matched) break
+            }
+            if (matched) break
+          }
+          if (matched) {
+            setActiveLocation(matched)
+            setGeoLocating(false)
+          } else {
+            setGeoError(`Detected "${candidates.find(Boolean) || 'unknown'}" — not in our list. Choose manually.`)
+            setGeoLocating(false)
+          }
+        } catch {
+          setGeoError('Location fetch failed. Choose manually below.')
+          setGeoLocating(false)
+        }
+      },
+      (err) => {
+        setGeoError(err.code === 1 ? 'Location access denied.' : 'Could not get location.')
+        setGeoLocating(false)
+      },
+      { timeout: 12000, maximumAge: 600000 }
+    )
+  }
 
   // Drawer content — portalled to body to escape backdrop-filter stacking context on #nav
   const drawerContent = createPortal(
@@ -176,20 +227,56 @@ function HamburgerMenu() {
         flexDirection: 'column',
       }}>
         {/* Location section */}
-        <div style={{ padding: '14px 18px 12px', borderBottom: '1px solid #f3f4f6', background: '#fafafa' }}>
-          <div style={{ fontSize: 10.5, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+        <div style={{ borderBottom: '1px solid #f3f4f6', background: '#fafafa' }}>
+          <div style={{ padding: '12px 18px 8px', fontSize: 10.5, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Your Location
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+
+          {/* Current city display */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 18px 10px' }}>
             <svg width="14" height="14" fill="#e8473f" stroke="none" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
               <path d="M12 2a7 7 0 0 1 7 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 0 1 7-7z"/>
               <circle cx="12" cy="9" r="2.5" fill="#fff"/>
             </svg>
-            <span style={{ fontSize: 14.5, fontWeight: 700, color: '#1a1a2e', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#1a1a2e', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {activeLocation === 'all' ? 'All India' : activeLocation}
             </span>
             <span className="ham-loc-wrap"><LocationPicker /></span>
           </div>
+
+          {/* Use my location button */}
+          <button
+            onClick={handleGeolocate}
+            disabled={geoLocating}
+            style={{
+              width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+              padding: '10px 18px', background: geoLocating ? '#f5f3ff' : '#f0edf7',
+              border: 'none', borderTop: '1px solid #ece8f8',
+              cursor: geoLocating ? 'default' : 'pointer',
+              transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => { if (!geoLocating) e.currentTarget.style.background = '#e8e2f5' }}
+            onMouseLeave={e => e.currentTarget.style.background = geoLocating ? '#f5f3ff' : '#f0edf7'}
+          >
+            {geoLocating ? (
+              <div style={{ width: 16, height: 16, border: '2px solid #c9b8f0', borderTopColor: '#4a4e69', borderRadius: '50%', animation: 'spin 0.7s linear infinite', flexShrink: 0 }} />
+            ) : (
+              <svg width="15" height="15" fill="none" stroke="#4a4e69" strokeWidth="2.2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+                <circle cx="12" cy="12" r="8" strokeOpacity=".3"/>
+              </svg>
+            )}
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#4a4e69' }}>
+              {geoLocating ? 'Detecting your location…' : 'Use my location'}
+            </span>
+            <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+          </button>
+
+          {geoError && (
+            <div style={{ padding: '8px 18px', fontSize: 12, color: '#92400e', background: '#fff7ed', borderTop: '1px solid #fed7aa' }}>
+              {geoError}
+            </div>
+          )}
         </div>
 
         {/* Menu items */}
