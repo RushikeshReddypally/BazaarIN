@@ -195,16 +195,18 @@ export default function PostAdModal() {
     })
   }
 
-  async function uploadImages(listingId, showToast) {
+  async function uploadImages(listingId) {
     const urls = []
     for (let i = 0; i < images.length; i++) {
       const file = images[i]
       const ext = file.name.split('.').pop().toLowerCase()
       const path = `listings/${listingId}/${Date.now()}_${i}.${ext}`
-      const { error } = await supabase.storage.from('listing-images').upload(path, file, { upsert: true })
+      const { error } = await supabase.storage
+        .from('listing-images')
+        .upload(path, file)
       if (error) {
-        console.error(`Upload failed for image ${i}:`, error.message)
-        showToast(`Photo upload failed: ${error.message}`, '✕')
+        console.error(`Upload failed for image ${i}:`, error)
+        showToast(`Photo ${i + 1} failed: ${error.message}`, '✕')
       } else {
         const { data } = supabase.storage.from('listing-images').getPublicUrl(path)
         urls.push(data.publicUrl)
@@ -253,18 +255,20 @@ export default function PostAdModal() {
       return
     }
 
-    let imageUrls = []
+    let photosFailed = false
     if (images.length > 0) {
-      imageUrls = await uploadImages(inserted.id, showToast)
-      console.log('Uploaded URLs:', imageUrls)
+      const imageUrls = await uploadImages(inserted.id)
       if (imageUrls.length > 0) {
-        const { error: imgErr } = await supabase.from('listings').update({ images: imageUrls }).eq('id', inserted.id)
+        const { error: imgErr } = await supabase
+          .from('listings')
+          .update({ images: imageUrls })
+          .eq('id', inserted.id)
         if (imgErr) {
-          console.error('Failed to save image URLs:', imgErr.message)
-          showToast(`Failed to save images: ${imgErr.message}`, '✕')
+          console.error('Failed to save image URLs:', imgErr)
+          photosFailed = true
         }
       } else {
-        showToast('Photos did not upload — check storage permissions', '✕')
+        photosFailed = true
       }
     }
 
@@ -275,7 +279,11 @@ export default function PostAdModal() {
     setImages([])
     setPreviews([])
     bumpListings()
-    showToast('Ad posted successfully!', '✓')
+    if (photosFailed) {
+      showToast('Ad posted! Photos failed — check console for storage error', '⚠')
+    } else {
+      showToast('Ad posted successfully!', '✓')
+    }
   }
 
   function close() {

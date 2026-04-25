@@ -45,6 +45,19 @@ export default function ListingCard({ listing }) {
           ? <img src={thumb} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
           : <span style={{ color: 'rgba(0,0,0,0.3)', display: 'flex' }}>{catIcon}</span>
         }
+        {images?.length > 1 && (
+          <div style={{
+            position: 'absolute', bottom: 7, left: 7, zIndex: 3,
+            background: 'rgba(0,0,0,0.52)', color: '#fff',
+            fontSize: 10, fontWeight: 600, padding: '3px 7px', borderRadius: 5,
+            display: 'flex', alignItems: 'center', gap: 4,
+          }}>
+            <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-5-5L5 21" />
+            </svg>
+            {images.length}
+          </div>
+        )}
       </div>
 
       <div className="lc-body">
