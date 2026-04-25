@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useApp } from '../context/AppContext'
 import { useNavScroll } from '../hooks/useNavScroll'
 import LocationPicker from './LocationPicker'
@@ -144,44 +145,21 @@ function HamburgerMenu() {
 
   const MOBILE_NAV_H = 56
 
-  return (
+  // Drawer content — portalled to body to escape backdrop-filter stacking context on #nav
+  const drawerContent = createPortal(
     <>
-      {/* Hamburger button — CSS shows only on mobile */}
-      <button
-        className="ham-btn"
-        onClick={() => setOpen(o => !o)}
-        aria-label="Menu"
-        style={{ position: 'relative' }}
-      >
-        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-          {open
-            ? <path d="M18 6 6 18M6 6l12 12" />
-            : <><path d="M4 6h16M4 12h16M4 18h16" /></>}
-        </svg>
-        {/* Combined badge for unread messages + cart */}
-        {user && (unreadCount > 0) && (
-          <span style={{
-            position: 'absolute', top: -2, right: -4,
-            minWidth: 16, height: 16, borderRadius: 99,
-            background: '#e8473f', color: '#fff',
-            fontSize: 9, fontWeight: 800,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: '1.5px solid #faf8f7', padding: '0 3px',
-          }}>
-            {unreadCount > 9 ? '9+' : unreadCount}
-          </span>
-        )}
-      </button>
-
       {/* Overlay */}
       {open && (
         <div
           onClick={close}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 1490, top: MOBILE_NAV_H }}
+          style={{
+            position: 'fixed', top: MOBILE_NAV_H, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.45)', zIndex: 1490,
+          }}
         />
       )}
 
-      {/* Drawer */}
+      {/* Drawer — always in DOM for CSS transition */}
       <div style={{
         position: 'fixed',
         top: MOBILE_NAV_H,
@@ -191,9 +169,9 @@ function HamburgerMenu() {
         background: '#fff',
         zIndex: 1500,
         overflowY: 'auto',
-        transform: open ? 'translateX(0)' : 'translateX(100%)',
+        transform: open ? 'translateX(0)' : 'translateX(110%)',
         transition: 'transform 0.26s cubic-bezier(.4,0,.2,1)',
-        boxShadow: open ? '-8px 0 40px rgba(0,0,0,0.18)' : 'none',
+        boxShadow: '-8px 0 40px rgba(0,0,0,0.18)',
         display: 'flex',
         flexDirection: 'column',
       }}>
@@ -271,6 +249,38 @@ function HamburgerMenu() {
           )}
         </div>
       </div>
+    </>,
+    document.body
+  )
+
+  return (
+    <>
+      {/* Hamburger button — shown on mobile via CSS */}
+      <button
+        className="ham-btn"
+        onClick={() => setOpen(o => !o)}
+        aria-label="Menu"
+        style={{ position: 'relative' }}
+      >
+        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+          {open
+            ? <path d="M18 6 6 18M6 6l12 12" />
+            : <><path d="M4 6h16M4 12h16M4 18h16" /></>}
+        </svg>
+        {user && unreadCount > 0 && (
+          <span style={{
+            position: 'absolute', top: -2, right: -4,
+            minWidth: 16, height: 16, borderRadius: 99,
+            background: '#e8473f', color: '#fff',
+            fontSize: 9, fontWeight: 800,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: '1.5px solid #faf8f7', padding: '0 3px',
+          }}>
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </span>
+        )}
+      </button>
+      {drawerContent}
     </>
   )
 }
