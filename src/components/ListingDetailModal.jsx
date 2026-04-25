@@ -53,18 +53,41 @@ export default function ListingDetailModal() {
   const [currentImg, setCurrentImg] = useState(0)
   const [listing, setListing] = useState(null)
   const [deleting, setDeleting] = useState(false)
+  const [similar, setSimilar] = useState([])
   const open = !!activeListing
 
   useEffect(() => {
-    if (activeListing) { setListing(activeListing); setCurrentImg(0) }
+    if (activeListing) { setListing(activeListing); setCurrentImg(0); setSimilar([]) }
     else setListing(null)
   }, [activeListing?.id])
 
+  // Fresh fetch to pick up latest images/status
   useEffect(() => {
     if (!activeListing?.id) return
     supabase.from('listings').select('*').eq('id', activeListing.id).single()
       .then(({ data }) => { if (data) setListing(data) })
   }, [activeListing?.id])
+
+  // Fetch similar listings (same category, exclude current)
+  useEffect(() => {
+    if (!activeListing?.id || !activeListing?.category) return
+    supabase
+      .from('listings')
+      .select('*')
+      .eq('category', activeListing.category)
+      .neq('id', activeListing.id)
+      .order('created_at', { ascending: false })
+      .limit(8)
+      .then(({ data }) => {
+        if (data) {
+          const now = Date.now()
+          const LIMIT = 48 * 3600 * 1000
+          setSimilar(data.filter(l =>
+            l.badge !== 'Sold' || !l.sold_at || (now - new Date(l.sold_at).getTime()) < LIMIT
+          ))
+        }
+      })
+  }, [activeListing?.id, activeListing?.category])
 
   useEffect(() => {
     function onKey(e) { if (e.key === 'Escape') setActiveListing(null) }
@@ -87,6 +110,7 @@ export default function ListingDetailModal() {
   } = listing
 
   const isOwner = !!(user?.id && user_id && user.id === user_id)
+  const isSold = badge === 'Sold'
   const hasImages = images?.length > 0
   const total = images?.length ?? 0
   const catIcon = categoryIcons[category] ?? categoryIcons['all']
@@ -124,14 +148,24 @@ export default function ListingDetailModal() {
       .update({ badge: 'Sold', badge_class: 'badge-sold', sold_at: new Date().toISOString() })
       .eq('id', listing.id)
     if (error) { showToast('Failed to update', '✕'); return }
+    setListing(l => ({ ...l, badge: 'Sold', badge_class: 'badge-sold', sold_at: new Date().toISOString() }))
     bumpListings()
-    setActiveListing(null)
-    showToast('Marked as Sold — listing removes in 48 hrs. Unmark from My Ads to keep it.', '✓')
+    showToast('Marked as Sold — listing removes in 48 hrs. Unmark to keep it.', '✓')
+  }
+
+  async function handleUnmarkSold() {
+    const { error } = await supabase.from('listings')
+      .update({ badge: null, badge_class: null, sold_at: null })
+      .eq('id', listing.id)
+    if (error) { showToast('Failed to update', '✕'); return }
+    setListing(l => ({ ...l, badge: null, badge_class: null, sold_at: null }))
+    bumpListings()
+    showToast('Listing is active again', '✓')
   }
 
   return (
     <div style={{
-      position: 'fixed', inset: 0, zIndex: 1100,
+      position: 'fixed', inset: 0, zIndex: 1300,
       background: '#f5f6f7', overflowY: 'auto',
       animation: 'ldpIn 0.18s ease',
     }}>
@@ -159,43 +193,16 @@ export default function ListingDetailModal() {
             Back to Listings
           </button>
 
-          {/* Breadcrumb */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 5,
-            fontSize: 12, color: '#9ca3af',
-          }}>
-            <span
-              onClick={() => setActiveListing(null)}
-              style={{ cursor: 'pointer', color: '#6b7280' }}
-            >All Listings</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#9ca3af' }}>
+            <span onClick={() => setActiveListing(null)} style={{ cursor: 'pointer', color: '#6b7280' }}>All Listings</span>
             <span>›</span>
             <span style={{ textTransform: 'capitalize', color: '#6b7280' }}>{category}</span>
             <span>›</span>
-            <span style={{
-              color: '#374151', maxWidth: 200,
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-            }}>{title}</span>
+            <span style={{ color: '#374151', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</span>
           </div>
 
-          {/* Right actions */}
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            {!isOwner && (
-              <button
-                onClick={handleSave}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '7px 14px', borderRadius: 8,
-                  border: `1.5px solid ${saved ? '#fca5a5' : '#e5e7eb'}`,
-                  background: saved ? '#fff5f5' : '#fff',
-                  color: saved ? '#e8473f' : '#374151',
-                  fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                }}
-              >
-                <HeartIcon filled={saved} />
-                {saved ? 'Saved' : 'Save'}
-              </button>
-            )}
-          </div>
+          {/* placeholder to keep breadcrumb centered */}
+          <div style={{ width: 120 }} />
         </div>
       </div>
 
@@ -213,21 +220,12 @@ export default function ListingDetailModal() {
                 {badge}
               </span>
             )}
-            <h1 style={{
-              fontSize: 24, fontWeight: 800, color: '#1a1a2e',
-              lineHeight: 1.3, letterSpacing: '-0.3px', margin: 0,
-            }}>{title}</h1>
+            <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1a1a2e', lineHeight: 1.3, letterSpacing: '-0.3px', margin: 0 }}>
+              {title}
+            </h1>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 6, fontSize: 12, color: '#9ca3af' }}>
-              {location && (
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <PinIcon />{location}
-                </span>
-              )}
-              {postedDate && (
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <CalIcon />Posted on {postedDate}
-                </span>
-              )}
+              {location && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><PinIcon />{location}</span>}
+              {postedDate && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><CalIcon />Posted on {postedDate}</span>}
             </div>
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
@@ -240,11 +238,9 @@ export default function ListingDetailModal() {
               </div>
             )}
             {discount > 0 && (
-              <span style={{
-                display: 'inline-block', marginTop: 4,
-                fontSize: 11, fontWeight: 700, color: '#16a34a',
-                background: '#dcfce7', padding: '3px 8px', borderRadius: 99,
-              }}>{discount}% OFF</span>
+              <span style={{ display: 'inline-block', marginTop: 4, fontSize: 11, fontWeight: 700, color: '#16a34a', background: '#dcfce7', padding: '3px 8px', borderRadius: 99 }}>
+                {discount}% OFF
+              </span>
             )}
           </div>
         </div>
@@ -252,7 +248,7 @@ export default function ListingDetailModal() {
         {/* ── Two-column layout ── */}
         <div className="ldp-cols">
 
-          {/* Left: image gallery */}
+          {/* Left: image gallery + details */}
           <div className="ldp-left">
             {/* Main image */}
             <div className={gradient || 'li2'} style={{
@@ -289,18 +285,13 @@ export default function ListingDetailModal() {
 
             {/* Thumbnail strip */}
             {total > 1 && (
-              <div style={{
-                display: 'flex', gap: 8, marginTop: 10,
-                overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none',
-              }}>
+              <div style={{ display: 'flex', gap: 8, marginTop: 10, overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none' }}>
                 {images.map((src, i) => (
                   <button key={i} onClick={() => setCurrentImg(i)} style={{
                     width: 68, height: 68, flexShrink: 0, borderRadius: 10,
                     overflow: 'hidden', padding: 0, cursor: 'pointer',
                     border: `2.5px solid ${i === currentImg ? '#1d3a6e' : 'transparent'}`,
-                    opacity: i === currentImg ? 1 : 0.6,
-                    transition: 'all 0.15s',
-                    background: '#ececec',
+                    opacity: i === currentImg ? 1 : 0.6, transition: 'all 0.15s', background: '#ececec',
                   }}>
                     <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                   </button>
@@ -308,7 +299,7 @@ export default function ListingDetailModal() {
               </div>
             )}
 
-            {/* Item Overview (tags) */}
+            {/* Item Overview */}
             {tags?.length > 0 && (
               <div style={{ marginTop: 28 }}>
                 <h3 style={{ fontSize: 17, fontWeight: 800, color: '#1a1a2e', margin: '0 0 14px' }}>Item Overview</h3>
@@ -329,10 +320,7 @@ export default function ListingDetailModal() {
             {description && (
               <div style={{ marginTop: 28 }}>
                 <h3 style={{ fontSize: 17, fontWeight: 800, color: '#1a1a2e', margin: '0 0 12px' }}>Description</h3>
-                <div style={{
-                  background: '#fff', borderRadius: 12,
-                  border: '1.5px solid #e5e7eb', padding: '18px 20px',
-                }}>
+                <div style={{ background: '#fff', borderRadius: 12, border: '1.5px solid #e5e7eb', padding: '18px 20px' }}>
                   <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.85, whiteSpace: 'pre-line', margin: 0 }}>
                     {description}
                   </p>
@@ -344,8 +332,7 @@ export default function ListingDetailModal() {
             <div style={{
               marginTop: 24, padding: '12px 16px', borderRadius: 10,
               background: '#fffbeb', border: '1px solid #fde68a',
-              fontSize: 12.5, color: '#92400e',
-              display: 'flex', gap: 10, alignItems: 'flex-start',
+              fontSize: 12.5, color: '#92400e', display: 'flex', gap: 10, alignItems: 'flex-start',
             }}>
               <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 1 }}>
                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
@@ -359,11 +346,7 @@ export default function ListingDetailModal() {
           <div className="ldp-right">
 
             {/* Seller card */}
-            <div style={{
-              background: '#fff', borderRadius: 14,
-              border: '1.5px solid #e5e7eb', padding: 20,
-              boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
-            }}>
+            <div style={{ background: '#fff', borderRadius: 14, border: '1.5px solid #e5e7eb', padding: 20, boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
                 <div style={{
                   width: 52, height: 52, borderRadius: '50%',
@@ -377,11 +360,7 @@ export default function ListingDetailModal() {
                   <div style={{ fontSize: 15, fontWeight: 700, color: '#1a1a2e', display: 'flex', alignItems: 'center', gap: 5 }}>
                     {seller_name}
                     {verified && (
-                      <span style={{
-                        background: '#1d3a6e', color: '#fff', borderRadius: '50%',
-                        width: 16, height: 16, fontSize: 8, fontWeight: 900,
-                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                      }}>✓</span>
+                      <span style={{ background: '#1d3a6e', color: '#fff', borderRadius: '50%', width: 16, height: 16, fontSize: 8, fontWeight: 900, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>✓</span>
                     )}
                   </div>
                   <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>Member · BazaarTrade</div>
@@ -390,23 +369,59 @@ export default function ListingDetailModal() {
 
               {isOwner ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <button onClick={handleMarkSold} style={{
-                    width: '100%', padding: '13px', borderRadius: 10,
-                    background: '#1d3a6e', color: '#fff',
-                    fontSize: 14, fontWeight: 700, border: 'none', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
-                  }}>
-                    <TagIcon /> Mark as Sold
-                  </button>
-                  <button onClick={handleDelete} disabled={deleting} style={{
-                    width: '100%', padding: '13px', borderRadius: 10,
-                    background: '#fff', color: '#dc2626',
-                    border: '1.5px solid #fca5a5', cursor: 'pointer',
-                    fontSize: 14, fontWeight: 700,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
-                  }}>
-                    <TrashIcon /> {deleting ? 'Deleting…' : 'Delete Ad'}
-                  </button>
+                  {isSold ? (
+                    <>
+                      {/* Sold banner */}
+                      <div style={{
+                        padding: '10px 14px', borderRadius: 10,
+                        background: '#fef3c7', border: '1px solid #fde68a',
+                        fontSize: 12.5, color: '#92400e', display: 'flex', alignItems: 'center', gap: 7,
+                      }}>
+                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                          <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+                        </svg>
+                        This listing is marked as <strong>Sold</strong> and will be removed in 48 hrs.
+                      </div>
+                      <button onClick={handleUnmarkSold} style={{
+                        width: '100%', padding: '13px', borderRadius: 10,
+                        background: '#ecfdf5', color: '#059669',
+                        border: '1.5px solid #a7f3d0', cursor: 'pointer',
+                        fontSize: 14, fontWeight: 700,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+                      }}>
+                        <TagIcon /> Unmark as Sold
+                      </button>
+                      <button onClick={handleDelete} disabled={deleting} style={{
+                        width: '100%', padding: '13px', borderRadius: 10,
+                        background: '#fff', color: '#dc2626',
+                        border: '1.5px solid #fca5a5', cursor: 'pointer',
+                        fontSize: 14, fontWeight: 700,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+                      }}>
+                        <TrashIcon /> {deleting ? 'Deleting…' : 'Delete Ad'}
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button onClick={handleMarkSold} style={{
+                        width: '100%', padding: '13px', borderRadius: 10,
+                        background: '#1d3a6e', color: '#fff',
+                        fontSize: 14, fontWeight: 700, border: 'none', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+                      }}>
+                        <TagIcon /> Mark as Sold
+                      </button>
+                      <button onClick={handleDelete} disabled={deleting} style={{
+                        width: '100%', padding: '13px', borderRadius: 10,
+                        background: '#fff', color: '#dc2626',
+                        border: '1.5px solid #fca5a5', cursor: 'pointer',
+                        fontSize: 14, fontWeight: 700,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+                      }}>
+                        <TrashIcon /> {deleting ? 'Deleting…' : 'Delete Ad'}
+                      </button>
+                    </>
+                  )}
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -438,16 +453,9 @@ export default function ListingDetailModal() {
               )}
             </div>
 
-            {/* Category badge */}
-            <div style={{
-              background: '#fff', borderRadius: 12,
-              border: '1.5px solid #e5e7eb', padding: '14px 16px',
-              display: 'flex', alignItems: 'center', gap: 10,
-            }}>
-              <span style={{
-                width: 36, height: 36, borderRadius: 10,
-                background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>{catIcon}</span>
+            {/* Category */}
+            <div style={{ background: '#fff', borderRadius: 12, border: '1.5px solid #e5e7eb', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ width: 36, height: 36, borderRadius: 10, background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{catIcon}</span>
               <div>
                 <div style={{ fontSize: 11, color: '#9ca3af', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Category</div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#1a1a2e', textTransform: 'capitalize', marginTop: 2 }}>{category}</div>
@@ -455,18 +463,62 @@ export default function ListingDetailModal() {
             </div>
 
             {/* Report */}
-            <button style={{
-              background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: 12, color: '#9ca3af', display: 'flex', alignItems: 'center', gap: 5,
-              padding: '4px 0',
-            }}>
-              <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><line x1="4" y1="22" x2="4" y2="15" />
-              </svg>
-              Report this ad
-            </button>
+            {!isOwner && (
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: '#9ca3af', display: 'flex', alignItems: 'center', gap: 5, padding: '4px 0' }}>
+                <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><line x1="4" y1="22" x2="4" y2="15" />
+                </svg>
+                Report this ad
+              </button>
+            )}
           </div>
         </div>
+
+        {/* ── Similar Products ── */}
+        {similar.length > 0 && (
+          <div style={{ marginTop: 48 }}>
+            <h3 style={{ fontSize: 19, fontWeight: 800, color: '#1a1a2e', margin: '0 0 18px', letterSpacing: '-0.2px' }}>
+              Similar Products
+            </h3>
+            <div style={{ display: 'flex', gap: 14, overflowX: 'auto', paddingBottom: 8, scrollbarWidth: 'thin' }}>
+              {similar.map(l => (
+                <div
+                  key={l.id}
+                  onClick={() => { setActiveListing(l) }}
+                  style={{
+                    flexShrink: 0, width: 180, borderRadius: 14, overflow: 'hidden',
+                    background: '#fff', border: '1.5px solid #e5e7eb',
+                    cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                    transition: 'transform 0.15s, box-shadow 0.15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)' }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)' }}
+                >
+                  {/* Thumbnail */}
+                  <div className={l.gradient || 'li2'} style={{ height: 130, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {l.images?.[0]
+                      ? <img src={l.images[0]} alt={l.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <span style={{ color: 'rgba(0,0,0,0.2)', display: 'flex', transform: 'scale(1.8)' }}>{categoryIcons[l.category] ?? categoryIcons['all']}</span>
+                    }
+                    {l.images?.length > 1 && (
+                      <div style={{ position: 'absolute', bottom: 6, left: 6, background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 4 }}>
+                        {l.images.length}
+                      </div>
+                    )}
+                  </div>
+                  {/* Info */}
+                  <div style={{ padding: '10px 12px 12px' }}>
+                    <div style={{ fontSize: 12.5, fontWeight: 700, color: '#1a1a2e', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 4 }}>{l.title}</div>
+                    <div style={{ fontSize: 15, fontWeight: 900, color: '#e8473f' }}>{formatPriceFull(l.price)}</div>
+                    <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 3, display: 'flex', alignItems: 'center', gap: 3 }}>
+                      <PinIcon />{l.location}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <style>{`
