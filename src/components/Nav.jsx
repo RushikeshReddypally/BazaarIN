@@ -176,11 +176,20 @@ function HamburgerMenu() {
         flexDirection: 'column',
       }}>
         {/* Location section */}
-        <div style={{ padding: '14px 18px', borderBottom: '1px solid #f3f4f6', background: '#fafafa' }}>
-          <div style={{ fontSize: 10.5, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+        <div style={{ padding: '14px 18px 12px', borderBottom: '1px solid #f3f4f6', background: '#fafafa' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
             Your Location
           </div>
-          <LocationPicker />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <svg width="14" height="14" fill="#e8473f" stroke="none" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+              <path d="M12 2a7 7 0 0 1 7 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 0 1 7-7z"/>
+              <circle cx="12" cy="9" r="2.5" fill="#fff"/>
+            </svg>
+            <span style={{ fontSize: 14.5, fontWeight: 700, color: '#1a1a2e', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {activeLocation === 'all' ? 'All India' : activeLocation}
+            </span>
+            <span className="ham-loc-wrap"><LocationPicker /></span>
+          </div>
         </div>
 
         {/* Menu items */}

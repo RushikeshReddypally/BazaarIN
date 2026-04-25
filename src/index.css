@@ -188,6 +188,12 @@ input,select,textarea{font-family:var(--font)}
 .nav-avatar:hover{border-color:var(--silk)}
 /* Nav city — ensure full name shows, no truncation */
 .nav-city{max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
+/* Inside hamburger drawer, show as compact "Change" link */
+.ham-loc-wrap .nav-city{
+  font-size:12px;padding:4px 10px;border-radius:6px;
+  background:#f0edf7;border-color:#e0d8f0;color:var(--grape);
+  max-width:none;
+}
 /* Hamburger button — hidden on desktop, shown on mobile via media query */
 .ham-btn{
   display:none;
@@ -1072,7 +1078,8 @@ footer{
   /* Nav */
   #nav{padding:0 4%;height:56px;gap:6px}
   .nav-logo{font-size:16px}
-  .nav-city{display:none}
+  /* Hide location pill in main nav bar only — drawer uses it too so scope to #nav */
+  #nav .nav-city{display:none}
   .nav-right{gap:4px}
   .nav-hide-mobile{display:none}
   .nav-icon-btn{width:32px;height:32px;font-size:13px}
