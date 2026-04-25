@@ -11,7 +11,7 @@ export function AppProvider({ children }) {
   const [myAdsOpen, setMyAdsOpen] = useState(false)
   const [messagesOpen, setMessagesOpen] = useState(false)
   const [favouritesOpen, setFavouritesOpen] = useState(false)
-  const [activeListing, setActiveListing] = useState(null)
+  const [activeListing, setActiveListingRaw] = useState(null)
   const [chatListing, setChatListing] = useState(null)
   const [pendingAction, setPendingAction] = useState(null) // action to run after login
   const [toast, setToast] = useState({ show: false, msg: '', icon: '✓' })
@@ -73,6 +73,35 @@ export function AppProvider({ children }) {
     return () => { supabase.removeChannel(channel) }
   }, [user?.phone])
 
+  // Sync activeListing ↔ URL so refresh restores the listing
+  const setActiveListing = useCallback((listing) => {
+    setActiveListingRaw(listing)
+    if (listing?.id) {
+      window.history.pushState(null, '', `?listing=${listing.id}`)
+    } else {
+      const clean = window.location.pathname
+      window.history.pushState(null, '', clean)
+    }
+  }, [])
+
+  // On mount: restore listing from URL param
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('listing')
+    if (!id) return
+    supabase.from('listings').select('*').eq('id', id).single()
+      .then(({ data }) => { if (data) setActiveListingRaw(data) })
+  }, [])
+
+  // Browser back/forward: sync state from URL
+  useEffect(() => {
+    function onPop() {
+      const id = new URLSearchParams(window.location.search).get('listing')
+      if (!id) setActiveListingRaw(null)
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
+
   const bumpListings = useCallback(() => setListingsKey(k => k + 1), [])
 
   const showToast = useCallback((msg, icon = '✓') => {
@@ -100,7 +129,7 @@ export function AppProvider({ children }) {
       myAdsOpen, setMyAdsOpen,
       messagesOpen, setMessagesOpen,
       favouritesOpen, setFavouritesOpen,
-      activeListing, setActiveListing,
+      activeListing, setActiveListing, /* URL-synced */
       chatListing, setChatListing,
       pendingAction, setPendingAction,
       toast, showToast,

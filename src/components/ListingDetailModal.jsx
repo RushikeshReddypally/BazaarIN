@@ -373,14 +373,19 @@ export default function ListingDetailModal() {
                     <>
                       {/* Sold banner */}
                       <div style={{
-                        padding: '10px 14px', borderRadius: 10,
+                        padding: '11px 14px', borderRadius: 10,
                         background: '#fef3c7', border: '1px solid #fde68a',
-                        fontSize: 12.5, color: '#92400e', display: 'flex', alignItems: 'flex-start', gap: 8,
+                        fontSize: 12.5, color: '#92400e',
                       }}>
-                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 1 }}>
-                          <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
-                        </svg>
-                        <span>This listing is marked as <strong>Sold</strong> and will be removed in 48 hrs.</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, marginBottom: 4 }}>
+                          <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                            <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+                          </svg>
+                          Marked as Sold
+                        </div>
+                        <div style={{ lineHeight: 1.55, paddingLeft: 19 }}>
+                          Listing removes in 48 hrs. Unmark it to keep it active.
+                        </div>
                       </div>
                       <button onClick={handleUnmarkSold} style={{
                         width: '100%', padding: '13px', borderRadius: 10,
