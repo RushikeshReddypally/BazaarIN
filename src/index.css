@@ -186,6 +186,18 @@ input,select,textarea{font-family:var(--font)}
   transition:var(--t) var(--ease);
 }
 .nav-avatar:hover{border-color:var(--silk)}
+/* Nav city — ensure full name shows, no truncation */
+.nav-city{max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
+/* Hamburger button — hidden on desktop, shown on mobile via media query */
+.ham-btn{
+  display:none;
+  width:36px;height:36px;border-radius:50%;
+  align-items:center;justify-content:center;
+  background:transparent;border:1.5px solid var(--ink-faint);
+  color:var(--grape);cursor:pointer;position:relative;
+  transition:var(--t) var(--ease);flex-shrink:0;
+}
+.ham-btn:hover{border-color:var(--ink-soft);background:var(--ink-faint)}
 
 /* ═══════════════════════════════════════════════════════
    HERO
@@ -1062,9 +1074,10 @@ footer{
   .nav-logo{font-size:16px}
   .nav-city{display:none}
   .nav-right{gap:4px}
-  /* Hide My Ads and Sign Out on mobile — sign out accessible via Profile modal */
   .nav-hide-mobile{display:none}
   .nav-icon-btn{width:32px;height:32px;font-size:13px}
+  /* Show hamburger on mobile */
+  .ham-btn{display:flex}
 
   /* Hero */
   #hero{padding:72px 4% 48px}

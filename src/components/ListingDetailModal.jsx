@@ -48,6 +48,7 @@ export default function ListingDetailModal() {
     activeListing, setActiveListing,
     user, setLoginOpen, showToast,
     setChatListing, setPendingAction, bumpListings,
+    addToCart, removeFromCart, cart, setCartOpen,
   } = useApp()
   const { saved, toggle: toggleFav } = useFavourite(activeListing?.id, user)
   const [currentImg, setCurrentImg] = useState(0)
@@ -451,6 +452,32 @@ export default function ListingDetailModal() {
                     <HeartIcon filled={saved} />
                     {saved ? 'Saved' : 'Save to Wishlist'}
                   </button>
+                  {/* Add to Cart */}
+                  {(() => {
+                    const inCart = cart.some(c => c.id === listing?.id)
+                    return (
+                      <button
+                        onClick={() => {
+                          if (inCart) { removeFromCart(listing.id); showToast('Removed from cart', '🛒') }
+                          else { addToCart(listing); showToast('Added to cart', '🛒') }
+                        }}
+                        style={{
+                          width: '100%', padding: '13px', borderRadius: 10,
+                          border: `1.5px solid ${inCart ? '#bfdbfe' : '#e5e7eb'}`,
+                          background: inCart ? '#eff6ff' : '#fff',
+                          color: inCart ? '#1d4ed8' : '#374151',
+                          fontSize: 14, fontWeight: 700, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                          transition: 'all 0.15s',
+                        }}
+                      >
+                        <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                        </svg>
+                        {inCart ? 'In Cart · View Cart' : 'Add to Cart'}
+                      </button>
+                    )
+                  })()}
                 </div>
               )}
             </div>

@@ -25,6 +25,10 @@ export function AppProvider({ children }) {
   const [user, setUser] = useState(null)
   const [unreadCount, setUnreadCount] = useState(0)
   const [savedCount, setSavedCount] = useState(0)
+  const [cartOpen, setCartOpen] = useState(false)
+  const [cart, setCart] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('bt_cart') || '[]') } catch { return [] }
+  })
 
   // Synchronously detect if we need to restore a listing from URL — prevents home page flash
   const [restoringListing, setRestoringListing] = useState(
@@ -123,6 +127,33 @@ export function AppProvider({ children }) {
     }
   }, [])
 
+  const addToCart = useCallback((listing) => {
+    setCart(prev => {
+      if (prev.find(l => l.id === listing.id)) return prev
+      const next = [...prev, listing]
+      localStorage.setItem('bt_cart', JSON.stringify(next))
+      return next
+    })
+  }, [])
+
+  const removeFromCart = useCallback((id) => {
+    setCart(prev => {
+      const next = prev.filter(l => l.id !== id)
+      localStorage.setItem('bt_cart', JSON.stringify(next))
+      return next
+    })
+  }, [])
+
+  const deleteAccount = useCallback(async () => {
+    if (!user) return
+    await supabase.from('listings').delete().eq('seller_id', user.id)
+    await supabase.from('favourites').delete().eq('user_id', user.id)
+    await supabase.auth.signOut()
+    setCart([])
+    localStorage.removeItem('bt_cart')
+    localStorage.removeItem('bt_location')
+  }, [user])
+
   const setActiveLocation = useCallback((loc) => {
     setActiveLocationRaw(loc)
     if (loc && loc !== 'all') localStorage.setItem('bt_location', loc)
@@ -170,6 +201,9 @@ export function AppProvider({ children }) {
       user, logout,
       unreadCount, clearUnread,
       savedCount, changeSavedCount,
+      cartOpen, setCartOpen,
+      cart, addToCart, removeFromCart,
+      deleteAccount,
       listingsKey, bumpListings,
       restoringListing,
     }}>

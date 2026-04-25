@@ -18,6 +18,7 @@ import ListingDetailModal from './components/ListingDetailModal'
 import MyAdsModal from './components/MyAdsModal'
 import { MessagesModal, ChatModal } from './components/ChatModal'
 import FavouritesModal from './components/FavouritesModal'
+import CartModal from './components/CartModal'
 import WelcomeModal from './components/WelcomeModal'
 import Toast from './components/Toast'
 
@@ -65,6 +66,7 @@ function AppInner() {
       <MessagesModal />
       <ChatModal />
       <FavouritesModal />
+      <CartModal />
       <WelcomeModal />
       <Toast />
     </>
