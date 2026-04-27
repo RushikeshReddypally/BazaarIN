@@ -1,73 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Home -->
   <url>
     <loc>https://baazartrade.in/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-  <url>
-    <loc>https://baazartrade.in/?category=vehicles</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://baazartrade.in/?category=mobiles</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://baazartrade.in/?category=property</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://baazartrade.in/?category=electronics</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://baazartrade.in/?category=bikes</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://baazartrade.in/?category=furniture</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://baazartrade.in/?category=fashion</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://baazartrade.in/?category=books</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://baazartrade.in/?category=pets</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://baazartrade.in/?category=gaming</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://baazartrade.in/?category=sports</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://baazartrade.in/?category=services</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://baazartrade.in/?category=kids</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
+
+  <!-- Category pages -->
+  <url><loc>https://baazartrade.in/cars</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://baazartrade.in/mobiles</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://baazartrade.in/property</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://baazartrade.in/electronics</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/bikes</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/furniture</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/fashion</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://baazartrade.in/books</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://baazartrade.in/pets</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://baazartrade.in/gaming</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://baazartrade.in/sports</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://baazartrade.in/services</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://baazartrade.in/kids</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+
+  <!-- Cars by city -->
+  <url><loc>https://baazartrade.in/cars/mumbai</loc><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://baazartrade.in/cars/delhi</loc><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://baazartrade.in/cars/bangalore</loc><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://baazartrade.in/cars/hyderabad</loc><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://baazartrade.in/cars/chennai</loc><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://baazartrade.in/cars/kolkata</loc><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://baazartrade.in/cars/pune</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/cars/ahmedabad</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/cars/jaipur</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/cars/surat</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/cars/lucknow</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/cars/nagpur</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/cars/indore</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/cars/patna</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/cars/kanpur</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+
+  <!-- Bikes by city -->
+  <url><loc>https://baazartrade.in/bikes/mumbai</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/bikes/delhi</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/bikes/bangalore</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/bikes/hyderabad</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/bikes/chennai</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/bikes/kolkata</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/bikes/pune</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/bikes/ahmedabad</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/bikes/jaipur</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/bikes/surat</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+
+  <!-- Mobiles by city -->
+  <url><loc>https://baazartrade.in/mobiles/mumbai</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/mobiles/delhi</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/mobiles/bangalore</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/mobiles/hyderabad</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/mobiles/chennai</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/mobiles/kolkata</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/mobiles/pune</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/mobiles/ahmedabad</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/mobiles/jaipur</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/mobiles/surat</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+
+  <!-- Property by city -->
+  <url><loc>https://baazartrade.in/property/mumbai</loc><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://baazartrade.in/property/delhi</loc><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://baazartrade.in/property/bangalore</loc><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://baazartrade.in/property/hyderabad</loc><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://baazartrade.in/property/chennai</loc><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://baazartrade.in/property/kolkata</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/property/pune</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/property/ahmedabad</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/property/jaipur</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://baazartrade.in/property/surat</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+
+  <!-- Electronics by city -->
+  <url><loc>https://baazartrade.in/electronics/mumbai</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/electronics/delhi</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/electronics/bangalore</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/electronics/hyderabad</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/electronics/chennai</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/electronics/pune</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+
+  <!-- Furniture by city -->
+  <url><loc>https://baazartrade.in/furniture/mumbai</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/furniture/delhi</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/furniture/bangalore</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/furniture/hyderabad</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/furniture/chennai</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/furniture/pune</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+
+  <!-- Services by city -->
+  <url><loc>https://baazartrade.in/services/mumbai</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/services/delhi</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/services/bangalore</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/services/hyderabad</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/services/chennai</loc><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://baazartrade.in/services/pune</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+
 </urlset>

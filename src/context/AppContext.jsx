@@ -1,7 +1,23 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { parsePathname, buildPath } from '../utils/routing'
 
 const AppContext = createContext(null)
+
+// Read initial category from URL path (e.g. /cars/mumbai → vehicles)
+function getInitCat() {
+  return parsePathname(window.location.pathname).cat
+}
+
+// Read initial location from URL path, fall back to localStorage
+function getInitLoc() {
+  const { loc } = parsePathname(window.location.pathname)
+  if (loc) {
+    if (!localStorage.getItem('bt_location')) localStorage.setItem('bt_location', loc)
+    return loc
+  }
+  return localStorage.getItem('bt_location') || 'all'
+}
 
 export function AppProvider({ children }) {
   const [loginOpen, setLoginOpen] = useState(false)
@@ -15,10 +31,8 @@ export function AppProvider({ children }) {
   const [chatListing, setChatListing] = useState(null)
   const [pendingAction, setPendingAction] = useState(null)
   const [toast, setToast] = useState({ show: false, msg: '', icon: '✓' })
-  const [activeCategory, setActiveCategory] = useState('all')
-  const [activeLocationRaw, setActiveLocationRaw] = useState(
-    () => localStorage.getItem('bt_location') || 'all'
-  )
+  const [activeCategory, setActiveCategory] = useState(getInitCat)
+  const [activeLocationRaw, setActiveLocationRaw] = useState(getInitLoc)
   const [welcomeOpen, setWelcomeOpen] = useState(
     () => !localStorage.getItem('bt_location')
   )
@@ -77,10 +91,22 @@ export function AppProvider({ children }) {
     function onPop() {
       const id = new URLSearchParams(window.location.search).get('listing')
       if (!id) setActiveListingRaw(null)
+      const { cat, loc } = parsePathname(window.location.pathname)
+      setActiveCategory(cat)
+      if (loc) setActiveLocationRaw(loc)
     }
     window.addEventListener('popstate', onPop)
     return () => window.removeEventListener('popstate', onPop)
   }, [])
+
+  // Sync URL path when category or location changes
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('listing')) return
+    const path = buildPath(activeCategory, activeLocationRaw)
+    if (window.location.pathname !== path) {
+      window.history.replaceState(null, '', path)
+    }
+  }, [activeCategory, activeLocationRaw])
 
   // Fetch saved (favourites) count when user changes
   useEffect(() => {

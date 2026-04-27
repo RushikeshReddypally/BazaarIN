@@ -3,6 +3,7 @@ import { AppProvider } from './context/AppContext'
 import { useApp } from './context/AppContext'
 import { useScrollReveal } from './hooks/useScrollReveal'
 import { useSEO } from './hooks/useSEO'
+import { buildPath } from './utils/routing'
 import Blog from './components/Blog'
 import Nav from './components/Nav'
 import CategoryStrip from './components/CategoryStrip'
@@ -44,9 +45,12 @@ const CATEGORY_SEO = {
 }
 
 function CategorySEO() {
-  const { activeCategory } = useApp()
+  const { activeCategory, activeLocation } = useApp()
   const seo = CATEGORY_SEO[activeCategory] || {}
-  useSEO({ title: seo.title, description: seo.description, url: activeCategory !== 'all' ? `/?category=${activeCategory}` : undefined })
+  const path = buildPath(activeCategory, activeLocation)
+  const cityLabel = activeLocation && activeLocation !== 'all' ? ` in ${activeLocation}` : ''
+  const title = seo.title ? seo.title.replace(/ in India$/, cityLabel || ' in India') : undefined
+  useSEO({ title, description: seo.description, url: path !== '/' ? path : undefined })
   return null
 }
 
