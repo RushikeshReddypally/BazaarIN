@@ -16,6 +16,7 @@ export default function AdminModal() {
   const allTabs = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'listings', label: 'Listings', icon: '📋' },
+    { id: 'blog', label: 'Blog', icon: '✍️' },
     { id: 'seo', label: 'SEO', icon: '🔍' },
     { id: 'sql', label: 'SQL Setup', icon: '⚙️' },
   ]
@@ -65,6 +66,7 @@ export default function AdminModal() {
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {tab === 'dashboard' && <DashboardTab />}
           {tab === 'listings' && <ListingsTab />}
+          {tab === 'blog' && <BlogTab />}
           {tab === 'seo' && <SEOTab />}
           {tab === 'sql' && <SQLTab />}
         </div>
@@ -489,6 +491,231 @@ ADD COLUMN IF NOT EXISTS extras jsonb DEFAULT '{}';`,
           </pre>
         </div>
       ))}
+    </div>
+  )
+}
+
+/* ── Blog Tab ──────────────────────────────────────────── */
+const BLOG_CATS = ['tips', 'guide', 'comparison', 'news', 'update']
+
+function slugify(str) {
+  return str.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
+function BlogTab() {
+  const [posts, setPosts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [editing, setEditing] = useState(null) // null = list, {} = new, post = edit
+  const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(null)
+
+  const emptyForm = { title: '', slug: '', excerpt: '', content: '', cover_image: '', category: 'tips', author: 'BazaarTrade Team', read_time: 3, published: false }
+
+  useEffect(() => { load() }, [])
+
+  async function load() {
+    setLoading(true)
+    const { data } = await supabase.from('blog_posts').select('*').order('created_at', { ascending: false })
+    setPosts(data || [])
+    setLoading(false)
+  }
+
+  async function save() {
+    if (!editing.title.trim() || !editing.content.trim()) return
+    setSaving(true)
+    const payload = { ...editing, slug: editing.slug || slugify(editing.title), updated_at: new Date().toISOString() }
+    if (editing.id) {
+      await supabase.from('blog_posts').update(payload).eq('id', editing.id)
+    } else {
+      await supabase.from('blog_posts').insert(payload)
+    }
+    setSaving(false)
+    setEditing(null)
+    load()
+  }
+
+  async function togglePublish(post) {
+    await supabase.from('blog_posts').update({ published: !post.published }).eq('id', post.id)
+    setPosts(prev => prev.map(p => p.id === post.id ? { ...p, published: !p.published } : p))
+  }
+
+  async function deletePost(id) {
+    if (!confirm('Delete this post? This cannot be undone.')) return
+    setDeleting(id)
+    await supabase.from('blog_posts').delete().eq('id', id)
+    setPosts(prev => prev.filter(p => p.id !== id))
+    setDeleting(null)
+  }
+
+  if (editing !== null) {
+    return (
+      <div style={{ padding: 24, maxWidth: 780, margin: '0 auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+          <button onClick={() => setEditing(null)} style={{ background: '#f3f4f6', border: 'none', borderRadius: 8, padding: '7px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer', color: '#374151' }}>← Back</button>
+          <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: '#1a1a2e' }}>{editing.id ? 'Edit Post' : 'New Post'}</h3>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 700, color: '#374151', display: 'block', marginBottom: 4 }}>Title *</label>
+            <input
+              value={editing.title}
+              onChange={e => setEditing(p => ({ ...p, title: e.target.value, slug: slugify(e.target.value) }))}
+              placeholder="How to sell your phone for best price"
+              style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid #e5e7eb', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+            />
+          </div>
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 700, color: '#374151', display: 'block', marginBottom: 4 }}>Slug (auto-generated)</label>
+            <input
+              value={editing.slug}
+              onChange={e => setEditing(p => ({ ...p, slug: e.target.value }))}
+              placeholder="how-to-sell-your-phone"
+              style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid #e5e7eb', fontSize: 13, outline: 'none', boxSizing: 'border-box', color: '#6b7280' }}
+            />
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 14 }}>
+          <label style={{ fontSize: 12, fontWeight: 700, color: '#374151', display: 'block', marginBottom: 4 }}>Excerpt (shown on blog card)</label>
+          <textarea
+            value={editing.excerpt}
+            onChange={e => setEditing(p => ({ ...p, excerpt: e.target.value }))}
+            placeholder="A short summary shown in the blog card (1-2 sentences)…"
+            rows={2}
+            style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid #e5e7eb', fontSize: 13, outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
+          />
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, marginBottom: 14 }}>
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 700, color: '#374151', display: 'block', marginBottom: 4 }}>Category</label>
+            <select
+              value={editing.category}
+              onChange={e => setEditing(p => ({ ...p, category: e.target.value }))}
+              style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid #e5e7eb', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+            >
+              {BLOG_CATS.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 700, color: '#374151', display: 'block', marginBottom: 4 }}>Author</label>
+            <input
+              value={editing.author}
+              onChange={e => setEditing(p => ({ ...p, author: e.target.value }))}
+              style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid #e5e7eb', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+            />
+          </div>
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 700, color: '#374151', display: 'block', marginBottom: 4 }}>Read time (mins)</label>
+            <input
+              type="number" min={1} max={60}
+              value={editing.read_time}
+              onChange={e => setEditing(p => ({ ...p, read_time: parseInt(e.target.value) || 3 }))}
+              style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid #e5e7eb', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+            />
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 14 }}>
+          <label style={{ fontSize: 12, fontWeight: 700, color: '#374151', display: 'block', marginBottom: 4 }}>Cover Image URL (1200×630px recommended)</label>
+          <input
+            value={editing.cover_image}
+            onChange={e => setEditing(p => ({ ...p, cover_image: e.target.value }))}
+            placeholder="https://images.unsplash.com/…"
+            style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid #e5e7eb', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+          />
+        </div>
+
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ fontSize: 12, fontWeight: 700, color: '#374151', display: 'block', marginBottom: 4 }}>
+            Content * <span style={{ fontWeight: 400, color: '#9ca3af' }}>— Use **bold**, ## Heading, ### Subheading, • bullet point</span>
+          </label>
+          <textarea
+            value={editing.content}
+            onChange={e => setEditing(p => ({ ...p, content: e.target.value }))}
+            placeholder={'## Introduction\n\nWrite your post content here…\n\n**Key Point**\n• Bullet one\n• Bullet two\n\n## Conclusion\n\nWrap up here.'}
+            rows={16}
+            style={{ width: '100%', padding: '12px', borderRadius: 8, border: '1.5px solid #e5e7eb', fontSize: 13, outline: 'none', resize: 'vertical', boxSizing: 'border-box', fontFamily: 'monospace', lineHeight: 1.7 }}
+          />
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#374151' }}>
+            <input
+              type="checkbox"
+              checked={editing.published}
+              onChange={e => setEditing(p => ({ ...p, published: e.target.checked }))}
+              style={{ width: 16, height: 16 }}
+            />
+            Publish immediately
+          </label>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button onClick={() => setEditing(null)} style={{ padding: '10px 20px', borderRadius: 9, border: '1.5px solid #e5e7eb', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', color: '#374151' }}>Cancel</button>
+            <button
+              onClick={save}
+              disabled={saving || !editing.title.trim() || !editing.content.trim()}
+              style={{ padding: '10px 24px', borderRadius: 9, border: 'none', background: '#1d3a6e', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: (saving || !editing.title.trim()) ? 0.6 : 1 }}
+            >
+              {saving ? 'Saving…' : 'Save Post'}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ padding: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+        <div>
+          <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: '#1a1a2e' }}>Blog Posts</h3>
+          <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>{posts.filter(p => p.published).length} published · {posts.filter(p => !p.published).length} drafts</div>
+        </div>
+        <button
+          onClick={() => setEditing(emptyForm)}
+          style={{ padding: '9px 18px', background: '#1d3a6e', color: '#fff', border: 'none', borderRadius: 9, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+        >
+          + New Post
+        </button>
+      </div>
+
+      {loading ? <Loader /> : posts.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '60px 0', color: '#9ca3af' }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>✍️</div>
+          <div style={{ fontSize: 14 }}>No posts yet. Create your first blog post!</div>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {posts.map(post => (
+            <div key={post.id} style={{ background: '#fff', borderRadius: 12, padding: '14px 18px', border: '1.5px solid #f3f4f6', display: 'flex', alignItems: 'center', gap: 14 }}>
+              {post.cover_image && (
+                <div style={{ width: 56, height: 56, borderRadius: 8, overflow: 'hidden', flexShrink: 0 }}>
+                  <img src={post.cover_image} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+              )}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13.5, fontWeight: 700, color: '#1a1a2e', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{post.title}</div>
+                <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 3 }}>
+                  {post.category} · {post.author} · {post.read_time} min read · {new Date(post.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 99, background: post.published ? '#d1fae5' : '#f3f4f6', color: post.published ? '#059669' : '#9ca3af' }}>
+                  {post.published ? 'Published' : 'Draft'}
+                </span>
+                <button onClick={() => togglePublish(post)} style={{ fontSize: 11.5, fontWeight: 600, padding: '5px 10px', borderRadius: 6, border: '1px solid #e5e7eb', background: '#fff', cursor: 'pointer', color: '#374151' }}>
+                  {post.published ? 'Unpublish' : 'Publish'}
+                </button>
+                <button onClick={() => setEditing(post)} style={{ fontSize: 11.5, fontWeight: 600, padding: '5px 10px', borderRadius: 6, border: '1px solid #dbeafe', background: '#eff6ff', cursor: 'pointer', color: '#1d4ed8' }}>Edit</button>
+                <button onClick={() => deletePost(post.id)} disabled={deleting === post.id} style={{ fontSize: 11.5, fontWeight: 600, padding: '5px 10px', borderRadius: 6, border: '1px solid #fca5a5', background: '#fff5f5', cursor: 'pointer', color: '#dc2626' }}>
+                  {deleting === post.id ? '…' : 'Delete'}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

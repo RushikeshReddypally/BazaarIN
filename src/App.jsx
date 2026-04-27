@@ -3,6 +3,7 @@ import { AppProvider } from './context/AppContext'
 import { useApp } from './context/AppContext'
 import { useScrollReveal } from './hooks/useScrollReveal'
 import { useSEO } from './hooks/useSEO'
+import Blog from './components/Blog'
 import Nav from './components/Nav'
 import CategoryStrip from './components/CategoryStrip'
 import Hero from './components/Hero'
@@ -79,6 +80,7 @@ function AppInner() {
         <CategoryStrip />
         <Listings />
         <SellCTA />
+        <Blog />
         <Features />
         <HowItWorks />
         <Contact />
