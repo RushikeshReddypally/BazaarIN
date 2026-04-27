@@ -134,7 +134,7 @@ function HamburgerMenu() {
     unreadCount, clearUnread,
     savedCount, cart,
     activeLocation, setActiveLocation,
-    adminOpen, setAdminOpen, isAdminUser,
+    adminOpen, setAdminOpen, isAdminUser, isSEOUser,
   } = useApp()
 
   const [open, setOpen] = useState(false)
@@ -301,8 +301,8 @@ function HamburgerMenu() {
               <div style={{ height: 1, background: '#f3f4f6', margin: '6px 0' }} />
 
               <HamItem icon={<ProfileIcon />} label="Profile" onClick={() => act(() => setProfileOpen(true))} />
-              {isAdminUser && (
-                <HamItem icon={<ShieldIcon />} label="Admin Panel" onClick={() => act(() => setAdminOpen(true))} />
+              {(isAdminUser || isSEOUser) && (
+                <HamItem icon={<ShieldIcon />} label={isAdminUser ? 'Admin Panel' : 'SEO Panel'} onClick={() => act(() => setAdminOpen(true))} />
               )}
               <HamItem icon={<SignOutIcon />} label="Sign Out" onClick={() => act(logout)} />
 
@@ -465,7 +465,7 @@ export default function Nav() {
     unreadCount, clearUnread,
     savedCount, cart,
     activeLocation,
-    setAdminOpen, isAdminUser,
+    setAdminOpen, isAdminUser, isSEOUser,
   } = useApp()
   useNavScroll()
 
@@ -559,14 +559,14 @@ export default function Nav() {
           <>
             <button className="btn btn-ghost btn-sm nav-hide-mobile" onClick={() => setMyAdsOpen(true)}>My Ads</button>
             <button className="btn btn-ghost btn-sm nav-hide-mobile" onClick={() => setProfileOpen(true)}>Profile</button>
-            {isAdminUser && (
+            {(isAdminUser || isSEOUser) && (
               <button
                 className="btn btn-sm nav-hide-mobile"
                 onClick={() => setAdminOpen(true)}
-                title="Admin Panel"
+                title={isAdminUser ? 'Admin Panel' : 'SEO Panel'}
                 style={{ background: 'linear-gradient(135deg,#1a1a2e,#2d3561)', color: '#fff', display: 'flex', alignItems: 'center', gap: 6 }}
               >
-                <ShieldIcon /> Admin
+                <ShieldIcon /> {isAdminUser ? 'Admin' : 'SEO'}
               </button>
             )}
             <button className="btn btn-ghost btn-sm nav-hide-mobile" onClick={logout}>Sign Out</button>

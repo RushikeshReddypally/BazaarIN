@@ -8,10 +8,18 @@ import { categories } from '../data/categories.jsx'
 const SITE_URL = 'https://baazartrade.in'
 
 export default function AdminModal() {
-  const { adminOpen, setAdminOpen, isAdminUser } = useApp()
-  const [tab, setTab] = useState('dashboard')
+  const { adminOpen, setAdminOpen, isAdminUser, isSEOUser } = useApp()
+  const [tab, setTab] = useState(() => isSEOUser && !isAdminUser ? 'seo' : 'dashboard')
 
-  if (!adminOpen || !isAdminUser) return null
+  if (!adminOpen || (!isAdminUser && !isSEOUser)) return null
+
+  const allTabs = [
+    { id: 'dashboard', label: 'Dashboard', icon: '📊' },
+    { id: 'listings', label: 'Listings', icon: '📋' },
+    { id: 'seo', label: 'SEO', icon: '🔍' },
+    { id: 'sql', label: 'SQL Setup', icon: '⚙️' },
+  ]
+  const visibleTabs = isAdminUser ? allTabs : allTabs.filter(t => t.id === 'seo')
 
   return (
     <div
@@ -27,7 +35,7 @@ export default function AdminModal() {
               <svg width="18" height="18" fill="none" stroke="#fff" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
             </div>
             <div>
-              <div style={{ color: '#fff', fontSize: 16, fontWeight: 800 }}>Admin Panel</div>
+              <div style={{ color: '#fff', fontSize: 16, fontWeight: 800 }}>{isAdminUser ? 'Admin Panel' : 'SEO Panel'}</div>
               <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11 }}>BazaarTrade.in Management Console</div>
             </div>
           </div>
@@ -36,12 +44,7 @@ export default function AdminModal() {
 
         {/* Tabs */}
         <div style={{ display: 'flex', background: '#fff', borderBottom: '1px solid #e5e7eb', flexShrink: 0 }}>
-          {[
-            { id: 'dashboard', label: 'Dashboard', icon: '📊' },
-            { id: 'listings', label: 'Listings', icon: '📋' },
-            { id: 'seo', label: 'SEO', icon: '🔍' },
-            { id: 'sql', label: 'SQL Setup', icon: '⚙️' },
-          ].map(t => (
+          {visibleTabs.map(t => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}

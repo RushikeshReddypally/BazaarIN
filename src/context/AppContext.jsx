@@ -185,7 +185,9 @@ export function AppProvider({ children }) {
   }, [user?.phone])
 
   const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase())
+  const SEO_EMAILS = (import.meta.env.VITE_SEO_EMAILS || '').split(',').map(e => e.trim().toLowerCase())
   const isAdminUser = !!user && ADMIN_EMAILS.includes(user.email?.toLowerCase())
+  const isSEOUser = !!user && SEO_EMAILS.includes(user.email?.toLowerCase())
 
   return (
     <AppContext.Provider value={{
@@ -210,7 +212,7 @@ export function AppProvider({ children }) {
       deleteAccount,
       listingsKey, bumpListings,
       restoringListing,
-      adminOpen, setAdminOpen, isAdminUser,
+      adminOpen, setAdminOpen, isAdminUser, isSEOUser,
     }}>
       {children}
     </AppContext.Provider>
