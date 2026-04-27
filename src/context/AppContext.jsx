@@ -29,6 +29,7 @@ export function AppProvider({ children }) {
   const [cart, setCart] = useState(() => {
     try { return JSON.parse(localStorage.getItem('bt_cart') || '[]') } catch { return [] }
   })
+  const [adminOpen, setAdminOpen] = useState(false)
 
   // Synchronously detect if we need to restore a listing from URL — prevents home page flash
   const [restoringListing, setRestoringListing] = useState(
@@ -183,6 +184,9 @@ export function AppProvider({ children }) {
     }
   }, [user?.phone])
 
+  const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase())
+  const isAdminUser = !!user && ADMIN_EMAILS.includes(user.email?.toLowerCase())
+
   return (
     <AppContext.Provider value={{
       loginOpen, setLoginOpen,
@@ -206,6 +210,7 @@ export function AppProvider({ children }) {
       deleteAccount,
       listingsKey, bumpListings,
       restoringListing,
+      adminOpen, setAdminOpen, isAdminUser,
     }}>
       {children}
     </AppContext.Provider>

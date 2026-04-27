@@ -134,6 +134,7 @@ function HamburgerMenu() {
     unreadCount, clearUnread,
     savedCount, cart,
     activeLocation, setActiveLocation,
+    adminOpen, setAdminOpen, isAdminUser,
   } = useApp()
 
   const [open, setOpen] = useState(false)
@@ -300,6 +301,9 @@ function HamburgerMenu() {
               <div style={{ height: 1, background: '#f3f4f6', margin: '6px 0' }} />
 
               <HamItem icon={<ProfileIcon />} label="Profile" onClick={() => act(() => setProfileOpen(true))} />
+              {isAdminUser && (
+                <HamItem icon={<ShieldIcon />} label="Admin Panel" onClick={() => act(() => setAdminOpen(true))} />
+              )}
               <HamItem icon={<SignOutIcon />} label="Sign Out" onClick={() => act(logout)} />
 
               <div style={{ height: 1, background: '#f3f4f6', margin: '6px 0' }} />
@@ -415,6 +419,9 @@ const SignOutIcon = () => (
 const DeleteIcon = () => (
   <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
 )
+const ShieldIcon = () => (
+  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+)
 
 function HamItem({ icon, label, badge, danger, accent, onClick }) {
   return (
@@ -458,6 +465,7 @@ export default function Nav() {
     unreadCount, clearUnread,
     savedCount, cart,
     activeLocation,
+    setAdminOpen, isAdminUser,
   } = useApp()
   useNavScroll()
 
@@ -551,6 +559,16 @@ export default function Nav() {
           <>
             <button className="btn btn-ghost btn-sm nav-hide-mobile" onClick={() => setMyAdsOpen(true)}>My Ads</button>
             <button className="btn btn-ghost btn-sm nav-hide-mobile" onClick={() => setProfileOpen(true)}>Profile</button>
+            {isAdminUser && (
+              <button
+                className="btn btn-sm nav-hide-mobile"
+                onClick={() => setAdminOpen(true)}
+                title="Admin Panel"
+                style={{ background: 'linear-gradient(135deg,#1a1a2e,#2d3561)', color: '#fff', display: 'flex', alignItems: 'center', gap: 6 }}
+              >
+                <ShieldIcon /> Admin
+              </button>
+            )}
             <button className="btn btn-ghost btn-sm nav-hide-mobile" onClick={logout}>Sign Out</button>
           </>
         ) : (

@@ -4,6 +4,7 @@ import { formatPriceFull, formatPrice } from '../utils/format'
 import { useFavourite } from '../hooks/useFavourite'
 import { supabase } from '../lib/supabase'
 import { categoryIcons } from '../data/categories.jsx'
+import { useSEO } from '../hooks/useSEO'
 
 const ChevL = () => (
   <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" /></svg>
@@ -56,6 +57,18 @@ export default function ListingDetailModal() {
   const [deleting, setDeleting] = useState(false)
   const [similar, setSimilar] = useState([])
   const open = !!activeListing
+
+  // Dynamic SEO when a listing is open
+  useSEO(listing ? {
+    title: listing.title,
+    description: listing.description
+      ? listing.description.slice(0, 160)
+      : `${listing.title} for ₹${listing.price?.toLocaleString('en-IN')} in ${listing.location} — BazaarTrade.in`,
+    image: listing.images?.[0],
+    url: `/?listing=${listing.id}`,
+    type: 'og:product',
+    listing,
+  } : {})
 
   useEffect(() => {
     if (activeListing) { setListing(activeListing); setCurrentImg(0); setSimilar([]) }

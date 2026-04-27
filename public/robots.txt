@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Block admin panel from indexing
+Disallow: /?admin=true
+
+Sitemap: https://baazartrade.in/sitemap.xml
