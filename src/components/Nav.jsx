@@ -104,7 +104,7 @@ function NavSearch() {
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
                   <div style={{ width: 44, height: 44, borderRadius: 8, flexShrink: 0, background: GRAD_BG[r.gradient] || GRAD_BG.li1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, overflow: 'hidden' }}>
-                    {r.images?.length > 0 ? <img src={r.images[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : r.emoji}
+                    {r.images?.length > 0 ? <img src={r.images[0]} alt={r.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : r.emoji}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13.5, fontWeight: 600, color: '#1a1a2e', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.title}</div>

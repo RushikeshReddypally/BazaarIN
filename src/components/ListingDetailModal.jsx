@@ -304,7 +304,7 @@ export default function ListingDetailModal() {
                     border: `2.5px solid ${i === currentImg ? '#1d3a6e' : 'transparent'}`,
                     opacity: i === currentImg ? 1 : 0.6, transition: 'all 0.15s', background: '#ececec',
                   }}>
-                    <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    <img src={src} alt={`${title} photo ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                   </button>
                 ))}
               </div>

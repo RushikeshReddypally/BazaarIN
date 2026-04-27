@@ -76,7 +76,7 @@ export default function FavouritesModal() {
                   }}
                 >
                   {listing.images?.[0]
-                    ? <img src={listing.images[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ? <img src={listing.images[0]} alt={listing.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     : listing.emoji}
                 </div>
 

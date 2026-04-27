@@ -72,7 +72,7 @@ export default function CartModal() {
                   }}
                 >
                   {item.images?.length > 0
-                    ? <img src={item.images[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ? <img src={item.images[0]} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     : item.emoji}
                 </div>
 

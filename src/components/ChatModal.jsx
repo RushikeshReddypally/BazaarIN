@@ -55,7 +55,7 @@ function EnquiryPane({ listing, user, onSent }) {
       <div style={{ padding: '14px 18px', borderBottom: '1px solid #f3f4f6', background: '#fafafa', display: 'flex', gap: 12, alignItems: 'center' }}>
         <div className={listing.gradient || 'li1'} style={{ width: 42, height: 42, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>
           {listing.images?.[0]
-            ? <img src={listing.images[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }} />
+            ? <img src={listing.images[0]} alt={listing.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }} />
             : listing.emoji}
         </div>
         <div>

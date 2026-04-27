@@ -246,7 +246,7 @@ function AdRow({ ad, onView, onEdit, onToggleSold, onDelete, deleting }) {
         fontSize: 28, overflow: 'hidden', cursor: 'pointer',
       }} onClick={onView}>
         {ad.images?.[0]
-          ? <img src={ad.images[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ? <img src={ad.images[0]} alt={ad.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           : ad.emoji}
       </div>
 
