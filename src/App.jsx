@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { AppProvider } from './context/AppContext'
 import { useApp } from './context/AppContext'
 import { useScrollReveal } from './hooks/useScrollReveal'
@@ -14,15 +14,16 @@ import HowItWorks from './components/HowItWorks'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import LoginModal from './components/LoginModal'
-import PostAdModal from './components/PostAdModal'
 import ProfileModal from './components/ProfileModal'
-import ListingDetailModal from './components/ListingDetailModal'
 import MyAdsModal from './components/MyAdsModal'
 import { MessagesModal, ChatModal } from './components/ChatModal'
 import FavouritesModal from './components/FavouritesModal'
 import CartModal from './components/CartModal'
 import WelcomeModal from './components/WelcomeModal'
-import AdminModal from './components/AdminModal'
+
+const PostAdModal = lazy(() => import('./components/PostAdModal'))
+const ListingDetailModal = lazy(() => import('./components/ListingDetailModal'))
+const AdminModal = lazy(() => import('./components/AdminModal'))
 import Toast from './components/Toast'
 
 const CATEGORY_SEO = {
@@ -87,16 +88,18 @@ function AppInner() {
       </main>
       <Footer />
       <LoginModal />
-      <PostAdModal />
       <ProfileModal />
-      <ListingDetailModal />
       <MyAdsModal />
       <MessagesModal />
       <ChatModal />
       <FavouritesModal />
       <CartModal />
       <WelcomeModal />
-      <AdminModal />
+      <Suspense fallback={null}>
+        <PostAdModal />
+        <ListingDetailModal />
+        <AdminModal />
+      </Suspense>
       <Toast />
     </>
   )
