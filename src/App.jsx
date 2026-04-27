@@ -20,6 +20,7 @@ import { MessagesModal, ChatModal } from './components/ChatModal'
 import FavouritesModal from './components/FavouritesModal'
 import CartModal from './components/CartModal'
 import WelcomeModal from './components/WelcomeModal'
+import NotificationsModal from './components/NotificationsModal'
 
 const PostAdModal = lazy(() => import('./components/PostAdModal'))
 const ListingDetailModal = lazy(() => import('./components/ListingDetailModal'))
@@ -95,6 +96,7 @@ function AppInner() {
       <FavouritesModal />
       <CartModal />
       <WelcomeModal />
+      <NotificationsModal />
       <Suspense fallback={null}>
         <PostAdModal />
         <ListingDetailModal />

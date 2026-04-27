@@ -135,6 +135,7 @@ function HamburgerMenu() {
     savedCount, cart,
     activeLocation, setActiveLocation,
     adminOpen, setAdminOpen, isAdminUser, isSEOUser,
+    notifOpen, setNotifOpen,
   } = useApp()
 
   const [open, setOpen] = useState(false)
@@ -296,7 +297,8 @@ function HamburgerMenu() {
               <HamItem icon={<AdsIcon />} label="My Ads" onClick={() => act(() => setMyAdsOpen(true))} />
               <HamItem icon={<HeartIcon filled={savedCount > 0} />} label="Wishlist" badge={savedCount} onClick={() => act(() => setFavouritesOpen(true))} />
               <HamItem icon={<CartIcon />} label="View Cart" badge={cart.length} onClick={() => act(() => setCartOpen(true))} />
-              <HamItem icon={<ChatIcon />} label="Chats" badge={unreadCount} onClick={() => act(() => { setMessagesOpen(true); clearUnread() })} />
+              <HamItem icon={<ChatIcon />} label="Chats" onClick={() => act(() => setMessagesOpen(true))} />
+              <HamItem icon={<BellIcon />} label="Notifications" badge={unreadCount} onClick={() => act(() => setNotifOpen(true))} />
 
               <div style={{ height: 1, background: '#f3f4f6', margin: '6px 0' }} />
 
@@ -466,6 +468,7 @@ export default function Nav() {
     savedCount, cart,
     activeLocation,
     setAdminOpen, isAdminUser, isSEOUser,
+    setNotifOpen,
   } = useApp()
   useNavScroll()
 
@@ -538,7 +541,7 @@ export default function Nav() {
         </button>
 
         {/* Notifications bell — web only via CSS */}
-        <button className="nav-icon-btn nav-hide-mobile" onClick={() => { if (user) { setMessagesOpen(true); clearUnread() } else setLoginOpen(true) }} title="Notifications">
+        <button className="nav-icon-btn nav-hide-mobile" onClick={() => { if (user) { setNotifOpen(true) } else { setLoginOpen(true) } }} title="Notifications">
           <BellIcon />
           {unreadCount > 0 && (
             <span style={{

@@ -30,6 +30,7 @@ export function AppProvider({ children }) {
     try { return JSON.parse(localStorage.getItem('bt_cart') || '[]') } catch { return [] }
   })
   const [adminOpen, setAdminOpen] = useState(false)
+  const [notifOpen, setNotifOpen] = useState(false)
 
   // Synchronously detect if we need to restore a listing from URL — prevents home page flash
   const [restoringListing, setRestoringListing] = useState(
@@ -213,6 +214,7 @@ export function AppProvider({ children }) {
       listingsKey, bumpListings,
       restoringListing,
       adminOpen, setAdminOpen, isAdminUser, isSEOUser,
+      notifOpen, setNotifOpen,
     }}>
       {children}
     </AppContext.Provider>
