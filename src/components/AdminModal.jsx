@@ -293,7 +293,7 @@ function SEOTab() {
   function defaultSEO() {
     return {
       siteTitle: "BazaarTrade.in — Buy & Sell Anything Across India for Free",
-      description: "India's trusted free marketplace. Buy and sell mobiles, cars, property, bikes, electronics and more. Post ads free!",
+      description: "India's trusted free marketplace. Buy and sell mobiles, cars, property, bikes, electronics, furniture and more. Post ads free — no commission, no fees.",
       keywords: "buy sell india, free classifieds, used cars india, second hand mobiles, property for sale rent, online marketplace india",
       ogImage: "https://baazartrade.in/og-image.jpg",
       twitterHandle: "@BazaarTradeIn",
@@ -439,7 +439,7 @@ CREATE POLICY "Admin hard-coded delete"
 ON public.listings FOR DELETE
 TO authenticated
 USING (
-  auth.jwt() ->> 'email' = 'rushikesh.reddypally@gmail.com'
+  auth.jwt() ->> 'email' = 'admin.bazaartrade@gmail.com'
   OR auth.uid()::text = user_id::text
 );`,
 
@@ -448,11 +448,11 @@ CREATE POLICY "Admin can update any listing"
 ON public.listings FOR UPDATE
 TO authenticated
 USING (
-  auth.jwt() ->> 'email' = 'rushikesh.reddypally@gmail.com'
+  auth.jwt() ->> 'email' = 'admin.bazaartrade@gmail.com'
   OR auth.uid()::text = user_id::text
 )
 WITH CHECK (
-  auth.jwt() ->> 'email' = 'rushikesh.reddypally@gmail.com'
+  auth.jwt() ->> 'email' = 'admin.bazaartrade@gmail.com'
   OR auth.uid()::text = user_id::text
 );`,
 
