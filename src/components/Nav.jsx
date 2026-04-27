@@ -168,9 +168,12 @@ function HamburgerMenu() {
           for (const name of candidates) {
             if (!name) continue
             const lc = name.toLowerCase().trim()
+            if (!lc) continue
             for (const s of locationStates) {
               for (const c of s.cities) {
-                if (c.toLowerCase() === lc || lc.includes(c.toLowerCase()) || c.toLowerCase().includes(lc)) {
+                const cl = c.toLowerCase()
+                const subMatch = cl.length >= 4 && lc.length >= 4 && (lc.includes(cl) || cl.includes(lc))
+                if (cl === lc || subMatch) {
                   matched = c; break
                 }
               }

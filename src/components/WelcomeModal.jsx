@@ -12,11 +12,10 @@ function findCityInData(nameFromGeo) {
       if (city.toLowerCase() === lc) return city
     }
   }
-  // Partial match — city name contains our known city or vice versa
   for (const s of states) {
     for (const city of s.cities) {
       const cl = city.toLowerCase()
-      if (lc.includes(cl) || cl.includes(lc)) return city
+      if (cl.length >= 4 && lc.length >= 4 && (lc.includes(cl) || cl.includes(lc))) return city
     }
   }
   return null

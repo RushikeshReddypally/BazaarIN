@@ -16,7 +16,7 @@ function findCityInData(name) {
   for (const s of states) {
     for (const c of s.cities) {
       const cl = c.toLowerCase()
-      if (lc.includes(cl) || cl.includes(lc)) return c
+      if (cl.length >= 4 && lc.length >= 4 && (lc.includes(cl) || cl.includes(lc))) return c
     }
   }
   return null
