@@ -467,23 +467,23 @@ h2.sec-h small{
 /* listing grid */
 .lg{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
-  gap:22px;
+  grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+  gap:14px;
 }
 .lc{
   background:var(--white);
-  border-radius:var(--r-xl);
+  border-radius:var(--r-lg,12px);
   border:1.5px solid var(--ink-faint);
   overflow:hidden;
   cursor:pointer;
   transition:transform var(--t) var(--spring),box-shadow var(--t) var(--ease),border-color var(--t) var(--ease);
   position:relative;
 }
-.lc:hover{transform:translateY(-5px);box-shadow:var(--sh-lg);border-color:var(--ink-soft)}
+.lc:hover{transform:translateY(-4px);box-shadow:var(--sh-lg);border-color:var(--ink-soft)}
 .lc-img{
-  height:200px;
+  height:130px;
   display:flex;align-items:center;justify-content:center;
-  font-size:60px;position:relative;overflow:hidden;
+  font-size:40px;position:relative;overflow:hidden;
 }
 .lc-img::after{
   content:'';position:absolute;inset:0;
@@ -496,58 +496,53 @@ h2.sec-h small{
 .li5{background:linear-gradient(145deg,#f0ede4 0%,#e6e0d2 100%)}
 .li6{background:linear-gradient(145deg,#e4f0ec 0%,#d4eae2 100%)}
 .lc-badge{
-  position:absolute;top:12px;left:12px;z-index:2;
-  padding:4px 10px;border-radius:99px;
-  font-size:9.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
+  position:absolute;top:8px;left:8px;z-index:2;
+  padding:3px 8px;border-radius:99px;
+  font-size:8.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
 }
 .lc-save{
-  position:absolute;top:12px;right:12px;z-index:2;
-  width:32px;height:32px;border-radius:50%;
+  position:absolute;top:8px;right:8px;z-index:2;
+  width:26px;height:26px;border-radius:50%;
   background:rgba(255,255,255,.9);
   border:1.5px solid var(--ink-faint);
   display:flex;align-items:center;justify-content:center;
-  font-size:14px;
+  font-size:12px;
   transition:all var(--t) var(--spring);
 }
 .lc-save:hover{transform:scale(1.12);background:var(--white);box-shadow:var(--sh-sm)}
-.lc-body{padding:16px 18px}
+.lc-body{padding:10px 12px}
+.lc-price-row{display:flex;align-items:baseline;gap:6px;margin-bottom:3px}
+.lc-price{font-size:16px;font-weight:900;color:var(--indigo);letter-spacing:-.6px}
+.lc-og{font-size:11px;color:var(--lilac);text-decoration:line-through}
 .lc-title{
-  font-size:15px;font-weight:700;color:var(--indigo);
+  font-size:12.5px;font-weight:600;color:#374151;
   margin-bottom:6px;line-height:1.3;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;
 }
-.lc-price-row{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
-.lc-price{font-size:21px;font-weight:900;color:var(--indigo);letter-spacing:-.8px}
-.lc-og{font-size:13px;color:var(--lilac);text-decoration:line-through}
-.lc-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.lc-tag{
-  padding:4px 10px;border-radius:99px;
-  background:var(--silk-xlight);
-  border:1px solid var(--ink-faint);
-  font-size:11px;font-weight:600;color:var(--lilac);
-}
-.lc-footer{
-  padding:12px 18px;
-  border-top:1px solid var(--ink-faint);
-  display:flex;align-items:center;gap:10px;
-}
-.lc-av{
-  width:28px;height:28px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:10px;font-weight:800;color:var(--white);flex-shrink:0;
-}
-.lc-seller{font-size:12px;font-weight:600;color:var(--grape)}
-.lc-time{font-size:11px;color:var(--lilac);margin-left:auto}
-.lc-loc{
-  display:flex;align-items:center;gap:3px;
-  font-size:11px;color:var(--lilac);margin-top:2px;
-}
+.lc-meta{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.lc-loc{font-size:10.5px;color:var(--lilac);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lc-time{font-size:10.5px;color:var(--lilac);flex-shrink:0}
 .lc-verify{
   width:14px;height:14px;border-radius:50%;
   background:var(--indigo);color:var(--white);
   display:inline-flex;align-items:center;justify-content:center;
   font-size:8px;margin-left:3px;
 }
+
+/* list view */
+.lg-list{display:flex;flex-direction:column;gap:10px}
+.lg-list .lc{display:flex;flex-direction:row;align-items:stretch}
+.lg-list .lc:hover{transform:none}
+.lg-list .lc-img{width:120px;height:auto;min-height:96px;flex-shrink:0}
+.lg-list .lc-body{flex:1;min-width:0;padding:10px 14px;display:flex;flex-direction:column;justify-content:center}
+
+.view-toggle{display:flex;gap:2px;border:1.5px solid var(--ink-faint,#d1d5db);border-radius:8px;padding:2px;flex-shrink:0}
+.view-toggle-btn{
+  width:30px;height:30px;border-radius:6px;border:none;background:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:#9ca3af;transition:all .15s ease;
+}
+.view-toggle-btn.active{background:#1d3a6e;color:#fff}
+
 .load-more{display:flex;justify-content:center;margin-top:48px}
 
 /* ═══════════════════════════════════════════════════════
@@ -1047,7 +1042,7 @@ footer{
   .footer-top{grid-template-columns:1fr 1fr;gap:32px}
 
   /* Listings grid */
-  .lg{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+  .lg{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
 }
 
 /* ── Large Mobile (≤768px) ── */
@@ -1057,7 +1052,7 @@ footer{
   #nav{gap:8px}
 
   /* Listing cards 2-column */
-  .lg{grid-template-columns:1fr 1fr;gap:14px}
+  .lg{grid-template-columns:1fr 1fr;gap:10px}
 
   /* Listings bar wrapping */
   .listings-bar{gap:6px}
@@ -1104,11 +1099,18 @@ footer{
   #listings .sec-head{flex-direction:column;align-items:flex-start;gap:10px;margin-bottom:20px}
   h2.sec-h{font-size:clamp(22px,6vw,30px)}
   .listings-bar{gap:6px}
-  .lg{grid-template-columns:1fr;gap:12px}
+  .lg{grid-template-columns:1fr 1fr;gap:8px}
 
   /* Listing card */
-  .lc-img{height:160px}
-  .lc-price{font-size:18px}
+  .lc-img{height:100px}
+  .lc-price{font-size:14px}
+  .lc-body{padding:8px 10px}
+  .lc-title{font-size:11.5px}
+
+  /* List view — narrower thumb + footer on small screens */
+  .lg-list .lc-img{width:88px;min-height:80px}
+  .lg-list .lc-footer{width:96px}
+  .lg-list .lc-seller{font-size:10px}
 
   /* Sell CTA */
   #sell-cta{padding:48px 4%}

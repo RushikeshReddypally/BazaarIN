@@ -136,6 +136,7 @@ function HamburgerMenu() {
     activeLocation, setActiveLocation,
     adminOpen, setAdminOpen, isAdminUser, isSEOUser,
     notifOpen, setNotifOpen,
+    setActiveListing,
   } = useApp()
 
   const [open, setOpen] = useState(false)
@@ -299,7 +300,7 @@ function HamburgerMenu() {
               <HamItem icon={<PostIcon />} label="Post Ad" onClick={() => act(() => setPostOpen(true))} accent />
               <HamItem icon={<AdsIcon />} label="My Ads" onClick={() => act(() => setMyAdsOpen(true))} />
               <HamItem icon={<HeartIcon filled={savedCount > 0} />} label="Wishlist" badge={savedCount} onClick={() => act(() => setFavouritesOpen(true))} />
-              <HamItem icon={<CartIcon />} label="View Cart" badge={cart.length} onClick={() => act(() => setCartOpen(true))} />
+              <HamItem icon={<CartIcon />} label="View Cart" badge={cart.length} onClick={() => act(() => { setActiveListing(null); setCartOpen(true) })} />
               <HamItem icon={<ChatIcon />} label="Chats" onClick={() => act(() => { setNotifOpen(false); setMessagesOpen(true) })} />
               <HamItem icon={<BellIcon />} label="Notifications" badge={unreadCount} onClick={() => act(() => { setMessagesOpen(false); setNotifOpen(true) })} />
 
@@ -348,7 +349,7 @@ function HamburgerMenu() {
                   Sign In
                 </button>
               </div>
-              <HamItem icon={<CartIcon />} label="View Cart" badge={cart.length} onClick={() => act(() => setCartOpen(true))} />
+              <HamItem icon={<CartIcon />} label="View Cart" badge={cart.length} onClick={() => act(() => { setActiveListing(null); setCartOpen(true) })} />
               <HamItem icon={<PostIcon />} label="Post Ad" onClick={() => act(() => setLoginOpen(true))} accent />
             </>
           )}
@@ -472,12 +473,20 @@ export default function Nav() {
     activeLocation,
     setAdminOpen, isAdminUser, isSEOUser,
     setNotifOpen,
+    setActiveListing, setActiveCategory,
   } = useApp()
   useNavScroll()
 
+  function goHome(e) {
+    e.preventDefault()
+    setActiveListing(null)
+    setActiveCategory('all')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
     <nav id="nav">
-      <a href="#" className="nav-logo">
+      <a href="/" className="nav-logo" onClick={goHome}>
         BazaarTrade<span className="nav-logo-dot" />in
       </a>
 
@@ -490,7 +499,7 @@ export default function Nav() {
         {/* Cart — visible on both web and mobile */}
         <button
           className="nav-icon-btn"
-          onClick={() => setCartOpen(true)}
+          onClick={() => { setActiveListing(null); setCartOpen(true) }}
           title="Cart"
           style={{ position: 'relative' }}
         >

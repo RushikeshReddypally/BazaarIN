@@ -55,7 +55,7 @@ export default function LoginModal() {
   }
 
   return (
-    <div className={`overlay${loginOpen ? ' open' : ''}`} style={{ zIndex: 1300 }}
+    <div className={`overlay${loginOpen ? ' open' : ''}`} style={{ zIndex: 1350 }}
       onClick={e => e.target === e.currentTarget && close()}>
       <div className="modal">
         <button className="modal-x" onClick={close}>✕</button>

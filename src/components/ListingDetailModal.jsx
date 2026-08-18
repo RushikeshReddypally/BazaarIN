@@ -56,6 +56,7 @@ export default function ListingDetailModal() {
   const [listing, setListing] = useState(null)
   const [deleting, setDeleting] = useState(false)
   const [similar, setSimilar] = useState([])
+  const [sellerVerified, setSellerVerified] = useState(false)
   const open = !!activeListing
 
   // Dynamic SEO when a listing is open
@@ -81,6 +82,13 @@ export default function ListingDetailModal() {
     supabase.from('listings').select('*').eq('id', activeListing.id).single()
       .then(({ data }) => { if (data) setListing(data) })
   }, [activeListing?.id])
+
+  // Live verification status — expires automatically after 6 months, independent of the stale listings.verified column
+  useEffect(() => {
+    if (!listing?.user_id) { setSellerVerified(false); return }
+    supabase.from('profiles').select('verified_until').eq('id', listing.user_id).maybeSingle()
+      .then(({ data }) => setSellerVerified(!!data?.verified_until && new Date(data.verified_until) > new Date()))
+  }, [listing?.user_id])
 
   // Fetch similar listings (same category, exclude current)
   useEffect(() => {
@@ -119,7 +127,7 @@ export default function ListingDetailModal() {
   const {
     title, price, original_price, gradient,
     badge, badge_class, location, tags, description,
-    seller_name, seller_initials, seller_color, verified,
+    seller_name, seller_initials, seller_color,
     category, created_at, images, user_id,
   } = listing
 
@@ -370,8 +378,8 @@ export default function ListingDetailModal() {
                 <div>
                   <div style={{ fontSize: 15, fontWeight: 700, color: '#1a1a2e', display: 'flex', alignItems: 'center', gap: 5 }}>
                     {seller_name}
-                    {verified && (
-                      <span style={{ background: '#1d3a6e', color: '#fff', borderRadius: '50%', width: 16, height: 16, fontSize: 8, fontWeight: 900, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>✓</span>
+                    {sellerVerified && (
+                      <span title="Verified seller" style={{ background: '#1d3a6e', color: '#fff', borderRadius: '50%', width: 16, height: 16, fontSize: 8, fontWeight: 900, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>✓</span>
                     )}
                   </div>
                   <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>Member · BazaarTrade</div>
@@ -468,27 +476,57 @@ export default function ListingDetailModal() {
                   {/* Add to Cart */}
                   {(() => {
                     const inCart = cart.some(c => c.id === listing?.id)
+                    if (!inCart) {
+                      return (
+                        <button
+                          onClick={() => { addToCart(listing); showToast('Added to cart', '🛒') }}
+                          style={{
+                            width: '100%', padding: '13px', borderRadius: 10,
+                            border: '1.5px solid #e5e7eb', background: '#fff', color: '#374151',
+                            fontSize: 14, fontWeight: 700, cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                            transition: 'all 0.15s',
+                          }}
+                        >
+                          <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                          </svg>
+                          Add to Cart
+                        </button>
+                      )
+                    }
                     return (
-                      <button
-                        onClick={() => {
-                          if (inCart) { removeFromCart(listing.id); showToast('Removed from cart', '🛒') }
-                          else { addToCart(listing); showToast('Added to cart', '🛒') }
-                        }}
-                        style={{
-                          width: '100%', padding: '13px', borderRadius: 10,
-                          border: `1.5px solid ${inCart ? '#bfdbfe' : '#e5e7eb'}`,
-                          background: inCart ? '#eff6ff' : '#fff',
-                          color: inCart ? '#1d4ed8' : '#374151',
-                          fontSize: 14, fontWeight: 700, cursor: 'pointer',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                          transition: 'all 0.15s',
-                        }}
-                      >
-                        <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
-                        </svg>
-                        {inCart ? 'In Cart · View Cart' : 'Add to Cart'}
-                      </button>
+                      <div style={{
+                        width: '100%', borderRadius: 10, display: 'flex', overflow: 'hidden',
+                        border: '1.5px solid #bfdbfe', background: '#eff6ff',
+                      }}>
+                        <button
+                          onClick={() => { setActiveListing(null); setCartOpen(true) }}
+                          style={{
+                            flex: 1, padding: '13px', border: 'none', background: 'transparent',
+                            color: '#1d4ed8', fontSize: 14, fontWeight: 700, cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                          }}
+                        >
+                          <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                          </svg>
+                          In Cart · View Cart
+                        </button>
+                        <button
+                          onClick={() => { removeFromCart(listing.id); showToast('Removed from cart', '🛒') }}
+                          title="Remove from cart"
+                          style={{
+                            padding: '13px 16px', border: 'none', borderLeft: '1.5px solid #bfdbfe',
+                            background: 'transparent', color: '#1d4ed8', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}
+                        >
+                          <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                            <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6M9 6V4h6v2" />
+                          </svg>
+                        </button>
+                      </div>
                     )
                   })()}
                 </div>

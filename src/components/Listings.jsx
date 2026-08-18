@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { useApp } from '../context/AppContext'
 import { supabase } from '../lib/supabase'
 import ListingCard from './ListingCard'
+import VerifiedBanner from './VerifiedBanner'
 
 /* ── Inline filter pill dropdown ── */
 function FilterBtn({ label, options, value, onChange }) {
@@ -290,7 +291,13 @@ export default function Listings() {
   const [loading, setLoading] = useState(true)
   const [activeSubFilters, setActiveSubFilters] = useState({})
   const [moreOpen, setMoreOpen] = useState(false)
+  const [view, setView] = useState(() => localStorage.getItem('bt_view') || 'grid')
   const moreBtnRef = useRef(null)
+
+  function changeView(v) {
+    setView(v)
+    localStorage.setItem('bt_view', v)
+  }
 
   useEffect(() => { setActiveSubFilters({}); setMoreOpen(false) }, [activeCategory])
 
@@ -390,6 +397,8 @@ export default function Listings() {
   return (
     <section id="listings" className="section">
       <div className="container">
+        <VerifiedBanner />
+
         <div className="sec-head reveal">
           <h2 className="sec-h">
             <small>Fresh near you</small>Latest Listings
@@ -481,7 +490,7 @@ export default function Listings() {
           </button>
 
           {/* Sort — pushed to right */}
-          <div className="sort-wrap" style={{ marginLeft: 'auto', flexShrink: 0 }}>
+          <div className="sort-wrap" style={{ marginLeft: 'auto' }}>
             <select className="sort-select" value={sort} onChange={e => setSort(e.target.value)}>
               <option value="newest">Newest First</option>
               <option value="price-asc">Price: Low to High</option>
@@ -490,6 +499,29 @@ export default function Listings() {
             <svg className="sort-arrow" width="12" height="12" fill="none" strokeWidth="2.5" viewBox="0 0 24 24">
               <path d="m6 9 6 6 6-6" />
             </svg>
+          </div>
+
+          {/* Grid / List toggle — extreme right */}
+          <div className="view-toggle">
+            <button
+              className={`view-toggle-btn${view === 'grid' ? ' active' : ''}`}
+              onClick={() => changeView('grid')}
+              title="Grid view"
+            >
+              <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+            </button>
+            <button
+              className={`view-toggle-btn${view === 'list' ? ' active' : ''}`}
+              onClick={() => changeView('list')}
+              title="List view"
+            >
+              <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/>
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -506,7 +538,7 @@ export default function Listings() {
         )}
 
         {/* Listings Grid */}
-        <div className="lg reveal reveal-d2">
+        <div className={`lg${view === 'list' ? ' lg-list' : ''} reveal reveal-d2`}>
           {loading ? (
             <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '80px 0' }}>
               <div style={{ fontSize: 32, marginBottom: 12 }}>⏳</div>

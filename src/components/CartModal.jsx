@@ -15,60 +15,81 @@ export default function CartModal() {
   if (!cartOpen) return null
 
   function openListing(item) {
-    setActiveListing(item)
     setCartOpen(false)
+    setActiveListing(item)
   }
 
   return (
-    <div
-      className="overlay open"
-      onClick={e => e.target === e.currentTarget && setCartOpen(false)}
-    >
-      <div className="modal modal-wide" style={{ maxWidth: 560 }}>
-        {/* Header */}
+    <div style={{
+      position: 'fixed', top: 62, left: 0, right: 0, bottom: 0,
+      zIndex: 1300, background: '#f5f6f7', overflowY: 'auto',
+      animation: 'cartPageIn 0.18s ease',
+    }}>
+      {/* ── Secondary bar: back button ── */}
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 20,
+        background: '#fff', borderBottom: '1px solid #e5e7eb',
+      }}>
         <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '20px 24px 16px', borderBottom: '1px solid #f3f4f6',
+          maxWidth: 720, margin: '0 auto',
+          padding: '0 24px', height: 44,
+          display: 'flex', alignItems: 'center', gap: 8,
         }}>
-          <div>
-            <h2 style={{ fontSize: 18, fontWeight: 800, color: '#1a1a2e', margin: 0 }}>My Cart</h2>
-            <p style={{ fontSize: 12.5, color: '#9ca3af', marginTop: 2 }}>
-              {cart.length} item{cart.length !== 1 ? 's' : ''} saved
-            </p>
-          </div>
           <button
             onClick={() => setCartOpen(false)}
-            style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px solid #e5e7eb', background: 'none', cursor: 'pointer', fontSize: 16, color: '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          >✕</button>
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              fontSize: 13, fontWeight: 600, color: '#1d3a6e',
+              background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0,
+            }}
+          >
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
+            Back
+          </button>
+          <span style={{ color: '#d1d5db' }}>|</span>
+          <span style={{ fontSize: 12, color: '#9ca3af' }}>My Cart</span>
         </div>
+      </div>
 
-        {/* Content */}
-        <div style={{ maxHeight: '70vh', overflowY: 'auto', padding: '8px 0' }}>
-          {cart.length === 0 ? (
-            <div style={{ padding: '48px 24px', textAlign: 'center' }}>
-              <div style={{ fontSize: 40, marginBottom: 12 }}>🛒</div>
-              <p style={{ fontWeight: 700, color: '#374151', marginBottom: 6 }}>Your cart is empty</p>
-              <p style={{ fontSize: 13, color: '#9ca3af' }}>Add listings you're interested in and come back to them later</p>
-            </div>
-          ) : (
-            cart.map(item => (
+      {/* ── Main content ── */}
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '24px 24px 60px' }}>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1a1a2e', margin: '0 0 4px' }}>My Cart</h1>
+        <p style={{ fontSize: 13, color: '#9ca3af', margin: '0 0 20px' }}>
+          {cart.length} item{cart.length !== 1 ? 's' : ''} saved
+        </p>
+
+        {cart.length === 0 ? (
+          <div style={{
+            background: '#fff', borderRadius: 14, border: '1.5px solid #e5e7eb',
+            padding: '60px 24px', textAlign: 'center',
+          }}>
+            <div style={{ fontSize: 44, marginBottom: 14 }}>🛒</div>
+            <p style={{ fontWeight: 700, color: '#374151', marginBottom: 6, fontSize: 16 }}>Your cart is empty</p>
+            <p style={{ fontSize: 13.5, color: '#9ca3af' }}>Add listings you're interested in and come back to them later</p>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {cart.map(item => (
               <div
                 key={item.id}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 14,
-                  padding: '12px 20px',
-                  borderBottom: '1px solid #f9fafb',
+                  padding: '14px 16px', background: '#fff',
+                  borderRadius: 12, border: '1.5px solid #e5e7eb',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
                 }}
               >
                 {/* Thumbnail */}
                 <div
                   onClick={() => openListing(item)}
                   style={{
-                    width: 64, height: 64, borderRadius: 10, flexShrink: 0,
+                    width: 72, height: 72, borderRadius: 10, flexShrink: 0,
                     background: GRAD_BG[item.gradient] || GRAD_BG.li1,
                     overflow: 'hidden', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 24,
+                    fontSize: 26,
                   }}
                 >
                   {item.images?.length > 0
@@ -80,14 +101,14 @@ export default function CartModal() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div
                     onClick={() => openListing(item)}
-                    style={{ fontSize: 14, fontWeight: 700, color: '#1a1a2e', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: 2 }}
+                    style={{ fontSize: 14.5, fontWeight: 700, color: '#1a1a2e', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: 3 }}
                   >
                     {item.title}
                   </div>
-                  <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 4 }}>
+                  <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 5 }}>
                     {item.location} · {item.category}
                   </div>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: '#e8473f' }}>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: '#e8473f' }}>
                     {formatPrice(item.price)}
                   </div>
                 </div>
@@ -97,7 +118,7 @@ export default function CartModal() {
                   <button
                     onClick={() => openListing(item)}
                     style={{
-                      fontSize: 11.5, fontWeight: 600, padding: '5px 12px',
+                      fontSize: 12, fontWeight: 600, padding: '6px 14px',
                       background: '#1a1a2e', color: '#fff', borderRadius: 6, border: 'none', cursor: 'pointer',
                     }}
                   >
@@ -106,7 +127,7 @@ export default function CartModal() {
                   <button
                     onClick={() => removeFromCart(item.id)}
                     style={{
-                      fontSize: 11.5, fontWeight: 600, padding: '5px 12px',
+                      fontSize: 12, fontWeight: 600, padding: '6px 14px',
                       background: 'transparent', color: '#e8473f', borderRadius: 6, border: '1px solid #fca5a5', cursor: 'pointer',
                     }}
                   >
@@ -114,10 +135,12 @@ export default function CartModal() {
                   </button>
                 </div>
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
+
+      <style>{`@keyframes cartPageIn { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: none } }`}</style>
     </div>
   )
 }

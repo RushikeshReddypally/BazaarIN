@@ -16,6 +16,7 @@ export default function AdminModal() {
   const allTabs = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'listings', label: 'Listings', icon: '📋' },
+    { id: 'verify', label: 'Verify', icon: '✅' },
     { id: 'blog', label: 'Blog', icon: '✍️' },
     { id: 'seo', label: 'SEO', icon: '🔍' },
     { id: 'sql', label: 'SQL Setup', icon: '⚙️' },
@@ -66,6 +67,7 @@ export default function AdminModal() {
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {tab === 'dashboard' && <DashboardTab />}
           {tab === 'listings' && <ListingsTab />}
+          {tab === 'verify' && <VerifyTab />}
           {tab === 'blog' && <BlogTab />}
           {tab === 'seo' && <SEOTab />}
           {tab === 'sql' && <SQLTab />}
@@ -285,6 +287,126 @@ function ListingsTab() {
   )
 }
 
+/* ── Seller Verification ───────────────────────────────── */
+function VerifyTab() {
+  const { showToast } = useApp()
+  const [profiles, setProfiles] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [busy, setBusy] = useState(null)
+
+  useEffect(() => { load() }, [])
+
+  async function load() {
+    setLoading(true)
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .order('verification_requested_at', { ascending: false })
+    if (error) showToast('Could not load profiles — run the SQL Setup step first', '✕')
+    setProfiles(data || [])
+    setLoading(false)
+  }
+
+  const now = Date.now()
+  const pending = profiles.filter(p => p.verification_requested_at && !(p.verified_until && new Date(p.verified_until).getTime() > now))
+  const verified = profiles.filter(p => p.verified_until && new Date(p.verified_until).getTime() > now)
+
+  async function approve(p) {
+    setBusy(p.id)
+    const verified_until = new Date()
+    verified_until.setMonth(verified_until.getMonth() + 6)
+    const { error } = await supabase.from('profiles')
+      .update({ verified_until: verified_until.toISOString(), verification_requested_at: null })
+      .eq('id', p.id)
+    if (error) showToast(error.message, '✕')
+    else { showToast(`${p.full_name || p.email} verified for 6 months`, '✓'); load() }
+    setBusy(null)
+  }
+
+  async function reject(p) {
+    setBusy(p.id)
+    const { error } = await supabase.from('profiles').update({ verification_requested_at: null }).eq('id', p.id)
+    if (error) showToast(error.message, '✕')
+    else { showToast('Request dismissed'); load() }
+    setBusy(null)
+  }
+
+  async function revoke(p) {
+    if (!window.confirm(`Revoke ${p.full_name || p.email}'s verified badge?`)) return
+    setBusy(p.id)
+    const { error } = await supabase.from('profiles').update({ verified_until: null }).eq('id', p.id)
+    if (error) showToast(error.message, '✕')
+    else { showToast('Verification revoked'); load() }
+    setBusy(null)
+  }
+
+  if (loading) return <Loader />
+
+  const Row = ({ p, children }) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 16px', borderBottom: '1px solid #f3f4f6' }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13.5, fontWeight: 700, color: '#1a1a2e' }}>{p.full_name || 'Unnamed user'}</div>
+        <div style={{ fontSize: 12, color: '#9ca3af' }}>{p.email}</div>
+      </div>
+      {children}
+    </div>
+  )
+
+  return (
+    <div style={{ padding: 24 }}>
+      <div style={{ marginBottom: 28 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 800, color: '#1a1a2e', marginBottom: 4 }}>Pending Requests</h3>
+        <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 12 }}>Users who tapped "Get Started" on the verification banner</p>
+        <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+          {pending.length === 0 ? (
+            <div style={{ padding: 32, textAlign: 'center', color: '#9ca3af', fontSize: 13 }}>No pending requests</div>
+          ) : pending.map(p => (
+            <Row key={p.id} p={p}>
+              <div style={{ fontSize: 11, color: '#9ca3af', flexShrink: 0 }}>
+                Requested {new Date(p.verification_requested_at).toLocaleDateString('en-IN')}
+              </div>
+              <button
+                onClick={() => approve(p)} disabled={busy === p.id}
+                style={{ padding: '6px 14px', borderRadius: 7, border: 'none', background: '#059669', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}
+              >
+                {busy === p.id ? '…' : 'Approve · 6mo'}
+              </button>
+              <button
+                onClick={() => reject(p)} disabled={busy === p.id}
+                style={{ padding: '6px 14px', borderRadius: 7, border: '1px solid #e5e7eb', background: '#fff', color: '#6b7280', fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
+              >
+                Dismiss
+              </button>
+            </Row>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 style={{ fontSize: 14, fontWeight: 800, color: '#1a1a2e', marginBottom: 4 }}>Verified Users</h3>
+        <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 12 }}>Badge auto-expires after 6 months unless renewed</p>
+        <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+          {verified.length === 0 ? (
+            <div style={{ padding: 32, textAlign: 'center', color: '#9ca3af', fontSize: 13 }}>No verified users yet</div>
+          ) : verified.map(p => (
+            <Row key={p.id} p={p}>
+              <div style={{ fontSize: 11, color: '#059669', flexShrink: 0 }}>
+                Until {new Date(p.verified_until).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </div>
+              <button
+                onClick={() => revoke(p)} disabled={busy === p.id}
+                style={{ padding: '6px 14px', borderRadius: 7, border: '1px solid #fca5a5', background: '#fff5f5', color: '#dc2626', fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
+              >
+                Revoke
+              </button>
+            </Row>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /* ── SEO Manager ───────────────────────────────────────── */
 function SEOTab() {
   const [seoData, setSeoData] = useState(() => {
@@ -461,6 +583,50 @@ WITH CHECK (
     extrasColumn: `-- Add 'extras' column to store category-specific form data
 ALTER TABLE public.listings
 ADD COLUMN IF NOT EXISTS extras jsonb DEFAULT '{}';`,
+
+    verifiedProfiles: `-- Seller verification: extends your EXISTING profiles table (keyed by "id")
+-- Run once in Supabase SQL Editor. Change the email below if your admin address differs.
+
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS verified_until timestamptz,
+  ADD COLUMN IF NOT EXISTS verification_requested_at timestamptz;
+
+-- Safety net in case a public-read / own-row-write policy isn't already in place
+DO $$ BEGIN
+  CREATE POLICY "profiles_select_all" ON public.profiles FOR SELECT USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "profiles_insert_own" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "profiles_update_own" ON public.profiles FOR UPDATE USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- Row-level RLS lets a user touch their own row (to request verification),
+-- but this trigger blocks anyone except the admin from setting verified_until —
+-- otherwise a user could self-verify via the browser console.
+CREATE OR REPLACE FUNCTION public.protect_verified_until()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  IF (TG_OP = 'UPDATE' AND NEW.verified_until IS DISTINCT FROM OLD.verified_until)
+     OR (TG_OP = 'INSERT' AND NEW.verified_until IS NOT NULL) THEN
+    IF coalesce(auth.jwt() ->> 'email', '') <> 'rushikesh.reddypally@gmail.com' THEN
+      RAISE EXCEPTION 'Only an admin can change verified_until';
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_protect_verified_until ON public.profiles;
+CREATE TRIGGER trg_protect_verified_until
+BEFORE INSERT OR UPDATE ON public.profiles
+FOR EACH ROW EXECUTE FUNCTION public.protect_verified_until();`,
   }
 
   function copy(key, text) {
@@ -475,7 +641,7 @@ ADD COLUMN IF NOT EXISTS extras jsonb DEFAULT '{}';`,
         <strong>Important:</strong> Run these SQL statements in your <a href="https://supabase.com/dashboard" target="_blank" rel="noreferrer" style={{ color: '#1d3a6e' }}>Supabase SQL Editor</a> to enable admin operations. Without them, admin delete will be blocked by RLS.
       </div>
 
-      {Object.entries({ adminDelete: 'Admin Delete Policy', adminUpdate: 'Admin Update Policy', extrasColumn: 'Add Extras Column' }).map(([key, label]) => (
+      {Object.entries({ adminDelete: 'Admin Delete Policy', adminUpdate: 'Admin Update Policy', extrasColumn: 'Add Extras Column', verifiedProfiles: 'Seller Verification (profiles table)' }).map(([key, label]) => (
         <div key={key} style={{ marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1a1a2e', margin: 0 }}>{label}</h4>

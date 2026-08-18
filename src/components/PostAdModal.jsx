@@ -4,6 +4,19 @@ import { categories } from '../data/categories.jsx'
 import { supabase } from '../lib/supabase'
 import { states } from '../data/locations'
 
+// iPhones default to HEIC/HEIF, which no browser except Safari can render —
+// convert to JPEG on selection so previews and stored photos both display everywhere.
+function isHeic(file) {
+  return file.type === 'image/heic' || file.type === 'image/heif' || /\.hei[cf]$/i.test(file.name)
+}
+async function toDisplayableFile(file) {
+  if (!isHeic(file)) return file
+  const heic2any = (await import('heic2any')).default
+  const converted = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.85 })
+  const jpegBlob = Array.isArray(converted) ? converted[0] : converted
+  return new File([jpegBlob], file.name.replace(/\.hei[cf]$/i, '.jpg'), { type: 'image/jpeg' })
+}
+
 function getSellerName(user) {
   return user?.user_metadata?.full_name
     || user?.user_metadata?.name
@@ -268,9 +281,16 @@ export default function PostAdModal() {
     setExtras({})
   }
 
-  function handleFiles(e) {
-    const newFiles = Array.from(e.target.files)
+  async function handleFiles(e) {
+    const rawFiles = Array.from(e.target.files)
     e.target.value = ''
+
+    const converted = await Promise.all(rawFiles.map(async file => {
+      try { return await toDisplayableFile(file) }
+      catch { showToast(`Couldn't process ${file.name} — try a JPG/PNG instead`, '✕'); return null }
+    }))
+    const newFiles = converted.filter(Boolean)
+
     setImages(prev => [...prev, ...newFiles].slice(0, 10))
     setPreviews(prev => [...prev, ...newFiles.map(f => URL.createObjectURL(f))].slice(0, 10))
   }
@@ -318,7 +338,6 @@ export default function PostAdModal() {
       badge: null, badge_class: null,
       tags,
       extras,
-      verified: false,
       seller_name: getSellerName(user),
       seller_initials: getInitials(user),
       seller_color: '#4a4e69',
