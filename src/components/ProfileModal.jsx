@@ -1,157 +1,90 @@
-import { useState, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
-import { supabase } from '../lib/supabase'
+import BasicInfoSection from './profile/BasicInfoSection'
+import AddressesSection from './profile/AddressesSection'
+import SecuritySection from './profile/SecuritySection'
 
-const COLORS = ['#4a4e69', '#9a8c98', '#c9ada7', '#22223b', '#e76f51', '#2a9d8f']
+const NAV_GROUPS = [
+  { label: 'Profile', items: [{ id: 'basic', label: 'Basic Info' }, { id: 'addresses', label: 'My Addresses' }] },
+  { label: 'Account', items: [{ id: 'security', label: 'Security' }] },
+]
 
 export default function ProfileModal() {
-  const { profileOpen, setProfileOpen, user, showToast } = useApp()
-  const [form, setForm] = useState({ full_name: '', city: '', phone: '' })
-  const [saving, setSaving] = useState(false)
-  const [selectedColor, setSelectedColor] = useState('#4a4e69')
+  const { profileOpen, setProfileOpen, profileTab: tab, setProfileTab: setTab, user, showToast, deleteAccount } = useApp()
 
-  const isGoogleUser = !!user?.email && !user?.phone
-  const displayPhone = user?.phone || form.phone
-
-  useEffect(() => {
-    if (!user || !profileOpen) return
-    supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single()
-      .then(({ data }) => {
-        const googleName = user?.user_metadata?.full_name || user?.user_metadata?.name || ''
-        if (data) {
-          setForm({
-            full_name: data.full_name || googleName,
-            city: data.city ?? '',
-            phone: data.phone ?? user?.phone ?? '',
-          })
-          setSelectedColor(data.avatar_color ?? '#4a4e69')
-        } else {
-          setForm({
-            full_name: googleName,
-            city: '',
-            phone: user?.phone ?? '',
-          })
-        }
-      })
-  }, [user, profileOpen])
-
-  function set(key) {
-    return e => setForm(f => ({ ...f, [key]: e.target.value }))
-  }
-
-  async function handleSave(e) {
-    e.preventDefault()
-    setSaving(true)
-
-    const payload = {
-      full_name: form.full_name,
-      city: form.city,
-      phone: displayPhone,
-      email: user.email ?? null,
-      avatar_color: selectedColor,
-    }
-
-    const { data: existing } = await supabase
-      .from('profiles').select('id').eq('id', user.id).single()
-
-    const { error } = existing
-      ? await supabase.from('profiles').update(payload).eq('id', user.id)
-      : await supabase.from('profiles').insert({ id: user.id, ...payload })
-
-    setSaving(false)
-    if (error) {
-      showToast(error.message || 'Failed to save profile', '✕')
-      console.error('Profile save error:', error)
-    } else {
-      setProfileOpen(false)
-      showToast('Profile saved! ✓', '✓')
-    }
-  }
+  if (!profileOpen) return null
 
   function close() { setProfileOpen(false) }
 
-  const initials = form.full_name
-    ? form.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-    : (user?.user_metadata?.full_name?.[0] || user?.email?.[0] || user?.phone?.[2] || '?').toUpperCase()
-
   return (
-    <div className={`overlay${profileOpen ? ' open' : ''}`} style={{ zIndex: 1200 }} onClick={e => e.target === e.currentTarget && close()}>
-      <div className="modal">
-        <button className="modal-x" onClick={close}>✕</button>
-        <div className="modal-logo">My Profile</div>
-        <p className="modal-sub">Update your details so buyers can reach you.</p>
-
-        {/* Avatar */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-          <div style={{
-            width: 64, height: 64, borderRadius: '50%',
-            background: selectedColor,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 22, color: '#fff', fontWeight: 700,
-          }}>
-            {user?.user_metadata?.avatar_url
-              ? <img src={user.user_metadata.avatar_url} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-              : initials}
-          </div>
-        </div>
-
-        {/* Color picker */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 10, marginBottom: 24 }}>
-          {COLORS.map(c => (
-            <button key={c} onClick={() => setSelectedColor(c)} style={{
-              width: 24, height: 24, borderRadius: '50%', background: c, border: 'none',
-              cursor: 'pointer', outline: selectedColor === c ? '2px solid #1a1a2e' : 'none',
-              outlineOffset: 2,
-            }} />
-          ))}
-        </div>
-
-        <form onSubmit={handleSave}>
-          {/* Signed in with Google — show email */}
-          {isGoogleUser && (
-            <div className="fr">
-              <label>Google Account</label>
-              <input value={user.email} disabled style={{ opacity: 0.5 }} />
-            </div>
-          )}
-
-          {/* Phone — editable for Google users, locked for phone users */}
-          <div className="fr">
-            <label>
-              Mobile Number
-              {isGoogleUser && <span style={{ color: '#9ca3af', fontWeight: 400, fontSize: 11, marginLeft: 6 }}>optional — for easier contact</span>}
-            </label>
-            {isGoogleUser ? (
-              <input
-                type="tel"
-                value={form.phone}
-                onChange={set('phone')}
-                placeholder="+91 XXXXX XXXXX"
-              />
-            ) : (
-              <input value={user?.phone ?? ''} disabled style={{ opacity: 0.5 }} />
-            )}
-          </div>
-
-          <div className="fr">
-            <label>Full Name</label>
-            <input value={form.full_name} onChange={set('full_name')} placeholder="Your full name" />
-          </div>
-
-          <div className="fr">
-            <label>City</label>
-            <input value={form.city} onChange={set('city')} placeholder="e.g. Mumbai" />
-          </div>
-
-          <button type="submit" className="fr-submit" disabled={saving}>
-            {saving ? 'Saving…' : 'Save Profile'}
+    <div style={{
+      position: 'fixed', top: 62, left: 0, right: 0, bottom: 0,
+      zIndex: 1300, background: '#f5f6f7', overflowY: 'auto',
+      animation: 'profilePageIn 0.18s ease',
+    }}>
+      {/* ── Secondary bar: back button ── */}
+      <div style={{ position: 'sticky', top: 0, zIndex: 20, background: '#fff', borderBottom: '1px solid #e5e7eb' }}>
+        <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 24px', height: 44, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            onClick={close}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#1d3a6e', background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
+          >
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
+            Back
           </button>
-        </form>
+          <span style={{ color: '#d1d5db' }}>|</span>
+          <span style={{ fontSize: 12, color: '#9ca3af' }}>Profile Settings</span>
+        </div>
       </div>
+
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '24px 24px 60px' }}>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1a1a2e', margin: '0 0 20px' }}>Profile Settings</h1>
+
+        <div className="profile-cols" style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+          {/* Sidebar */}
+          <div style={{ width: 220, flexShrink: 0, background: '#fff', borderRadius: 14, border: '1.5px solid #e5e7eb', padding: 10 }}>
+            {NAV_GROUPS.map(group => (
+              <div key={group.label} style={{ marginBottom: 6 }}>
+                <div style={{ fontSize: 10.5, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '8px 10px 4px' }}>
+                  {group.label}
+                </div>
+                {group.items.map(item => (
+                  <button
+                    key={item.id}
+                    onClick={() => setTab(item.id)}
+                    style={{
+                      width: '100%', textAlign: 'left', padding: '9px 10px', borderRadius: 8,
+                      border: 'none', cursor: 'pointer', fontSize: 13.5,
+                      fontWeight: tab === item.id ? 700 : 500,
+                      background: tab === item.id ? '#eef2ff' : 'transparent',
+                      color: tab === item.id ? '#1d3a6e' : '#374151',
+                      borderLeft: tab === item.id ? '3px solid #1d3a6e' : '3px solid transparent',
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          {/* Content */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {tab === 'basic' && <BasicInfoSection user={user} showToast={showToast} />}
+            {tab === 'addresses' && <AddressesSection user={user} showToast={showToast} />}
+            {tab === 'security' && <SecuritySection user={user} deleteAccount={deleteAccount} showToast={showToast} />}
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes profilePageIn { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: none } }
+        @media (max-width: 640px) {
+          .profile-cols { flex-direction: column; }
+          .profile-cols > div:first-child { width: 100% !important; display: flex; overflow-x: auto; }
+        }
+      `}</style>
     </div>
   )
 }

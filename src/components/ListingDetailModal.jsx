@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { formatPriceFull, formatPrice } from '../utils/format'
 import { useFavourite } from '../hooks/useFavourite'
+import { useVerification } from '../hooks/useVerification'
 import { supabase } from '../lib/supabase'
 import { categoryIcons } from '../data/categories.jsx'
 import { useSEO } from '../hooks/useSEO'
@@ -56,7 +57,7 @@ export default function ListingDetailModal() {
   const [listing, setListing] = useState(null)
   const [deleting, setDeleting] = useState(false)
   const [similar, setSimilar] = useState([])
-  const [sellerVerified, setSellerVerified] = useState(false)
+  const { isVerified: sellerVerified } = useVerification(listing?.user_id ? { id: listing.user_id } : null)
   const open = !!activeListing
 
   // Dynamic SEO when a listing is open
@@ -82,13 +83,6 @@ export default function ListingDetailModal() {
     supabase.from('listings').select('*').eq('id', activeListing.id).single()
       .then(({ data }) => { if (data) setListing(data) })
   }, [activeListing?.id])
-
-  // Live verification status — expires automatically after 6 months, independent of the stale listings.verified column
-  useEffect(() => {
-    if (!listing?.user_id) { setSellerVerified(false); return }
-    supabase.from('profiles').select('verified_until').eq('id', listing.user_id).maybeSingle()
-      .then(({ data }) => setSellerVerified(!!data?.verified_until && new Date(data.verified_until) > new Date()))
-  }, [listing?.user_id])
 
   // Fetch similar listings (same category, exclude current)
   useEffect(() => {

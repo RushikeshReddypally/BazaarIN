@@ -356,30 +356,18 @@ function VerifyTab() {
     <div style={{ padding: 24 }}>
       <div style={{ marginBottom: 28 }}>
         <h3 style={{ fontSize: 14, fontWeight: 800, color: '#1a1a2e', marginBottom: 4 }}>Pending Requests</h3>
-        <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 12 }}>Users who tapped "Get Started" on the verification banner</p>
-        <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
-          {pending.length === 0 ? (
-            <div style={{ padding: 32, textAlign: 'center', color: '#9ca3af', fontSize: 13 }}>No pending requests</div>
-          ) : pending.map(p => (
-            <Row key={p.id} p={p}>
-              <div style={{ fontSize: 11, color: '#9ca3af', flexShrink: 0 }}>
-                Requested {new Date(p.verification_requested_at).toLocaleDateString('en-IN')}
-              </div>
-              <button
-                onClick={() => approve(p)} disabled={busy === p.id}
-                style={{ padding: '6px 14px', borderRadius: 7, border: 'none', background: '#059669', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}
-              >
-                {busy === p.id ? '…' : 'Approve · 6mo'}
-              </button>
-              <button
-                onClick={() => reject(p)} disabled={busy === p.id}
-                style={{ padding: '6px 14px', borderRadius: 7, border: '1px solid #e5e7eb', background: '#fff', color: '#6b7280', fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
-              >
-                Dismiss
-              </button>
-            </Row>
-          ))}
-        </div>
+        <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 12 }}>Review the Aadhaar photo and selfie before approving</p>
+        {pending.length === 0 ? (
+          <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', padding: 32, textAlign: 'center', color: '#9ca3af', fontSize: 13 }}>
+            No pending requests
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {pending.map(p => (
+              <PendingCard key={p.id} p={p} busy={busy === p.id} onApprove={() => approve(p)} onReject={() => reject(p)} />
+            ))}
+          </div>
+        )}
       </div>
 
       <div>
@@ -402,6 +390,64 @@ function VerifyTab() {
             </Row>
           ))}
         </div>
+      </div>
+    </div>
+  )
+}
+
+function DocThumb({ path, label }) {
+  const [url, setUrl] = useState(null)
+
+  useEffect(() => {
+    if (!path) return
+    supabase.storage.from('verification-docs').createSignedUrl(path, 600)
+      .then(({ data }) => setUrl(data?.signedUrl ?? null))
+  }, [path])
+
+  if (!path) return null
+
+  return (
+    <a
+      href={url || undefined} target="_blank" rel="noreferrer"
+      style={{ display: 'block', width: 110, flexShrink: 0, textDecoration: 'none' }}
+    >
+      <div style={{ width: 110, height: 78, borderRadius: 8, background: '#f3f4f6', overflow: 'hidden', border: '1px solid #e5e7eb' }}>
+        {url && <img src={url} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+      </div>
+      <div style={{ fontSize: 10.5, color: '#9ca3af', marginTop: 4, textAlign: 'center' }}>{label}</div>
+    </a>
+  )
+}
+
+function PendingCard({ p, busy, onApprove, onReject }) {
+  return (
+    <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', padding: 16, display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 10 }}>
+        <DocThumb path={p.aadhaar_photo_path} label="Aadhaar" />
+        <DocThumb path={p.selfie_photo_path} label="Selfie" />
+      </div>
+
+      <div style={{ flex: 1, minWidth: 140 }}>
+        <div style={{ fontSize: 13.5, fontWeight: 700, color: '#1a1a2e' }}>{p.full_name || 'Unnamed user'}</div>
+        <div style={{ fontSize: 12, color: '#9ca3af' }}>{p.email}</div>
+        <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 4 }}>
+          Requested {new Date(p.verification_requested_at).toLocaleDateString('en-IN')}
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+        <button
+          onClick={onApprove} disabled={busy}
+          style={{ padding: '7px 16px', borderRadius: 7, border: 'none', background: '#059669', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+        >
+          {busy ? '…' : 'Approve · 6mo'}
+        </button>
+        <button
+          onClick={onReject} disabled={busy}
+          style={{ padding: '7px 16px', borderRadius: 7, border: '1px solid #e5e7eb', background: '#fff', color: '#6b7280', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+        >
+          Dismiss
+        </button>
       </div>
     </div>
   )
@@ -627,6 +673,73 @@ DROP TRIGGER IF EXISTS trg_protect_verified_until ON public.profiles;
 CREATE TRIGGER trg_protect_verified_until
 BEFORE INSERT OR UPDATE ON public.profiles
 FOR EACH ROW EXECUTE FUNCTION public.protect_verified_until();`,
+
+    profileExtraFields: `-- Extra profile fields: date of birth, nationality, gender
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS date_of_birth date,
+  ADD COLUMN IF NOT EXISTS nationality text,
+  ADD COLUMN IF NOT EXISTS gender text;`,
+
+    addressesTable: `-- Saved addresses (private to each user)
+CREATE TABLE IF NOT EXISTS public.addresses (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  label text NOT NULL,
+  neighbourhood text NOT NULL,
+  street text,
+  apartment text,
+  lat double precision,
+  lng double precision,
+  is_default boolean DEFAULT false,
+  created_at timestamptz DEFAULT now()
+);
+
+ALTER TABLE public.addresses ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  CREATE POLICY "addresses_select_own" ON public.addresses FOR SELECT USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "addresses_insert_own" ON public.addresses FOR INSERT WITH CHECK (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "addresses_update_own" ON public.addresses FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "addresses_delete_own" ON public.addresses FOR DELETE USING (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;`,
+
+    verificationDocs: `-- Aadhaar + selfie capture for identity verification
+-- Change the admin email below if it differs from your login.
+
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS aadhaar_photo_path text,
+  ADD COLUMN IF NOT EXISTS selfie_photo_path text;
+
+-- Private bucket — never made public, files only reachable via signed URLs
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('verification-docs', 'verification-docs', false)
+ON CONFLICT (id) DO NOTHING;
+
+-- Each user can upload/read only files under their own {user_id}/ folder
+DO $$ BEGIN
+  CREATE POLICY "verification_docs_insert_own" ON storage.objects
+  FOR INSERT WITH CHECK (bucket_id = 'verification-docs' AND (storage.foldername(name))[1] = auth.uid()::text);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "verification_docs_select_own" ON storage.objects
+  FOR SELECT USING (bucket_id = 'verification-docs' AND (storage.foldername(name))[1] = auth.uid()::text);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- Admin can view everyone's uploaded documents to review requests
+DO $$ BEGIN
+  CREATE POLICY "verification_docs_select_admin" ON storage.objects
+  FOR SELECT USING (bucket_id = 'verification-docs' AND auth.jwt() ->> 'email' = 'rushikesh.reddypally@gmail.com');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;`,
   }
 
   function copy(key, text) {
@@ -641,7 +754,7 @@ FOR EACH ROW EXECUTE FUNCTION public.protect_verified_until();`,
         <strong>Important:</strong> Run these SQL statements in your <a href="https://supabase.com/dashboard" target="_blank" rel="noreferrer" style={{ color: '#1d3a6e' }}>Supabase SQL Editor</a> to enable admin operations. Without them, admin delete will be blocked by RLS.
       </div>
 
-      {Object.entries({ adminDelete: 'Admin Delete Policy', adminUpdate: 'Admin Update Policy', extrasColumn: 'Add Extras Column', verifiedProfiles: 'Seller Verification (profiles table)' }).map(([key, label]) => (
+      {Object.entries({ adminDelete: 'Admin Delete Policy', adminUpdate: 'Admin Update Policy', extrasColumn: 'Add Extras Column', verifiedProfiles: 'Seller Verification (profiles table)', profileExtraFields: 'Profile Extra Fields (DOB, Nationality, Gender)', addressesTable: 'Saved Addresses Table', verificationDocs: 'Verification Docs (Aadhaar + Selfie)' }).map(([key, label]) => (
         <div key={key} style={{ marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1a1a2e', margin: 0 }}>{label}</h4>

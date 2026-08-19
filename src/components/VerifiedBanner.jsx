@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useApp } from '../context/AppContext'
-import { supabase } from '../lib/supabase'
+import { useVerification } from '../hooks/useVerification'
+import VerificationRequestModal from './VerificationRequestModal'
 
 function getName(user) {
   return user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'Anonymous'
@@ -8,19 +9,10 @@ function getName(user) {
 
 export default function VerifiedBanner() {
   const { user, setLoginOpen, showToast } = useApp()
-  const [profile, setProfile] = useState(null)
-  const [submitting, setSubmitting] = useState(false)
+  const { profile, isVerified, isPending, requestVerification } = useVerification(user)
+  const [modalOpen, setModalOpen] = useState(false)
 
-  useEffect(() => {
-    if (!user?.id) { setProfile(null); return }
-    supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
-      .then(({ data }) => setProfile(data))
-  }, [user?.id])
-
-  const isVerified = profile?.verified_until && new Date(profile.verified_until) > new Date()
-  const isPending = profile?.verification_requested_at && !isVerified
-
-  async function handleClick() {
+  function handleClick() {
     if (!user) { setLoginOpen(true); return }
     if (isVerified) {
       showToast(`You're verified until ${new Date(profile.verified_until).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`, '✓')
@@ -30,20 +22,16 @@ export default function VerifiedBanner() {
       showToast('Your verification request is pending review', 'ℹ️')
       return
     }
-    setSubmitting(true)
-    const { error } = await supabase.from('profiles').upsert({
-      id: user.id,
-      email: user.email,
-      full_name: getName(user),
-      verification_requested_at: new Date().toISOString(),
-    })
-    setSubmitting(false)
-    if (error) { showToast("Couldn't send request — try again later", '✕'); return }
-    setProfile(p => ({ ...(p || {}), verification_requested_at: new Date().toISOString() }))
+    setModalOpen(true)
+  }
+
+  async function handleSubmitDocs(docs) {
+    const { error } = await requestVerification({ full_name: profile?.full_name || getName(user), ...docs })
+    if (error) { showToast("Couldn't send request — try again later", '✕'); throw error }
     showToast('Request sent! Our team will review it shortly.', '✓')
   }
 
-  const buttonLabel = isVerified ? 'Verified ✓' : isPending ? 'Pending review' : submitting ? 'Sending…' : 'Get Started'
+  const buttonLabel = isVerified ? 'Verified ✓' : isPending ? 'Pending review' : 'Get Started'
 
   return (
     <div style={{
@@ -76,19 +64,28 @@ export default function VerifiedBanner() {
 
       <button
         onClick={handleClick}
-        disabled={submitting || isPending}
+        disabled={isPending}
         style={{
           flexShrink: 0, padding: '10px 22px', borderRadius: 10,
           border: 'none', background: isVerified ? '#059669' : '#fff',
           color: isVerified ? '#fff' : '#1a1a2e',
           fontSize: 13.5, fontWeight: 700,
-          cursor: (submitting || isPending) ? 'default' : 'pointer',
+          cursor: isPending ? 'default' : 'pointer',
           boxShadow: isVerified ? 'none' : '0 1px 4px rgba(0,0,0,0.08)',
           opacity: isPending ? 0.7 : 1,
         }}
       >
         {buttonLabel}
       </button>
+
+      {modalOpen && (
+        <VerificationRequestModal
+          user={user}
+          onClose={() => setModalOpen(false)}
+          onSubmit={handleSubmitDocs}
+          showToast={showToast}
+        />
+      )}
     </div>
   )
 }

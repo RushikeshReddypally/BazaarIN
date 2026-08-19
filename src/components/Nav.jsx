@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useApp } from '../context/AppContext'
 import { useNavScroll } from '../hooks/useNavScroll'
+import { useVerification } from '../hooks/useVerification'
 import LocationPicker from './LocationPicker'
 import { supabase } from '../lib/supabase'
 import { formatPrice } from '../utils/format'
@@ -306,7 +307,7 @@ function HamburgerMenu() {
 
               <div style={{ height: 1, background: '#f3f4f6', margin: '6px 0' }} />
 
-              <HamItem icon={<ProfileIcon />} label="Profile" onClick={() => act(() => setProfileOpen(true))} />
+              <HamItem icon={<ProfileIcon />} label="Profile" onClick={() => act(() => { setActiveListing(null); setCartOpen(false); setProfileOpen(true) })} />
               {(isAdminUser || isSEOUser) && (
                 <HamItem icon={<ShieldIcon />} label={isAdminUser ? 'Admin Panel' : 'SEO Panel'} onClick={() => act(() => setAdminOpen(true))} />
               )}
@@ -461,13 +462,113 @@ function HamItem({ icon, label, badge, danger, accent, onClick }) {
   )
 }
 
+/* ── Account dropdown (web) ─────────────────────────── */
+function UserMenu() {
+  const {
+    user, logout, unreadCount,
+    setMyAdsOpen, setProfileOpen, setProfileTab,
+    setActiveListing, setCartOpen,
+  } = useApp()
+  const { isVerified } = useVerification(user)
+  const [open, setOpen] = useState(false)
+  const [pos, setPos] = useState({ top: 0, right: 0 })
+  const btnRef = useRef(null)
+  const menuRef = useRef(null)
+
+  useEffect(() => {
+    function onDown(e) {
+      if (!btnRef.current?.contains(e.target) && !menuRef.current?.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [])
+
+  function toggle() {
+    if (!open && btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect()
+      setPos({ top: r.bottom + window.scrollY + 8, right: window.innerWidth - r.right })
+    }
+    setOpen(o => !o)
+  }
+
+  function goProfile(tab) {
+    setOpen(false)
+    setActiveListing(null)
+    setCartOpen(false)
+    setProfileTab(tab)
+    setProfileOpen(true)
+  }
+
+  const name = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'Account'
+  const firstName = name.split(' ')[0]
+  const initials = name[0]?.toUpperCase() || '?'
+
+  const items = [
+    { label: 'My Profile', onClick: () => goProfile('basic') },
+    { label: 'My Ads', onClick: () => { setOpen(false); setMyAdsOpen(true) } },
+    { label: 'My Addresses', onClick: () => goProfile('addresses') },
+    { label: isVerified ? 'Verified ✓' : 'Get Verified', onClick: () => goProfile('basic') },
+    { label: 'Account Settings', onClick: () => goProfile('security') },
+  ]
+
+  return (
+    <>
+      <button ref={btnRef} onClick={toggle} className="btn btn-ghost btn-sm nav-hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: 7, position: 'relative' }}>
+        <span style={{ width: 22, height: 22, borderRadius: '50%', background: '#4a4e69', color: '#fff', fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
+          {user?.user_metadata?.avatar_url
+            ? <img src={user.user_metadata.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            : initials}
+        </span>
+        {firstName}
+        {unreadCount > 0 && (
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#e8473f' }} />
+        )}
+        <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', opacity: 0.7 }}>
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </button>
+
+      {open && createPortal(
+        <div ref={menuRef} style={{
+          position: 'absolute', top: pos.top, right: pos.right,
+          background: '#fff', borderRadius: 12, border: '1.5px solid #e5e7eb',
+          boxShadow: '0 12px 40px rgba(0,0,0,0.13)', zIndex: 9999, minWidth: 200, overflow: 'hidden',
+        }}>
+          {items.map(item => (
+            <button
+              key={item.label} onClick={item.onClick}
+              style={{
+                width: '100%', textAlign: 'left', padding: '10px 16px', background: 'none', border: 'none',
+                borderBottom: '1px solid #f3f4f6', cursor: 'pointer', fontSize: 13, color: '#374151',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
+              onMouseLeave={e => e.currentTarget.style.background = 'none'}
+            >
+              {item.label}
+            </button>
+          ))}
+          <button
+            onClick={() => { setOpen(false); logout() }}
+            style={{ width: '100%', textAlign: 'left', padding: '10px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#dc2626' }}
+            onMouseEnter={e => e.currentTarget.style.background = '#fff5f5'}
+            onMouseLeave={e => e.currentTarget.style.background = 'none'}
+          >
+            Sign Out
+          </button>
+        </div>,
+        document.body
+      )}
+    </>
+  )
+}
+
 /* ── Main Nav ───────────────────────────────────────── */
 export default function Nav() {
   const {
-    setLoginOpen, setPostOpen, setProfileOpen,
-    setMyAdsOpen, setMessagesOpen, setFavouritesOpen,
+    setLoginOpen, setPostOpen,
+    setMessagesOpen, setFavouritesOpen,
     setCartOpen,
-    user, logout,
+    user,
     unreadCount, clearUnread,
     savedCount, cart,
     activeLocation,
@@ -572,8 +673,6 @@ export default function Nav() {
         {/* Web text buttons */}
         {user ? (
           <>
-            <button className="btn btn-ghost btn-sm nav-hide-mobile" onClick={() => setMyAdsOpen(true)}>My Ads</button>
-            <button className="btn btn-ghost btn-sm nav-hide-mobile" onClick={() => setProfileOpen(true)}>Profile</button>
             {(isAdminUser || isSEOUser) && (
               <button
                 className="btn btn-sm nav-hide-mobile"
@@ -584,7 +683,7 @@ export default function Nav() {
                 <ShieldIcon /> {isAdminUser ? 'Admin' : 'SEO'}
               </button>
             )}
-            <button className="btn btn-ghost btn-sm nav-hide-mobile" onClick={logout}>Sign Out</button>
+            <UserMenu />
           </>
         ) : (
           <button className="btn btn-ghost btn-sm nav-hide-mobile" onClick={() => setLoginOpen(true)}>Sign In</button>

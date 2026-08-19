@@ -24,6 +24,7 @@ export function AppProvider({ children }) {
   const [postOpen, setPostOpen] = useState(false)
   const [listingsKey, setListingsKey] = useState(0)
   const [profileOpen, setProfileOpen] = useState(false)
+  const [profileTab, setProfileTab] = useState('basic')
   const [myAdsOpen, setMyAdsOpen] = useState(false)
   const [messagesOpen, setMessagesOpen] = useState(false)
   const [favouritesOpen, setFavouritesOpen] = useState(false)
@@ -221,6 +222,7 @@ export function AppProvider({ children }) {
       loginOpen, setLoginOpen,
       postOpen, setPostOpen,
       profileOpen, setProfileOpen,
+      profileTab, setProfileTab,
       myAdsOpen, setMyAdsOpen,
       messagesOpen, setMessagesOpen,
       favouritesOpen, setFavouritesOpen,

@@ -381,7 +381,7 @@ export default function MyAdsModal() {
   function close() { setMyAdsOpen(false); setEditing(null); setSoldConfirm(null) }
 
   return (
-    <div className={`overlay${myAdsOpen ? ' open' : ''}`} onClick={e => e.target === e.currentTarget && close()}>
+    <div className={`overlay${myAdsOpen ? ' open' : ''}`} style={{ zIndex: 1300 }} onClick={e => e.target === e.currentTarget && close()}>
       <div className="modal modal-wide" style={{ maxWidth: 620, padding: '32px 28px 28px', minHeight: 420, display: 'flex', flexDirection: 'column' }}>
         <button className="modal-x" onClick={close}>✕</button>
 
