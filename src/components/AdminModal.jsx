@@ -591,6 +591,41 @@ function SQLTab() {
   const [copied, setCopied] = useState(null)
 
   const sql = {
+    lockdownProfiles: `-- URGENT — run this immediately.
+-- The profiles table currently has "USING (true)" on SELECT, meaning ANYONE
+-- on the internet can read every user's full name, email, phone number, and
+-- Aadhaar/selfie file paths with zero authentication. This locks it to the
+-- row owner + admin only, and adds a safe, PII-free way to still show
+-- "Verified" badges on other people's listings without exposing anything else.
+-- Change the email below if your admin address differs.
+
+DROP POLICY IF EXISTS "profiles_select_all" ON public.profiles;
+
+DO $$ BEGIN
+  CREATE POLICY "profiles_select_own" ON public.profiles FOR SELECT USING (auth.uid() = id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "profiles_select_admin" ON public.profiles FOR SELECT USING (auth.jwt() ->> 'email' = 'rushikesh.reddypally@gmail.com');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- Lets "Delete Account" actually remove the profile row, not just leave it orphaned
+DO $$ BEGIN
+  CREATE POLICY "profiles_delete_own" ON public.profiles FOR DELETE USING (auth.uid() = id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- Narrow, PII-free lookup so verified badges keep working for OTHER users' listings
+CREATE OR REPLACE FUNCTION public.get_verified_until(target_id uuid)
+RETURNS timestamptz
+LANGUAGE sql
+SECURITY DEFINER
+STABLE
+AS $$
+  SELECT verified_until FROM public.profiles WHERE id = target_id;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.get_verified_until(uuid) TO anon, authenticated;`,
+
     adminDelete: `-- Allow admin users to delete ANY listing
 -- Run this in Supabase SQL Editor
 
@@ -609,7 +644,7 @@ CREATE POLICY "Admin hard-coded delete"
 ON public.listings FOR DELETE
 TO authenticated
 USING (
-  auth.jwt() ->> 'email' = 'admin.bazaartrade@gmail.com'
+  auth.jwt() ->> 'email' = 'rushikesh.reddypally@gmail.com'
   OR auth.uid()::text = user_id::text
 );`,
 
@@ -618,11 +653,11 @@ CREATE POLICY "Admin can update any listing"
 ON public.listings FOR UPDATE
 TO authenticated
 USING (
-  auth.jwt() ->> 'email' = 'admin.bazaartrade@gmail.com'
+  auth.jwt() ->> 'email' = 'rushikesh.reddypally@gmail.com'
   OR auth.uid()::text = user_id::text
 )
 WITH CHECK (
-  auth.jwt() ->> 'email' = 'admin.bazaartrade@gmail.com'
+  auth.jwt() ->> 'email' = 'rushikesh.reddypally@gmail.com'
   OR auth.uid()::text = user_id::text
 );`,
 
@@ -637,9 +672,12 @@ ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS verified_until timestamptz,
   ADD COLUMN IF NOT EXISTS verification_requested_at timestamptz;
 
--- Safety net in case a public-read / own-row-write policy isn't already in place
+-- profiles is NOT publicly readable — it holds phone numbers, email, DOB and
+-- Aadhaar document paths. Only the row's owner and the admin can read it.
+-- (Verified badges for OTHER users are served separately via get_verified_until()
+-- in the "URGENT: Lock Down Profiles Table" card above — don't add USING(true) here.)
 DO $$ BEGIN
-  CREATE POLICY "profiles_select_all" ON public.profiles FOR SELECT USING (true);
+  CREATE POLICY "profiles_select_own" ON public.profiles FOR SELECT USING (auth.uid() = id);
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN
@@ -739,6 +777,12 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN
   CREATE POLICY "verification_docs_select_admin" ON storage.objects
   FOR SELECT USING (bucket_id = 'verification-docs' AND auth.jwt() ->> 'email' = 'rushikesh.reddypally@gmail.com');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- Lets "Delete Account" actually remove uploaded Aadhaar/selfie files, not leave them orphaned
+DO $$ BEGIN
+  CREATE POLICY "verification_docs_delete_own" ON storage.objects
+  FOR DELETE USING (bucket_id = 'verification-docs' AND (storage.foldername(name))[1] = auth.uid()::text);
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;`,
   }
 
@@ -754,7 +798,7 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;`,
         <strong>Important:</strong> Run these SQL statements in your <a href="https://supabase.com/dashboard" target="_blank" rel="noreferrer" style={{ color: '#1d3a6e' }}>Supabase SQL Editor</a> to enable admin operations. Without them, admin delete will be blocked by RLS.
       </div>
 
-      {Object.entries({ adminDelete: 'Admin Delete Policy', adminUpdate: 'Admin Update Policy', extrasColumn: 'Add Extras Column', verifiedProfiles: 'Seller Verification (profiles table)', profileExtraFields: 'Profile Extra Fields (DOB, Nationality, Gender)', addressesTable: 'Saved Addresses Table', verificationDocs: 'Verification Docs (Aadhaar + Selfie)' }).map(([key, label]) => (
+      {Object.entries({ lockdownProfiles: '🔒 URGENT: Lock Down Profiles Table', adminDelete: 'Admin Delete Policy', adminUpdate: 'Admin Update Policy', extrasColumn: 'Add Extras Column', verifiedProfiles: 'Seller Verification (profiles table)', profileExtraFields: 'Profile Extra Fields (DOB, Nationality, Gender)', addressesTable: 'Saved Addresses Table', verificationDocs: 'Verification Docs (Aadhaar + Selfie)' }).map(([key, label]) => (
         <div key={key} style={{ marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1a1a2e', margin: 0 }}>{label}</h4>

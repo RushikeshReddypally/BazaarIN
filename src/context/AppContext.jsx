@@ -235,8 +235,15 @@ export function AppProvider({ children }) {
 
   const deleteAccount = useCallback(async () => {
     if (!user) return
-    await supabase.from('listings').delete().eq('seller_id', user.id)
+    await supabase.from('listings').delete().eq('user_id', user.id)
     await supabase.from('favourites').delete().eq('user_id', user.id)
+    await supabase.from('addresses').delete().eq('user_id', user.id)
+    // Remove any uploaded Aadhaar/selfie files before the profile row itself
+    const { data: files } = await supabase.storage.from('verification-docs').list(user.id)
+    if (files?.length) {
+      await supabase.storage.from('verification-docs').remove(files.map(f => `${user.id}/${f.name}`))
+    }
+    await supabase.from('profiles').delete().eq('id', user.id)
     await supabase.auth.signOut()
     setCart([])
     localStorage.removeItem('bt_cart')
