@@ -37,7 +37,7 @@ export default function FavouritesModal() {
   function close() { setFavouritesOpen(false) }
 
   return (
-    <div className={`overlay${favouritesOpen ? ' open' : ''}`} onClick={e => e.target === e.currentTarget && close()}>
+    <div className={`overlay${favouritesOpen ? ' open' : ''}`} style={{ zIndex: 1300 }} onClick={e => e.target === e.currentTarget && close()}>
       <div className="modal modal-wide" style={{ maxWidth: 560, padding: '32px 28px 28px' }}>
         <button className="modal-x" onClick={close}>✕</button>
         <div className="modal-logo">Saved Items</div>

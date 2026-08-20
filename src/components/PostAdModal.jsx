@@ -384,7 +384,7 @@ export default function PostAdModal() {
   const extraFields = catConfig?.fields ?? []
 
   return (
-    <div className={`overlay${postOpen ? ' open' : ''}`} onClick={e => e.target === e.currentTarget && close()}>
+    <div className={`overlay${postOpen ? ' open' : ''}`} style={{ zIndex: 1300 }} onClick={e => e.target === e.currentTarget && close()}>
       <div className="modal modal-wide" style={{ maxWidth: 660, padding: '28px 32px 28px', maxHeight: '92vh', overflowY: 'auto' }}>
         <button className="modal-x" onClick={close}>✕</button>
 

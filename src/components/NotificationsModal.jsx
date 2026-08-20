@@ -61,6 +61,7 @@ export default function NotificationsModal() {
   return (
     <div
       className={`overlay${notifOpen ? ' open' : ''}`}
+      style={{ zIndex: 1300 }}
       onClick={e => e.target === e.currentTarget && close()}
     >
       <div className="modal modal-wide" style={{ maxWidth: 460, padding: 0, overflow: 'hidden' }}>

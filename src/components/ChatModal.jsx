@@ -197,7 +197,7 @@ export function MessagesModal() {
   function close() { setMessagesOpen(false) }
 
   return (
-    <div className={`overlay${messagesOpen ? ' open' : ''}`} onClick={e => e.target === e.currentTarget && close()}>
+    <div className={`overlay${messagesOpen ? ' open' : ''}`} style={{ zIndex: 1300 }} onClick={e => e.target === e.currentTarget && close()}>
       <div className="modal modal-wide" style={{ maxWidth: 520, padding: 0, overflow: 'hidden' }}>
         <div style={{ padding: '24px 24px 16px', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ fontSize: 20, fontWeight: 800, color: '#1a1a2e' }}>Messages</div>
