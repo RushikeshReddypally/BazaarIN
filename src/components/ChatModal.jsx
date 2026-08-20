@@ -227,7 +227,7 @@ export function ChatModal() {
   return (
     <div
       style={{
-        position: 'fixed', inset: 0, zIndex: 1200,
+        position: 'fixed', inset: 0, zIndex: 1350,
         background: 'rgba(22,22,40,0.55)',
         backdropFilter: 'blur(4px)',
         display: chatListing ? 'flex' : 'none',

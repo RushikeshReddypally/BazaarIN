@@ -27,15 +27,15 @@ function getInitLoc() {
 }
 
 export function AppProvider({ children }) {
-  const [loginOpen, setLoginOpen] = useState(false)
-  const [postOpen, setPostOpen] = useState(false)
+  const [loginOpen, setLoginOpenRaw] = useState(false)
+  const [postOpen, setPostOpenRaw] = useState(false)
   const [listingsKey, setListingsKey] = useState(0)
-  const [profileOpen, setProfileOpen] = useState(false)
+  const [profileOpen, setProfileOpenRaw] = useState(false)
   const [profileTab, setProfileTab] = useState('basic')
   const [activeContentPage, setActiveContentPageRaw] = useState(getInitContentPage)
-  const [myAdsOpen, setMyAdsOpen] = useState(false)
-  const [messagesOpen, setMessagesOpen] = useState(false)
-  const [favouritesOpen, setFavouritesOpen] = useState(false)
+  const [myAdsOpen, setMyAdsOpenRaw] = useState(false)
+  const [messagesOpen, setMessagesOpenRaw] = useState(false)
+  const [favouritesOpen, setFavouritesOpenRaw] = useState(false)
   const [activeListing, setActiveListingRaw] = useState(null)
   const [chatListing, setChatListing] = useState(null)
   const [pendingAction, setPendingAction] = useState(null)
@@ -48,12 +48,39 @@ export function AppProvider({ children }) {
   const [user, setUser] = useState(null)
   const [unreadCount, setUnreadCount] = useState(0)
   const [savedCount, setSavedCount] = useState(0)
-  const [cartOpen, setCartOpen] = useState(false)
+  const [cartOpen, setCartOpenRaw] = useState(false)
   const [cart, setCart] = useState(() => {
     try { return JSON.parse(localStorage.getItem('bt_cart') || '[]') } catch { return [] }
   })
-  const [adminOpen, setAdminOpen] = useState(false)
-  const [notifOpen, setNotifOpen] = useState(false)
+  const [adminOpen, setAdminOpenRaw] = useState(false)
+  const [notifOpen, setNotifOpenRaw] = useState(false)
+
+  // Every full-page/modal overlay in the app is mutually exclusive — opening one closes
+  // all the others. Without this, the nav bar (which sits above all of them) stays
+  // clickable and lets a second overlay open on top of/behind an already-open one.
+  const closeAllOverlaysExcept = useCallback((except) => {
+    if (except !== 'login') setLoginOpenRaw(false)
+    if (except !== 'post') setPostOpenRaw(false)
+    if (except !== 'profile') setProfileOpenRaw(false)
+    if (except !== 'myAds') setMyAdsOpenRaw(false)
+    if (except !== 'messages') setMessagesOpenRaw(false)
+    if (except !== 'favourites') setFavouritesOpenRaw(false)
+    if (except !== 'cart') setCartOpenRaw(false)
+    if (except !== 'notif') setNotifOpenRaw(false)
+    if (except !== 'admin') setAdminOpenRaw(false)
+    if (except !== 'listing') setActiveListingRaw(null)
+    if (except !== 'content') setActiveContentPageRaw(null)
+  }, [])
+
+  const setLoginOpen = useCallback(v => { if (v) closeAllOverlaysExcept('login'); setLoginOpenRaw(v) }, [closeAllOverlaysExcept])
+  const setPostOpen = useCallback(v => { if (v) closeAllOverlaysExcept('post'); setPostOpenRaw(v) }, [closeAllOverlaysExcept])
+  const setProfileOpen = useCallback(v => { if (v) closeAllOverlaysExcept('profile'); setProfileOpenRaw(v) }, [closeAllOverlaysExcept])
+  const setMyAdsOpen = useCallback(v => { if (v) closeAllOverlaysExcept('myAds'); setMyAdsOpenRaw(v) }, [closeAllOverlaysExcept])
+  const setMessagesOpen = useCallback(v => { if (v) closeAllOverlaysExcept('messages'); setMessagesOpenRaw(v) }, [closeAllOverlaysExcept])
+  const setFavouritesOpen = useCallback(v => { if (v) closeAllOverlaysExcept('favourites'); setFavouritesOpenRaw(v) }, [closeAllOverlaysExcept])
+  const setCartOpen = useCallback(v => { if (v) closeAllOverlaysExcept('cart'); setCartOpenRaw(v) }, [closeAllOverlaysExcept])
+  const setNotifOpen = useCallback(v => { if (v) closeAllOverlaysExcept('notif'); setNotifOpenRaw(v) }, [closeAllOverlaysExcept])
+  const setAdminOpen = useCallback(v => { if (v) closeAllOverlaysExcept('admin'); setAdminOpenRaw(v) }, [closeAllOverlaysExcept])
 
   // Synchronously detect if we need to restore a listing from URL — prevents home page flash
   const [restoringListing, setRestoringListing] = useState(
@@ -169,23 +196,25 @@ export function AppProvider({ children }) {
 
   // URL-synced setActiveListing
   const setActiveListing = useCallback((listing) => {
+    if (listing?.id) closeAllOverlaysExcept('listing')
     setActiveListingRaw(listing)
     if (listing?.id) {
       window.history.pushState(null, '', buildListingPath(listing))
     } else {
       window.history.pushState(null, '', buildPath(activeCategory, activeLocationRaw))
     }
-  }, [activeCategory, activeLocationRaw])
+  }, [activeCategory, activeLocationRaw, closeAllOverlaysExcept])
 
   // URL-synced setActiveContentPage — pass a page title (e.g. 'About Us') or null to close
   const setActiveContentPage = useCallback((page) => {
+    if (page) closeAllOverlaysExcept('content')
     setActiveContentPageRaw(page)
     if (page && PAGE_SLUGS[page]) {
       window.history.pushState(null, '', `/${PAGE_SLUGS[page]}`)
     } else {
       window.history.pushState(null, '', buildPath(activeCategory, activeLocationRaw))
     }
-  }, [activeCategory, activeLocationRaw])
+  }, [activeCategory, activeLocationRaw, closeAllOverlaysExcept])
 
   const addToCart = useCallback((listing) => {
     setCart(prev => {
