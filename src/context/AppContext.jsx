@@ -216,7 +216,8 @@ export function AppProvider({ children }) {
 
   const setActiveLocation = useCallback((loc) => {
     setActiveLocationRaw(loc)
-    if (loc && loc !== 'all') localStorage.setItem('bt_location', loc)
+    // Persist 'all' too (e.g. "Skip" on the welcome modal) so the choice isn't asked again every visit
+    if (loc) localStorage.setItem('bt_location', loc)
     else localStorage.removeItem('bt_location')
   }, [])
 
