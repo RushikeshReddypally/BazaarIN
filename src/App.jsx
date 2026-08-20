@@ -3,7 +3,8 @@ import { AppProvider } from './context/AppContext'
 import { useApp } from './context/AppContext'
 import { useScrollReveal } from './hooks/useScrollReveal'
 import { useSEO } from './hooks/useSEO'
-import { buildPath } from './utils/routing'
+import { buildPath, CAT_TO_SLUG, cityToSlug } from './utils/routing'
+import { categories } from './data/categories.jsx'
 import Blog from './components/Blog'
 import Nav from './components/Nav'
 import CategoryStrip from './components/CategoryStrip'
@@ -13,6 +14,7 @@ import SellCTA from './components/SellCTA'
 import Features from './components/Features'
 import HowItWorks from './components/HowItWorks'
 import Contact from './components/Contact'
+import HomeSEOLinks from './components/HomeSEOLinks'
 import Footer from './components/Footer'
 import LoginModal from './components/LoginModal'
 import ProfileModal from './components/ProfileModal'
@@ -26,6 +28,7 @@ import NotificationsModal from './components/NotificationsModal'
 const PostAdModal = lazy(() => import('./components/PostAdModal'))
 const ListingDetailModal = lazy(() => import('./components/ListingDetailModal'))
 const AdminModal = lazy(() => import('./components/AdminModal'))
+const ContentPage = lazy(() => import('./components/ContentPage'))
 import Toast from './components/Toast'
 
 const CATEGORY_SEO = {
@@ -50,7 +53,17 @@ function CategorySEO() {
   const path = buildPath(activeCategory, activeLocation)
   const cityLabel = activeLocation && activeLocation !== 'all' ? ` in ${activeLocation}` : ''
   const title = seo.title ? seo.title.replace(/ in India$/, cityLabel || ' in India') : undefined
-  useSEO({ title, description: seo.description, url: path !== '/' ? path : undefined })
+
+  const catSlug = CAT_TO_SLUG[activeCategory]
+  const catLabel = categories.find(c => c.id === activeCategory)?.label
+  const hasCity = activeLocation && activeLocation !== 'all'
+  const breadcrumbs = catSlug ? [
+    { name: 'Home', url: '/' },
+    { name: catLabel, url: `/${catSlug}` },
+    ...(hasCity ? [{ name: activeLocation, url: `/${catSlug}/${cityToSlug(activeLocation)}` }] : []),
+  ] : undefined
+
+  useSEO({ title, description: seo.description, url: path !== '/' ? path : undefined, breadcrumbs })
   return null
 }
 
@@ -90,6 +103,7 @@ function AppInner() {
         <Features />
         <HowItWorks />
         <Contact />
+        <HomeSEOLinks />
       </main>
       <Footer />
       <LoginModal />
@@ -105,6 +119,7 @@ function AppInner() {
         <PostAdModal />
         <ListingDetailModal />
         <AdminModal />
+        <ContentPage />
       </Suspense>
       <Toast />
     </>

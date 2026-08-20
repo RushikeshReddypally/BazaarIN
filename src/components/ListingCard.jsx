@@ -41,7 +41,7 @@ export default function ListingCard({ listing }) {
           <HeartIcon filled={saved} />
         </button>
         {thumb
-          ? <img src={thumb} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
+          ? <img src={thumb} alt={title} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
           : <span style={{ color: 'rgba(0,0,0,0.3)', display: 'flex' }}>{catIcon}</span>
         }
         {images?.length > 1 && (

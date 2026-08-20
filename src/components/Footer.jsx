@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import ContentModal from './ContentModal'
+import { useApp } from '../context/AppContext'
+import { PAGE_SLUGS } from '../data/contentPages'
 
 const links = {
   Company: ['About Us', 'Careers', 'Press', 'Blog'],
@@ -49,66 +49,65 @@ const socials = [
 ]
 
 export default function Footer() {
-  const [contentPage, setContentPage] = useState(null)
+  const { setActiveContentPage } = useApp()
+
+  function openPage(e, page) {
+    e.preventDefault()
+    setActiveContentPage(page)
+  }
 
   return (
-    <>
-      <footer>
-        <div className="container" style={{ maxWidth: 1200 }}>
-          <div className="footer-top">
-            <div className="footer-brand">
-              <div className="nav-logo" style={{ color: 'var(--white)' }}>
-                BazaarTrade<span className="nav-logo-dot" />in
-              </div>
-              <p>India's trusted marketplace for buying and selling preloved goods across every city in India.</p>
-              <div className="footer-social">
-                {socials.map(s => (
-                  <a key={s.label} href={s.href} className="fs-btn" title={s.label} aria-label={s.label}>{s.icon}</a>
-                ))}
-              </div>
+    <footer>
+      <div className="container" style={{ maxWidth: 1200 }}>
+        <div className="footer-top">
+          <div className="footer-brand">
+            <div className="nav-logo" style={{ color: 'var(--white)' }}>
+              BazaarTrade<span className="nav-logo-dot" />in
             </div>
-
-            {Object.entries(links).map(([heading, items]) => (
-              <div key={heading} className="footer-col">
-                <h4>{heading}</h4>
-                {items.map(item => (
-                  <button
-                    key={item}
-                    className="footer-link"
-                    onClick={() => setContentPage(item)}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left', fontFamily: 'inherit' }}
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
-            ))}
+            <p>India's trusted marketplace for buying and selling preloved goods across every city in India.</p>
+            <div className="footer-social">
+              {socials.map(s => (
+                <a key={s.label} href={s.href} className="fs-btn" title={s.label} aria-label={s.label}>{s.icon}</a>
+              ))}
+            </div>
           </div>
 
-          <div className="footer-bottom">
-            <div>© 2026 BazaarTrade.in · Made with love in India</div>
-            <div className="footer-badges">
-              <div className="app-badge">
-                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
-                  <rect x="5" y="2" width="14" height="20" rx="2" />
-                  <line x1="12" y1="18" x2="12.01" y2="18" />
-                </svg>
-                App Store
-              </div>
-              <div className="app-badge">
-                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
-                  <path d="M3 20.5v-17c0-.83 1-.92 1.4-.37l14 8a.5.5 0 0 1 0 .74l-14 8c-.4.55-1.4.46-1.4-.37z" />
-                </svg>
-                Play Store
-              </div>
+          {Object.entries(links).map(([heading, items]) => (
+            <div key={heading} className="footer-col">
+              <h4>{heading}</h4>
+              {items.map(item => (
+                <a
+                  key={item}
+                  href={`/${PAGE_SLUGS[item]}`}
+                  className="footer-link"
+                  onClick={e => openPage(e, item)}
+                >
+                  {item}
+                </a>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        <div className="footer-bottom">
+          <div>© 2026 BazaarTrade.in · Made with love in India</div>
+          <div className="footer-badges">
+            <div className="app-badge">
+              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                <rect x="5" y="2" width="14" height="20" rx="2" />
+                <line x1="12" y1="18" x2="12.01" y2="18" />
+              </svg>
+              App Store
+            </div>
+            <div className="app-badge">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                <path d="M3 20.5v-17c0-.83 1-.92 1.4-.37l14 8a.5.5 0 0 1 0 .74l-14 8c-.4.55-1.4.46-1.4-.37z" />
+              </svg>
+              Play Store
             </div>
           </div>
         </div>
-      </footer>
-
-      {contentPage && (
-        <ContentModal page={contentPage} onClose={() => setContentPage(null)} />
-      )}
-    </>
+      </div>
+    </footer>
   )
 }

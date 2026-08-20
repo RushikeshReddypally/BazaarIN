@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 
 const SITE = 'BazaarTrade.in'
-const BASE_URL = 'https://baazartrade.in'
+const BASE_URL = 'https://www.bazaartrade.in'
 const DEFAULT_DESC = "India's trusted free marketplace. Buy and sell mobiles, cars, property, bikes, electronics and more. Post ads free!"
 const DEFAULT_IMG = `${BASE_URL}/og-image.jpg`
 
@@ -31,7 +31,7 @@ function removeJsonLD(id) {
   document.getElementById(id)?.remove()
 }
 
-export function useSEO({ title, description, image, url, type = 'website', listing } = {}) {
+export function useSEO({ title, description, image, url, type = 'website', listing, breadcrumbs, noindex = false } = {}) {
   useEffect(() => {
     const fullTitle = title ? `${title} | ${SITE}` : `${SITE} — Buy & Sell Anything Across India for Free`
     const desc = description || DEFAULT_DESC
@@ -42,6 +42,7 @@ export function useSEO({ title, description, image, url, type = 'website', listi
 
     // Primary
     setMeta('meta[name="description"]', 'content', desc)
+    setMeta('meta[name="robots"]', 'content', noindex ? 'noindex, follow' : 'index, follow')
 
     // Canonical
     let canonEl = document.querySelector('link[rel="canonical"]')
@@ -83,16 +84,34 @@ export function useSEO({ title, description, image, url, type = 'website', listi
       removeJsonLD('listing-jsonld')
     }
 
+    // Breadcrumb JSON-LD — pass [{ name, url }] in root-to-leaf order
+    if (breadcrumbs?.length) {
+      setJsonLD('breadcrumb-jsonld', {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: breadcrumbs.map((b, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: b.name,
+          item: b.url ? `${BASE_URL}${b.url}` : undefined,
+        })),
+      })
+    } else {
+      removeJsonLD('breadcrumb-jsonld')
+    }
+
     return () => {
       // Reset to defaults when unmounted (e.g. listing closed)
       if (title) {
         document.title = `${SITE} — Buy & Sell Anything Across India for Free`
         setMeta('meta[name="description"]', 'content', DEFAULT_DESC)
+        setMeta('meta[name="robots"]', 'content', 'index, follow')
         setMeta('meta[property="og:title"]', 'content', `${SITE} — Buy & Sell Anything Across India for Free`)
         setMeta('meta[property="og:description"]', 'content', DEFAULT_DESC)
         setMeta('meta[property="og:image"]', 'content', DEFAULT_IMG)
         removeJsonLD('listing-jsonld')
+        removeJsonLD('breadcrumb-jsonld')
       }
     }
-  }, [title, description, image, url, type, listing])
+  }, [title, description, image, url, type, listing, breadcrumbs, noindex])
 }

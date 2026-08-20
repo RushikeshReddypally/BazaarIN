@@ -4,4 +4,4 @@ Allow: /
 # Block admin panel from indexing
 Disallow: /?admin=true
 
-Sitemap: https://baazartrade.in/sitemap.xml
+Sitemap: https://www.bazaartrade.in/sitemap.xml

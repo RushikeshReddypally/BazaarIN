@@ -1,6 +1,13 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { parsePathname, buildPath } from '../utils/routing'
+import { parsePathname, buildPath, buildListingPath, parseListingId } from '../utils/routing'
+import { SLUG_TO_PAGE, PAGE_SLUGS } from '../data/contentPages'
+
+// Read initial content page from URL path (e.g. /about → 'About Us'), if any
+function getInitContentPage() {
+  const slug = window.location.pathname.replace(/^\//, '').split('/')[0]
+  return SLUG_TO_PAGE[slug] || null
+}
 
 const AppContext = createContext(null)
 
@@ -25,6 +32,7 @@ export function AppProvider({ children }) {
   const [listingsKey, setListingsKey] = useState(0)
   const [profileOpen, setProfileOpen] = useState(false)
   const [profileTab, setProfileTab] = useState('basic')
+  const [activeContentPage, setActiveContentPageRaw] = useState(getInitContentPage)
   const [myAdsOpen, setMyAdsOpen] = useState(false)
   const [messagesOpen, setMessagesOpen] = useState(false)
   const [favouritesOpen, setFavouritesOpen] = useState(false)
@@ -49,7 +57,7 @@ export function AppProvider({ children }) {
 
   // Synchronously detect if we need to restore a listing from URL — prevents home page flash
   const [restoringListing, setRestoringListing] = useState(
-    () => !!new URLSearchParams(window.location.search).get('listing')
+    () => !!new URLSearchParams(window.location.search).get('listing') || !!parseListingId(window.location.pathname)
   )
 
   useEffect(() => {
@@ -76,13 +84,25 @@ export function AppProvider({ children }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Restore listing from URL param on mount
+  // Restore listing from URL on mount — supports both the clean path and legacy ?listing= links
   useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get('listing')
+    const id = new URLSearchParams(window.location.search).get('listing') || parseListingId(window.location.pathname)
     if (!id) return
     supabase.from('listings').select('*').eq('id', id).single()
       .then(({ data }) => {
-        if (data) setActiveListingRaw(data)
+        if (data) {
+          setActiveListingRaw(data)
+          // Silently upgrade old ?listing= links to the clean, canonical URL
+          const cleanPath = buildListingPath(data)
+          if (window.location.pathname + window.location.search !== cleanPath) {
+            window.history.replaceState(null, '', cleanPath)
+          }
+        } else {
+          // Listing gone (deleted/never existed) — URL sync effect below will fall back
+          // to the category+city page already implied by the URL; let the user know why.
+          setToast({ show: true, msg: 'That listing is no longer available', icon: 'ℹ️' })
+          setTimeout(() => setToast(t => ({ ...t, show: false })), 3500)
+        }
         setRestoringListing(false)
       })
   }, [])
@@ -90,8 +110,9 @@ export function AppProvider({ children }) {
   // Browser back/forward — sync state from URL
   useEffect(() => {
     function onPop() {
-      const id = new URLSearchParams(window.location.search).get('listing')
+      const id = new URLSearchParams(window.location.search).get('listing') || parseListingId(window.location.pathname)
       if (!id) setActiveListingRaw(null)
+      setActiveContentPageRaw(getInitContentPage())
       const { cat, loc } = parsePathname(window.location.pathname)
       setActiveCategory(cat)
       if (loc) setActiveLocationRaw(loc)
@@ -100,14 +121,14 @@ export function AppProvider({ children }) {
     return () => window.removeEventListener('popstate', onPop)
   }, [])
 
-  // Sync URL path when category or location changes
+  // Sync URL path when category or location changes (not while a listing/content page is open)
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('listing')) return
+    if (activeListing || activeContentPage) return
     const path = buildPath(activeCategory, activeLocationRaw)
     if (window.location.pathname !== path) {
       window.history.replaceState(null, '', path)
     }
-  }, [activeCategory, activeLocationRaw])
+  }, [activeCategory, activeLocationRaw, activeListing, activeContentPage])
 
   // Fetch saved (favourites) count when user changes
   useEffect(() => {
@@ -150,11 +171,21 @@ export function AppProvider({ children }) {
   const setActiveListing = useCallback((listing) => {
     setActiveListingRaw(listing)
     if (listing?.id) {
-      window.history.pushState(null, '', `?listing=${listing.id}`)
+      window.history.pushState(null, '', buildListingPath(listing))
     } else {
-      window.history.pushState(null, '', window.location.pathname)
+      window.history.pushState(null, '', buildPath(activeCategory, activeLocationRaw))
     }
-  }, [])
+  }, [activeCategory, activeLocationRaw])
+
+  // URL-synced setActiveContentPage — pass a page title (e.g. 'About Us') or null to close
+  const setActiveContentPage = useCallback((page) => {
+    setActiveContentPageRaw(page)
+    if (page && PAGE_SLUGS[page]) {
+      window.history.pushState(null, '', `/${PAGE_SLUGS[page]}`)
+    } else {
+      window.history.pushState(null, '', buildPath(activeCategory, activeLocationRaw))
+    }
+  }, [activeCategory, activeLocationRaw])
 
   const addToCart = useCallback((listing) => {
     setCart(prev => {
@@ -227,6 +258,7 @@ export function AppProvider({ children }) {
       messagesOpen, setMessagesOpen,
       favouritesOpen, setFavouritesOpen,
       activeListing, setActiveListing,
+      activeContentPage, setActiveContentPage,
       chatListing, setChatListing,
       pendingAction, setPendingAction,
       toast, showToast,

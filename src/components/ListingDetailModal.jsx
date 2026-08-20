@@ -4,8 +4,9 @@ import { formatPriceFull, formatPrice } from '../utils/format'
 import { useFavourite } from '../hooks/useFavourite'
 import { useVerification } from '../hooks/useVerification'
 import { supabase } from '../lib/supabase'
-import { categoryIcons } from '../data/categories.jsx'
+import { categoryIcons, categories } from '../data/categories.jsx'
 import { useSEO } from '../hooks/useSEO'
+import { buildListingPath, CAT_TO_SLUG, cityToSlug } from '../utils/routing'
 
 const ChevL = () => (
   <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" /></svg>
@@ -51,6 +52,7 @@ export default function ListingDetailModal() {
     user, setLoginOpen, showToast,
     setChatListing, setPendingAction, bumpListings,
     addToCart, removeFromCart, cart, setCartOpen,
+    setActiveCategory, setActiveLocation,
   } = useApp()
   const { saved, toggle: toggleFav } = useFavourite(activeListing?.id, user)
   const [currentImg, setCurrentImg] = useState(0)
@@ -61,15 +63,23 @@ export default function ListingDetailModal() {
   const open = !!activeListing
 
   // Dynamic SEO when a listing is open
+  const catSlug = listing ? CAT_TO_SLUG[listing.category] : null
+  const catLabel = listing ? (categories.find(c => c.id === listing.category)?.label || listing.category) : null
   useSEO(listing ? {
     title: listing.title,
     description: listing.description
       ? listing.description.slice(0, 160)
       : `${listing.title} for ₹${listing.price?.toLocaleString('en-IN')} in ${listing.location} — BazaarTrade.in`,
     image: listing.images?.[0],
-    url: `/?listing=${listing.id}`,
+    url: buildListingPath(listing),
     type: 'og:product',
     listing,
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: catLabel, url: catSlug ? `/${catSlug}` : undefined },
+      ...(listing.location ? [{ name: listing.location, url: catSlug ? `/${catSlug}/${cityToSlug(listing.location)}` : undefined }] : []),
+      { name: listing.title },
+    ],
   } : {})
 
   useEffect(() => {
@@ -210,9 +220,27 @@ export default function ListingDetailModal() {
           </button>
           <span style={{ color: '#d1d5db' }}>|</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#9ca3af', overflow: 'hidden' }}>
-            <span onClick={() => setActiveListing(null)} style={{ cursor: 'pointer', color: '#6b7280', flexShrink: 0 }}>All Listings</span>
+            <a
+              href="/"
+              onClick={e => { e.preventDefault(); setActiveListing(null) }}
+              style={{ cursor: 'pointer', color: '#6b7280', flexShrink: 0, textDecoration: 'none' }}
+            >Home</a>
             <span>›</span>
-            <span style={{ textTransform: 'capitalize', color: '#6b7280', flexShrink: 0 }}>{category}</span>
+            <a
+              href={catSlug ? `/${catSlug}` : '#'}
+              onClick={e => { e.preventDefault(); setActiveListing(null); setActiveCategory(category) }}
+              style={{ color: '#6b7280', flexShrink: 0, textDecoration: 'none' }}
+            >{catLabel}</a>
+            {location && (
+              <>
+                <span>›</span>
+                <a
+                  href={catSlug ? `/${catSlug}/${cityToSlug(location)}` : '#'}
+                  onClick={e => { e.preventDefault(); setActiveListing(null); setActiveCategory(category); setActiveLocation(location) }}
+                  style={{ color: '#6b7280', flexShrink: 0, textDecoration: 'none' }}
+                >{location}</a>
+              </>
+            )}
             <span>›</span>
             <span style={{ color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</span>
           </div>
@@ -275,6 +303,8 @@ export default function ListingDetailModal() {
                     key={currentImg}
                     src={images[currentImg]}
                     alt={title}
+                    loading="eager"
+                    fetchPriority="high"
                     style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                   {total > 1 && (
@@ -306,7 +336,7 @@ export default function ListingDetailModal() {
                     border: `2.5px solid ${i === currentImg ? '#1d3a6e' : 'transparent'}`,
                     opacity: i === currentImg ? 1 : 0.6, transition: 'all 0.15s', background: '#ececec',
                   }}>
-                    <img src={src} alt={`${title} photo ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    <img src={src} alt={`${title} photo ${i + 1}`} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                   </button>
                 ))}
               </div>
@@ -571,7 +601,7 @@ export default function ListingDetailModal() {
                   {/* Thumbnail */}
                   <div className={l.gradient || 'li2'} style={{ height: 130, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {l.images?.[0]
-                      ? <img src={l.images[0]} alt={l.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ? <img src={l.images[0]} alt={l.title} loading="lazy" decoding="async" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                       : <span style={{ color: 'rgba(0,0,0,0.2)', display: 'flex', transform: 'scale(1.8)' }}>{categoryIcons[l.category] ?? categoryIcons['all']}</span>
                     }
                     {l.images?.length > 1 && (

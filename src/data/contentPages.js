@@ -1,6 +1,4 @@
-import { useEffect } from 'react'
-
-const CONTENT = {
+export const CONTENT = {
   'About Us': {
     title: 'About BazaarTrade',
     body: `BazaarTrade.in is India's trusted peer-to-peer marketplace, built to make buying and selling simple, safe, and free for everyone across the country.
@@ -362,68 +360,21 @@ Email: support.bazaartrade@gmail.com`,
   },
 }
 
-export default function ContentModal({ page, onClose }) {
-  const content = CONTENT[page]
-
-  useEffect(() => {
-    function onKey(e) { if (e.key === 'Escape') onClose() }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [onClose])
-
-  useEffect(() => {
-    document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = '' }
-  }, [])
-
-  if (!content) return null
-
-  function renderBody(text) {
-    return text.split('\n').map((line, i) => {
-      if (line.startsWith('**') && line.endsWith('**'))
-        return <div key={i} style={{ fontWeight: 700, color: '#1a1a2e', fontSize: 15, marginTop: 20, marginBottom: 4 }}>{line.slice(2, -2)}</div>
-      if (line.startsWith('• '))
-        return <div key={i} style={{ display: 'flex', gap: 8, padding: '2px 0', fontSize: 14, color: '#4b5563' }}><span style={{ color: '#1d3a6e', flexShrink: 0 }}>•</span>{line.slice(2)}</div>
-      if (line.trim() === '')
-        return <div key={i} style={{ height: 6 }} />
-      return <p key={i} style={{ fontSize: 14, color: '#4b5563', lineHeight: 1.7 }}>{line}</p>
-    })
-  }
-
-  return (
-    <div
-      style={{
-        position: 'fixed', inset: 0, zIndex: 2000,
-        background: 'rgba(22,22,40,0.6)', backdropFilter: 'blur(8px)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: 20,
-      }}
-      onClick={e => e.target === e.currentTarget && onClose()}
-    >
-      <div style={{
-        background: '#fff', borderRadius: 20, width: '100%', maxWidth: 640,
-        maxHeight: '88vh', display: 'flex', flexDirection: 'column',
-        boxShadow: '0 32px 80px rgba(0,0,0,0.22)',
-        animation: 'slideUp 0.22s cubic-bezier(.34,1.56,.64,1)',
-      }}>
-        {/* Header */}
-        <div style={{
-          padding: '20px 28px', borderBottom: '1px solid #f3f4f6',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
-        }}>
-          <div style={{ fontSize: 18, fontWeight: 800, color: '#1a1a2e', letterSpacing: '-0.4px' }}>{content.title}</div>
-          <button onClick={onClose} style={{
-            width: 32, height: 32, borderRadius: '50%', background: '#f3f4f6',
-            border: 'none', cursor: 'pointer', fontSize: 16, color: '#6b7280',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>✕</button>
-        </div>
-        {/* Body */}
-        <div style={{ padding: '20px 28px 28px', overflowY: 'auto' }}>
-          {renderBody(content.body)}
-        </div>
-      </div>
-      <style>{`@keyframes slideUp{from{transform:translateY(20px) scale(.97);opacity:0}to{transform:none;opacity:1}}`}</style>
-    </div>
-  )
+export const PAGE_SLUGS = {
+  'About Us': 'about',
+  'Safety Tips': 'safety-tips',
+  'Help Center': 'help',
+  'Report a Problem': 'report-a-problem',
+  'Community Guidelines': 'community-guidelines',
+  'Terms of Service': 'terms',
+  'Privacy Policy': 'privacy',
+  'Cookie Policy': 'cookie-policy',
+  'Sitemap': 'html-sitemap',
+  'Careers': 'careers',
+  'Press': 'press',
+  'Blog': 'blog-info',
 }
+
+export const SLUG_TO_PAGE = Object.fromEntries(
+  Object.entries(PAGE_SLUGS).map(([page, slug]) => [slug, page])
+)

@@ -5,7 +5,7 @@ import { formatPrice } from '../utils/format'
 import { categories } from '../data/categories.jsx'
 
 /* ── SEO preview helper ───────────────────────────────── */
-const SITE_URL = 'https://baazartrade.in'
+const SITE_URL = 'https://www.bazaartrade.in'
 
 export default function AdminModal() {
   const { adminOpen, setAdminOpen, isAdminUser, isSEOUser } = useApp()
@@ -465,7 +465,7 @@ function SEOTab() {
       siteTitle: "BazaarTrade.in — Buy & Sell Anything Across India for Free",
       description: "India's trusted free marketplace. Buy and sell mobiles, cars, property, bikes, electronics, furniture and more. Post ads free — no commission, no fees.",
       keywords: "buy sell india, free classifieds, used cars india, second hand mobiles, property for sale rent, online marketplace india",
-      ogImage: "https://baazartrade.in/og-image.jpg",
+      ogImage: "https://www.bazaartrade.in/og-image.jpg",
       twitterHandle: "@BazaarTradeIn",
       googleAnalyticsId: "",
     }
@@ -514,7 +514,7 @@ function SEOTab() {
         <Field label="Meta Description (max 160 chars)" k="description" multiline placeholder="Describe your site in 150-160 characters…" />
         <div style={{ fontSize: 11, color: seoData.description.length > 160 ? '#e8473f' : '#9ca3af', marginTop: -12, marginBottom: 12 }}>{seoData.description.length}/160 chars</div>
         <Field label="Keywords (comma-separated)" k="keywords" multiline placeholder="buy sell india, free classifieds…" />
-        <Field label="OG Image URL (1200×630px)" k="ogImage" placeholder="https://baazartrade.in/og-image.jpg" />
+        <Field label="OG Image URL (1200×630px)" k="ogImage" placeholder="https://www.bazaartrade.in/og-image.jpg" />
         <Field label="Twitter Handle" k="twitterHandle" placeholder="@BazaarTradeIn" />
         <Field label="Google Analytics ID (optional)" k="googleAnalyticsId" placeholder="G-XXXXXXXXXX" />
 
@@ -554,7 +554,7 @@ function SEOTab() {
                 : <span style={{ color: '#9ca3af', fontSize: 12 }}>OG Image (1200×630)</span>}
             </div>
             <div style={{ padding: '10px 14px', background: '#f9fafb', borderTop: '1px solid #e5e7eb' }}>
-              <div style={{ fontSize: 10, color: '#9ca3af', textTransform: 'uppercase', marginBottom: 2 }}>baazartrade.in</div>
+              <div style={{ fontSize: 10, color: '#9ca3af', textTransform: 'uppercase', marginBottom: 2 }}>www.bazaartrade.in</div>
               <div style={{ fontSize: 13, fontWeight: 700, color: '#1a1a2e', lineHeight: 1.3 }}>{seoData.siteTitle.slice(0, 55)}</div>
               <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>{seoData.description.slice(0, 80)}…</div>
             </div>
