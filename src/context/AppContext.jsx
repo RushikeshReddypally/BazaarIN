@@ -238,6 +238,12 @@ export function AppProvider({ children }) {
     await supabase.from('listings').delete().eq('user_id', user.id)
     await supabase.from('favourites').delete().eq('user_id', user.id)
     await supabase.from('addresses').delete().eq('user_id', user.id)
+    // Same "your messages" scope used everywhere else in the app (sent, or received on your phone)
+    if (user.phone) {
+      await supabase.from('messages').delete().or(`sender_id.eq.${user.id},receiver_phone.eq.${user.phone}`)
+    } else {
+      await supabase.from('messages').delete().eq('sender_id', user.id)
+    }
     // Remove any uploaded Aadhaar/selfie files before the profile row itself
     const { data: files } = await supabase.storage.from('verification-docs').list(user.id)
     if (files?.length) {

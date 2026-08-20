@@ -59,7 +59,7 @@ async function main() {
   for (const slug of Object.values(CAT_TO_SLUG)) {
     pageUrls.push(urlTag(`${BASE_URL}/${slug}`, null, 'daily', '0.9'))
   }
-  const TRUST_SLUGS = ['about', 'safety-tips', 'help', 'report-a-problem', 'community-guidelines', 'terms', 'privacy', 'cookie-policy', 'careers', 'press']
+  const TRUST_SLUGS = ['about', 'safety-tips', 'help', 'report-a-problem', 'community-guidelines', 'terms', 'privacy', 'cookie-policy', 'grievance-redressal', 'careers', 'press']
   for (const slug of TRUST_SLUGS) {
     pageUrls.push(urlTag(`${BASE_URL}/${slug}`, null, 'monthly', '0.4'))
   }

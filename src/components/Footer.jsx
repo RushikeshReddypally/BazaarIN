@@ -4,7 +4,7 @@ import { PAGE_SLUGS } from '../data/contentPages'
 const links = {
   Company: ['About Us', 'Careers', 'Press', 'Blog'],
   Support:  ['Help Center', 'Safety Tips', 'Report a Problem', 'Community Guidelines'],
-  Legal:    ['Terms of Service', 'Privacy Policy', 'Cookie Policy', 'Sitemap'],
+  Legal:    ['Terms of Service', 'Privacy Policy', 'Cookie Policy', 'Grievance Redressal', 'Sitemap'],
 }
 
 const socials = [

@@ -341,6 +341,29 @@ BazaarTrade.in is India's trusted peer-to-peer classifieds marketplace, connecti
 We aim to respond to all media enquiries within 48 hours.`,
   },
 
+  'Grievance Redressal': {
+    title: 'Grievance Redressal',
+    body: `In accordance with the Information Technology Act, 2000 and the rules made thereunder, and the Consumer Protection (E-Commerce) Rules, 2020, the name and contact details of the Grievance Officer for BazaarTrade.in are published below.
+
+**Grievance Officer**
+Name: Rushikesh Reddy Reddypally
+Email: support.bazaartrade@gmail.com
+
+**Response Timeline**
+We will acknowledge your complaint within 24 hours of receipt and aim to resolve it within 15 days, as required under applicable Indian law.
+
+**What You Can Raise With Us**
+• Content that violates our Terms of Service or Community Guidelines
+• Privacy concerns, or requests to access, correct, or delete your personal data
+• Fraudulent listings, scams, or user misconduct
+• Any other complaint related to your use of BazaarTrade.in
+
+**How to Reach Us**
+Email the Grievance Officer directly at support.bazaartrade@gmail.com with a clear description of your complaint, along with any relevant listing URLs, screenshots, or account details. You can also use our Report a Problem page for content-specific issues.
+
+This mechanism is separate from, and in addition to, any rights you have under our Privacy Policy and Terms of Service.`,
+  },
+
   'Blog': {
     title: 'BazaarTrade Blog',
     body: `Our blog is coming soon!
@@ -369,6 +392,7 @@ export const PAGE_SLUGS = {
   'Terms of Service': 'terms',
   'Privacy Policy': 'privacy',
   'Cookie Policy': 'cookie-policy',
+  'Grievance Redressal': 'grievance-redressal',
   'Sitemap': 'html-sitemap',
   'Careers': 'careers',
   'Press': 'press',

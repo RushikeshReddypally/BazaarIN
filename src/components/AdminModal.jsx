@@ -784,6 +784,13 @@ DO $$ BEGIN
   CREATE POLICY "verification_docs_delete_own" ON storage.objects
   FOR DELETE USING (bucket_id = 'verification-docs' AND (storage.foldername(name))[1] = auth.uid()::text);
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;`,
+
+    messagesDeleteOwn: `-- Lets "Delete Account" actually remove a user's messages (sent, or received
+-- on their phone) — without this, deleteAccount's cleanup silently deletes nothing.
+DO $$ BEGIN
+  CREATE POLICY "messages_delete_own" ON public.messages
+  FOR DELETE USING (auth.uid() = sender_id OR receiver_phone = (auth.jwt() ->> 'phone'));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;`,
   }
 
   function copy(key, text) {
@@ -798,7 +805,7 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;`,
         <strong>Important:</strong> Run these SQL statements in your <a href="https://supabase.com/dashboard" target="_blank" rel="noreferrer" style={{ color: '#1d3a6e' }}>Supabase SQL Editor</a> to enable admin operations. Without them, admin delete will be blocked by RLS.
       </div>
 
-      {Object.entries({ lockdownProfiles: '🔒 URGENT: Lock Down Profiles Table', adminDelete: 'Admin Delete Policy', adminUpdate: 'Admin Update Policy', extrasColumn: 'Add Extras Column', verifiedProfiles: 'Seller Verification (profiles table)', profileExtraFields: 'Profile Extra Fields (DOB, Nationality, Gender)', addressesTable: 'Saved Addresses Table', verificationDocs: 'Verification Docs (Aadhaar + Selfie)' }).map(([key, label]) => (
+      {Object.entries({ lockdownProfiles: '🔒 URGENT: Lock Down Profiles Table', adminDelete: 'Admin Delete Policy', adminUpdate: 'Admin Update Policy', extrasColumn: 'Add Extras Column', verifiedProfiles: 'Seller Verification (profiles table)', profileExtraFields: 'Profile Extra Fields (DOB, Nationality, Gender)', addressesTable: 'Saved Addresses Table', verificationDocs: 'Verification Docs (Aadhaar + Selfie)', messagesDeleteOwn: 'Messages Delete Policy (for account deletion)' }).map(([key, label]) => (
         <div key={key} style={{ marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1a1a2e', margin: 0 }}>{label}</h4>
