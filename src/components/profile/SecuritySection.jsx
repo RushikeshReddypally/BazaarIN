@@ -39,7 +39,7 @@ export default function SecuritySection({ user, deleteAccount, showToast }) {
           </div>
           <button
             onClick={handleSignOutEverywhere} disabled={signingOut}
-            style={{ padding: '8px 16px', borderRadius: 8, border: '1.5px solid #e5e7eb', background: '#fff', color: '#374151', fontSize: 12.5, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}
+            style={{ padding: '8px 16px', borderRadius: 99, border: '1.5px solid #e5e7eb', background: '#fff', color: '#374151', fontSize: 12.5, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}
           >
             {signingOut ? 'Signing out…' : 'Sign out everywhere else'}
           </button>
@@ -54,7 +54,7 @@ export default function SecuritySection({ user, deleteAccount, showToast }) {
         {!confirmDelete ? (
           <button
             onClick={() => setConfirmDelete(true)}
-            style={{ padding: '10px 20px', borderRadius: 9, border: '1.5px solid #fca5a5', background: '#fff5f5', color: '#dc2626', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+            style={{ padding: '10px 20px', borderRadius: 99, border: '1.5px solid #fca5a5', background: '#fff5f5', color: '#dc2626', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
           >
             Delete Account
           </button>
@@ -62,13 +62,13 @@ export default function SecuritySection({ user, deleteAccount, showToast }) {
           <div style={{ display: 'flex', gap: 10 }}>
             <button
               onClick={handleDelete} disabled={deleting}
-              style={{ padding: '10px 20px', borderRadius: 9, border: 'none', background: '#e8473f', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+              style={{ padding: '10px 20px', borderRadius: 99, border: 'none', background: '#e8473f', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
             >
               {deleting ? 'Deleting…' : 'Yes, delete permanently'}
             </button>
             <button
               onClick={() => setConfirmDelete(false)}
-              style={{ padding: '10px 20px', borderRadius: 9, border: '1.5px solid #e5e7eb', background: '#fff', color: '#374151', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+              style={{ padding: '10px 20px', borderRadius: 99, border: '1.5px solid #e5e7eb', background: '#fff', color: '#374151', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
             >
               Cancel
             </button>

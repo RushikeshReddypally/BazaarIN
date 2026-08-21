@@ -213,11 +213,11 @@ function EditPanel({ ad, onSave, onCancel }) {
 
       <div style={{ display: 'flex', gap: 10, paddingTop: 16, borderTop: '1px solid #f3f4f6', marginTop: 16 }}>
         <button onClick={onCancel} style={{
-          flex: 1, padding: '11px', borderRadius: 10, fontSize: 13.5, fontWeight: 600,
+          flex: 1, padding: '11px', borderRadius: 99, fontSize: 13.5, fontWeight: 600,
           border: '1.5px solid #e5e7eb', background: '#fff', cursor: 'pointer', color: '#6b7280',
         }}>Cancel</button>
         <button onClick={handleSave} disabled={saving} style={{
-          flex: 2, padding: '11px', borderRadius: 10, fontSize: 13.5, fontWeight: 700,
+          flex: 2, padding: '11px', borderRadius: 99, fontSize: 13.5, fontWeight: 700,
           border: 'none', background: '#1d3a6e', color: '#fff', cursor: 'pointer',
           opacity: saving ? 0.7 : 1,
         }}>{saving ? 'Saving…' : 'Save Changes'}</button>
@@ -283,17 +283,17 @@ function AdRow({ ad, onView, onEdit, onToggleSold, onDelete, deleting }) {
       {/* Actions */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 5, flexShrink: 0 }}>
         <button onClick={onEdit} style={{
-          padding: '5px 11px', borderRadius: 7, fontSize: 11.5, fontWeight: 600,
+          padding: '5px 11px', borderRadius: 99, fontSize: 11.5, fontWeight: 600,
           border: '1.5px solid #dbeafe', background: '#eff6ff', cursor: 'pointer', color: '#1d4ed8',
         }}>Edit</button>
         <button onClick={onToggleSold} style={{
-          padding: '5px 11px', borderRadius: 7, fontSize: 11.5, fontWeight: 600,
+          padding: '5px 11px', borderRadius: 99, fontSize: 11.5, fontWeight: 600,
           border: `1.5px solid ${isSold ? '#d1fae5' : '#e5e7eb'}`,
           background: isSold ? '#ecfdf5' : '#fff',
           cursor: 'pointer', color: isSold ? '#059669' : '#6b7280',
         }}>{isSold ? 'Unmark' : 'Mark Sold'}</button>
         <button onClick={onDelete} disabled={deleting} style={{
-          padding: '5px 11px', borderRadius: 7, fontSize: 11.5, fontWeight: 600,
+          padding: '5px 11px', borderRadius: 99, fontSize: 11.5, fontWeight: 600,
           border: '1.5px solid #fca5a5', background: '#fff5f5',
           cursor: 'pointer', color: '#dc2626',
         }}>{deleting ? '…' : 'Delete'}</button>
@@ -412,11 +412,11 @@ export default function MyAdsModal() {
             </p>
             <div style={{ display: 'flex', gap: 10, width: '100%', maxWidth: 300 }}>
               <button onClick={() => setSoldConfirm(null)} style={{
-                flex: 1, padding: '12px', borderRadius: 10, fontSize: 14, fontWeight: 600,
+                flex: 1, padding: '12px', borderRadius: 99, fontSize: 14, fontWeight: 600,
                 border: '1.5px solid #e5e7eb', background: '#fff', cursor: 'pointer', color: '#6b7280',
               }}>Cancel</button>
               <button onClick={() => applyToggleSold(soldConfirm, true)} style={{
-                flex: 2, padding: '12px', borderRadius: 10, fontSize: 14, fontWeight: 700,
+                flex: 2, padding: '12px', borderRadius: 99, fontSize: 14, fontWeight: 700,
                 border: 'none', background: '#1d3a6e', color: '#fff', cursor: 'pointer',
               }}>Yes, Mark as Sold</button>
             </div>

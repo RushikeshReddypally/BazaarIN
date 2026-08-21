@@ -216,7 +216,7 @@ export default function BasicInfoSection({ user, showToast }) {
         </Section>
 
         <button type="submit" disabled={saving} style={{
-          padding: '13px 32px', borderRadius: 10, background: '#1a1a2e', color: '#fff',
+          padding: '13px 32px', borderRadius: 99, background: '#1a1a2e', color: '#fff',
           border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 700,
         }}>
           {saving ? 'Saving…' : 'Save Changes'}

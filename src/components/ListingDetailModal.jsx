@@ -431,7 +431,7 @@ export default function ListingDetailModal() {
                         </div>
                       </div>
                       <button onClick={handleUnmarkSold} style={{
-                        width: '100%', padding: '13px', borderRadius: 10,
+                        width: '100%', padding: '13px', borderRadius: 99,
                         background: '#ecfdf5', color: '#059669',
                         border: '1.5px solid #a7f3d0', cursor: 'pointer',
                         fontSize: 14, fontWeight: 700,
@@ -440,7 +440,7 @@ export default function ListingDetailModal() {
                         <TagIcon /> Unmark as Sold
                       </button>
                       <button onClick={handleDelete} disabled={deleting} style={{
-                        width: '100%', padding: '13px', borderRadius: 10,
+                        width: '100%', padding: '13px', borderRadius: 99,
                         background: '#fff', color: '#dc2626',
                         border: '1.5px solid #fca5a5', cursor: 'pointer',
                         fontSize: 14, fontWeight: 700,
@@ -452,7 +452,7 @@ export default function ListingDetailModal() {
                   ) : (
                     <>
                       <button onClick={handleMarkSold} style={{
-                        width: '100%', padding: '13px', borderRadius: 10,
+                        width: '100%', padding: '13px', borderRadius: 99,
                         background: '#1d3a6e', color: '#fff',
                         fontSize: 14, fontWeight: 700, border: 'none', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
@@ -460,7 +460,7 @@ export default function ListingDetailModal() {
                         <TagIcon /> Mark as Sold
                       </button>
                       <button onClick={handleDelete} disabled={deleting} style={{
-                        width: '100%', padding: '13px', borderRadius: 10,
+                        width: '100%', padding: '13px', borderRadius: 99,
                         background: '#fff', color: '#dc2626',
                         border: '1.5px solid #fca5a5', cursor: 'pointer',
                         fontSize: 14, fontWeight: 700,
@@ -474,7 +474,7 @@ export default function ListingDetailModal() {
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <button onClick={handleContact} style={{
-                    width: '100%', padding: '13px', borderRadius: 10,
+                    width: '100%', padding: '13px', borderRadius: 99,
                     background: '#1d3a6e', color: '#fff',
                     fontSize: 14, fontWeight: 700, border: 'none', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -486,7 +486,7 @@ export default function ListingDetailModal() {
                     <ChatIcon /> Chat With Seller
                   </button>
                   <button onClick={handleSave} style={{
-                    width: '100%', padding: '13px', borderRadius: 10,
+                    width: '100%', padding: '13px', borderRadius: 99,
                     border: `1.5px solid ${saved ? '#fca5a5' : '#e5e7eb'}`,
                     background: saved ? '#fff5f5' : '#fff',
                     color: saved ? '#e8473f' : '#374151',
@@ -505,7 +505,7 @@ export default function ListingDetailModal() {
                         <button
                           onClick={() => { addToCart(listing); showToast('Added to cart', '🛒') }}
                           style={{
-                            width: '100%', padding: '13px', borderRadius: 10,
+                            width: '100%', padding: '13px', borderRadius: 99,
                             border: '1.5px solid #e5e7eb', background: '#fff', color: '#374151',
                             fontSize: 14, fontWeight: 700, cursor: 'pointer',
                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -521,7 +521,7 @@ export default function ListingDetailModal() {
                     }
                     return (
                       <div style={{
-                        width: '100%', borderRadius: 10, display: 'flex', overflow: 'hidden',
+                        width: '100%', borderRadius: 99, display: 'flex', overflow: 'hidden',
                         border: '1.5px solid #bfdbfe', background: '#eff6ff',
                       }}>
                         <button

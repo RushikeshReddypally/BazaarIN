@@ -119,7 +119,7 @@ export default function CartModal() {
                     onClick={() => openListing(item)}
                     style={{
                       fontSize: 12, fontWeight: 600, padding: '6px 14px',
-                      background: '#1a1a2e', color: '#fff', borderRadius: 6, border: 'none', cursor: 'pointer',
+                      background: '#1a1a2e', color: '#fff', borderRadius: 99, border: 'none', cursor: 'pointer',
                     }}
                   >
                     View
@@ -128,7 +128,7 @@ export default function CartModal() {
                     onClick={() => removeFromCart(item.id)}
                     style={{
                       fontSize: 12, fontWeight: 600, padding: '6px 14px',
-                      background: 'transparent', color: '#e8473f', borderRadius: 6, border: '1px solid #fca5a5', cursor: 'pointer',
+                      background: 'transparent', color: '#e8473f', borderRadius: 99, border: '1px solid #fca5a5', cursor: 'pointer',
                     }}
                   >
                     Remove

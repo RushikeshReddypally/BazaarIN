@@ -95,7 +95,7 @@ export default function AddressesSection({ user, showToast }) {
 
         <button
           onClick={handleSave} disabled={saving}
-          style={{ width: '100%', padding: '13px', borderRadius: 10, background: '#1a1a2e', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 700 }}
+          style={{ width: '100%', padding: '13px', borderRadius: 99, background: '#1a1a2e', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 700 }}
         >
           {saving ? 'Saving…' : 'Save Address'}
         </button>
@@ -109,7 +109,7 @@ export default function AddressesSection({ user, showToast }) {
         <h3 style={{ fontSize: 14, fontWeight: 800, color: '#1a1a2e', margin: 0 }}>My Addresses</h3>
         <button
           onClick={startNew}
-          style={{ padding: '8px 16px', borderRadius: 9, background: '#1a1a2e', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 700 }}
+          style={{ padding: '8px 16px', borderRadius: 99, background: '#1a1a2e', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 700 }}
         >
           + Add A Location
         </button>

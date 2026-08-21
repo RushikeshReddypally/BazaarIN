@@ -383,7 +383,7 @@ function VerifyTab() {
               </div>
               <button
                 onClick={() => revoke(p)} disabled={busy === p.id}
-                style={{ padding: '6px 14px', borderRadius: 7, border: '1px solid #fca5a5', background: '#fff5f5', color: '#dc2626', fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
+                style={{ padding: '6px 14px', borderRadius: 99, border: '1px solid #fca5a5', background: '#fff5f5', color: '#dc2626', fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
               >
                 Revoke
               </button>
@@ -438,13 +438,13 @@ function PendingCard({ p, busy, onApprove, onReject }) {
       <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
         <button
           onClick={onApprove} disabled={busy}
-          style={{ padding: '7px 16px', borderRadius: 7, border: 'none', background: '#059669', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+          style={{ padding: '7px 16px', borderRadius: 99, border: 'none', background: '#059669', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
         >
           {busy ? '…' : 'Approve · 6mo'}
         </button>
         <button
           onClick={onReject} disabled={busy}
-          style={{ padding: '7px 16px', borderRadius: 7, border: '1px solid #e5e7eb', background: '#fff', color: '#6b7280', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+          style={{ padding: '7px 16px', borderRadius: 99, border: '1px solid #e5e7eb', background: '#fff', color: '#6b7280', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
         >
           Dismiss
         </button>
@@ -981,11 +981,11 @@ function BlogTab() {
             Publish immediately
           </label>
           <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={() => setEditing(null)} style={{ padding: '10px 20px', borderRadius: 9, border: '1.5px solid #e5e7eb', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', color: '#374151' }}>Cancel</button>
+            <button onClick={() => setEditing(null)} style={{ padding: '10px 20px', borderRadius: 99, border: '1.5px solid #e5e7eb', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', color: '#374151' }}>Cancel</button>
             <button
               onClick={save}
               disabled={saving || !editing.title.trim() || !editing.content.trim()}
-              style={{ padding: '10px 24px', borderRadius: 9, border: 'none', background: '#1d3a6e', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: (saving || !editing.title.trim()) ? 0.6 : 1 }}
+              style={{ padding: '10px 24px', borderRadius: 99, border: 'none', background: '#1d3a6e', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: (saving || !editing.title.trim()) ? 0.6 : 1 }}
             >
               {saving ? 'Saving…' : 'Save Post'}
             </button>
@@ -1004,7 +1004,7 @@ function BlogTab() {
         </div>
         <button
           onClick={() => setEditing(emptyForm)}
-          style={{ padding: '9px 18px', background: '#1d3a6e', color: '#fff', border: 'none', borderRadius: 9, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+          style={{ padding: '9px 18px', background: '#1d3a6e', color: '#fff', border: 'none', borderRadius: 99, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
         >
           + New Post
         </button>

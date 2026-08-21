@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext'
 import { supabase } from '../lib/supabase'
 
 const BTN = {
-  width: '100%', padding: '13px 16px', borderRadius: 10,
+  width: '100%', padding: '13px 16px', borderRadius: 99,
   border: '1.5px solid #e5e7eb', background: '#fff', cursor: 'pointer',
   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
   fontSize: 14, fontWeight: 600, color: '#1a1a2e', fontFamily: 'inherit',

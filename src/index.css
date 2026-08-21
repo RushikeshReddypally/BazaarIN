@@ -86,8 +86,16 @@ input,select,textarea{font-family:var(--font)}
 .btn-ghost:hover{background:var(--indigo);color:var(--white);border-color:var(--indigo);transform:translateY(-2px)}
 .btn-silk{background:var(--white);color:var(--indigo);box-shadow:var(--sh-sm)}
 .btn-silk:hover{transform:translateY(-2px) scale(1.02);box-shadow:var(--sh-md)}
+.btn-success{background:#059669;color:var(--white);box-shadow:var(--sh-xs)}
+.btn-success:hover{background:#047857;transform:translateY(-2px);box-shadow:var(--sh-md)}
+.btn-danger{background:#fff;color:#dc2626;border:1.5px solid #fca5a5}
+.btn-danger:hover{background:#dc2626;color:var(--white);border-color:#dc2626;transform:translateY(-2px)}
+.btn-danger-solid{background:#e8473f;color:var(--white);box-shadow:var(--sh-xs)}
+.btn-danger-solid:hover{background:#dc2626;transform:translateY(-2px);box-shadow:var(--sh-md)}
 .btn-lg{padding:15px 32px;font-size:16px}
 .btn-sm{padding:8px 16px;font-size:13px}
+.btn-xs{padding:6px 14px;font-size:12px}
+.btn:disabled{opacity:.55;cursor:default;transform:none!important;box-shadow:none!important}
 
 /* ═══════════════════════════════════════════════════════
    BADGE
@@ -847,7 +855,7 @@ h2.sell-h{
 .fr textarea{height:96px;resize:vertical}
 .fr-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .fr-submit{
-  width:100%;padding:14px;border-radius:var(--r-lg);
+  width:100%;padding:14px;border-radius:99px;
   background:var(--indigo);color:var(--white);
   border:none;font-family:var(--font);font-size:15px;font-weight:700;
   cursor:pointer;letter-spacing:-.2px;

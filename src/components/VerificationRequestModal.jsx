@@ -174,7 +174,7 @@ export default function VerificationRequestModal({ user, onClose, onSubmit, show
         {!hasPhoto ? (
           <button
             onClick={() => inputRef.current?.click()}
-            style={{ width: '100%', padding: '11px', borderRadius: 10, border: '1.5px solid #e5e7eb', background: '#fff', color: '#374151', cursor: 'pointer', fontSize: 13, fontWeight: 600, marginBottom: 10 }}
+            style={{ width: '100%', padding: '11px', borderRadius: 99, border: '1.5px solid #e5e7eb', background: '#fff', color: '#374151', cursor: 'pointer', fontSize: 13, fontWeight: 600, marginBottom: 10 }}
           >
             {cameraActive ? 'Or upload a photo instead' : 'Upload a photo'}
           </button>
@@ -182,13 +182,13 @@ export default function VerificationRequestModal({ user, onClose, onSubmit, show
           <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
             <button
               onClick={retake}
-              style={{ flex: 1, padding: '12px', borderRadius: 10, border: '1.5px solid #e5e7eb', background: '#fff', color: '#374151', cursor: 'pointer', fontSize: 13.5, fontWeight: 600 }}
+              style={{ flex: 1, padding: '12px', borderRadius: 99, border: '1.5px solid #e5e7eb', background: '#fff', color: '#374151', cursor: 'pointer', fontSize: 13.5, fontWeight: 600 }}
             >
               Retake
             </button>
             <button
               onClick={handleNext} disabled={uploading}
-              style={{ flex: 2, padding: '12px', borderRadius: 10, border: 'none', background: '#1a1a2e', color: '#fff', cursor: 'pointer', fontSize: 13.5, fontWeight: 700 }}
+              style={{ flex: 2, padding: '12px', borderRadius: 99, border: 'none', background: '#1a1a2e', color: '#fff', cursor: 'pointer', fontSize: 13.5, fontWeight: 700 }}
             >
               {uploading ? 'Submitting…' : isLast ? 'Submit for Review' : 'Next →'}
             </button>
