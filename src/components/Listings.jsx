@@ -37,7 +37,7 @@ function FilterBtn({ label, options, value, onChange }) {
         onClick={toggle}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 5, flexShrink: 0,
-          padding: '8px 13px', borderRadius: 8, whiteSpace: 'nowrap',
+          padding: '8px 13px', borderRadius: 99, whiteSpace: 'nowrap',
           fontSize: 13, fontWeight: 500, cursor: 'pointer',
           border: `1.5px solid ${active ? '#1d3a6e' : '#d1d5db'}`,
           background: active ? '#1d3a6e' : '#fff',
@@ -176,7 +176,7 @@ function MoreFiltersPanel({ groups, activeSubFilters, onChange, activeCount, onC
           <button
             onClick={() => { Object.keys(groups).forEach(g => onChange(g, null)); onClose() }}
             style={{
-              width: '100%', padding: '9px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+              width: '100%', padding: '9px', borderRadius: 99, fontSize: 13, fontWeight: 600,
               cursor: 'pointer', border: '1.5px solid #fca5a5', background: '#fff5f5', color: '#dc2626',
             }}
           >
@@ -422,7 +422,7 @@ export default function Listings() {
               placeholder="Search listings…"
               style={{
                 paddingLeft: 32, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
-                border: '1.5px solid #d1d5db', borderRadius: 8, fontSize: 13.5,
+                border: '1.5px solid #d1d5db', borderRadius: 99, fontSize: 13.5,
                 background: '#fff', outline: 'none', width: 190, color: '#1a1a2e',
               }}
             />
@@ -446,7 +446,7 @@ export default function Listings() {
               onClick={() => setMoreOpen(o => !o)}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6, flexShrink: 0,
-                padding: '8px 13px', borderRadius: 8, whiteSpace: 'nowrap',
+                padding: '8px 13px', borderRadius: 99, whiteSpace: 'nowrap',
                 fontSize: 13, fontWeight: 500, cursor: 'pointer',
                 border: `1.5px solid ${moreActiveCount > 0 || moreOpen ? '#1d3a6e' : '#d1d5db'}`,
                 background: moreActiveCount > 0 ? '#1d3a6e' : moreOpen ? '#f0f4ff' : '#fff',
@@ -478,7 +478,7 @@ export default function Listings() {
             onClick={() => { setActiveSubFilters({}); setSearch('') }}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 5, flexShrink: 0,
-              padding: '8px 13px', borderRadius: 8, fontSize: 13, fontWeight: 500,
+              padding: '8px 13px', borderRadius: 99, fontSize: 13, fontWeight: 500,
               cursor: 'pointer',
               border: `1.5px solid ${hasAnyFilter ? '#fca5a5' : '#e5e7eb'}`,
               background: hasAnyFilter ? '#fff5f5' : '#fafafa',

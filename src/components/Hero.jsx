@@ -116,13 +116,13 @@ export default function Hero() {
           </p>
 
           <div className="hero-actions">
-            <button className="btn btn-dark btn-lg" style={{ minWidth: 190, justifyContent: 'center' }} onClick={() => setPostOpen(true)}>
+            <button className="btn btn-dark btn-lg" style={{ width: 210, height: 54, boxSizing: 'border-box', justifyContent: 'center' }} onClick={() => setPostOpen(true)}>
               <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path d="M12 5v14M5 12h14" />
               </svg>
               Post Free Ad
             </button>
-            <a href="#listings" className="btn btn-ghost btn-lg" style={{ minWidth: 190, justifyContent: 'center' }}>Browse Listings</a>
+            <a href="#listings" className="btn btn-ghost btn-lg" style={{ width: 210, height: 54, boxSizing: 'border-box', justifyContent: 'center' }}>Browse Listings</a>
           </div>
 
           <div className="hero-trust" style={{ gap: 16 }}>

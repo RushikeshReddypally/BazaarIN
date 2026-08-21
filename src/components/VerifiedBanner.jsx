@@ -37,7 +37,7 @@ export default function VerifiedBanner() {
     <div style={{
       display: 'flex', alignItems: 'center', gap: 16,
       background: 'linear-gradient(135deg,#eff6ff,#f0f7ff)',
-      border: '1px solid #bfdbfe', borderRadius: 14,
+      border: '1px solid #bfdbfe', borderRadius: 99,
       padding: '16px 20px', marginBottom: 28,
     }}>
       <div style={{
@@ -66,7 +66,7 @@ export default function VerifiedBanner() {
         onClick={handleClick}
         disabled={isPending}
         style={{
-          flexShrink: 0, padding: '10px 22px', borderRadius: 10,
+          flexShrink: 0, padding: '10px 22px', borderRadius: 99,
           border: 'none', background: isVerified ? '#059669' : '#fff',
           color: isVerified ? '#fff' : '#1a1a2e',
           fontSize: 13.5, fontWeight: 700,

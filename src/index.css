@@ -550,9 +550,9 @@ h2.sec-h small{
 .lg-list .lc-img{width:120px;height:auto;min-height:96px;flex-shrink:0}
 .lg-list .lc-body{flex:1;min-width:0;padding:10px 14px;display:flex;flex-direction:column;justify-content:center}
 
-.view-toggle{display:flex;gap:2px;border:1.5px solid var(--ink-faint,#d1d5db);border-radius:8px;padding:2px;flex-shrink:0}
+.view-toggle{display:flex;gap:2px;border:1.5px solid var(--ink-faint,#d1d5db);border-radius:99px;padding:2px;flex-shrink:0}
 .view-toggle-btn{
-  width:30px;height:30px;border-radius:6px;border:none;background:none;cursor:pointer;
+  width:30px;height:30px;border-radius:99px;border:none;background:none;cursor:pointer;
   display:flex;align-items:center;justify-content:center;color:#9ca3af;transition:all .15s ease;
 }
 .view-toggle-btn.active{background:#1d3a6e;color:#fff}
