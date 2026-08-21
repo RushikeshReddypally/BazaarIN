@@ -399,14 +399,14 @@ export default function Listings() {
       <div className="container">
         <VerifiedBanner />
 
-        <div className="sec-head reveal">
+        <div className="sec-head">
           <h2 className="sec-h">
             <small>Fresh near you</small>Latest Listings
           </h2>
         </div>
 
         {/* Filter + Sort bar — single line */}
-        <div className="reveal reveal-d1" style={{
+        <div style={{
           display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, flexWrap: 'wrap',
         }}>
 
@@ -538,7 +538,7 @@ export default function Listings() {
         )}
 
         {/* Listings Grid */}
-        <div className={`lg${view === 'list' ? ' lg-list' : ''} reveal reveal-d2`}>
+        <div className={`lg${view === 'list' ? ' lg-list' : ''}`}>
           {loading ? (
             <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '80px 0' }}>
               <div style={{ fontSize: 32, marginBottom: 12 }}>⏳</div>
@@ -591,7 +591,7 @@ export default function Listings() {
         </div>
 
         {filtered.length > 0 && (
-          <div className="load-more reveal reveal-d3">
+          <div className="load-more">
             <button
               className="btn btn-ghost"
               style={{ fontSize: 15, padding: '13px 36px' }}
