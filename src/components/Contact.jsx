@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useApp } from '../context/AppContext'
+import { supabase } from '../lib/supabase'
 
 const contactCards = [
   { icon: '💬', title: 'In-App Chat',    sub: 'Message sellers directly from any listing', href: '#listings' },
@@ -12,13 +13,26 @@ const emptyForm = { name: '', email: '', subject: '', message: '' }
 export default function Contact() {
   const { showToast } = useApp()
   const [form, setForm] = useState(emptyForm)
+  const [submitting, setSubmitting] = useState(false)
 
   function set(key) {
     return e => setForm(f => ({ ...f, [key]: e.target.value }))
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
+    setSubmitting(true)
+    const { error } = await supabase.from('contact_messages').insert({
+      name: form.name.trim(),
+      email: form.email.trim(),
+      subject: form.subject.trim(),
+      message: form.message.trim(),
+    })
+    setSubmitting(false)
+    if (error) {
+      showToast("Couldn't send your message — please try again", '✕')
+      return
+    }
     showToast("Message sent! We'll reply within 24 hours.", '✉️')
     setForm(emptyForm)
   }
@@ -72,8 +86,8 @@ export default function Contact() {
               <textarea value={form.message} onChange={set('message')} placeholder="Tell us more…" required />
             </div>
 
-            <button type="submit" className="fr-submit">
-              Send Message
+            <button type="submit" className="fr-submit" disabled={submitting} style={{ opacity: submitting ? 0.7 : 1, cursor: submitting ? 'default' : 'pointer' }}>
+              {submitting ? 'Sending…' : 'Send Message'}
               <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path d="m22 2-7 20-4-9-9-4 20-7z" />
               </svg>

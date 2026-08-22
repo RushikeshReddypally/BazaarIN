@@ -17,6 +17,7 @@ export default function AdminModal() {
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'listings', label: 'Listings', icon: '📋' },
     { id: 'verify', label: 'Verify', icon: '✅' },
+    { id: 'messages', label: 'Messages', icon: '📨' },
     { id: 'blog', label: 'Blog', icon: '✍️' },
     { id: 'seo', label: 'SEO', icon: '🔍' },
     { id: 'sql', label: 'SQL Setup', icon: '⚙️' },
@@ -68,6 +69,7 @@ export default function AdminModal() {
           {tab === 'dashboard' && <DashboardTab />}
           {tab === 'listings' && <ListingsTab />}
           {tab === 'verify' && <VerifyTab />}
+          {tab === 'messages' && <MessagesTab />}
           {tab === 'blog' && <BlogTab />}
           {tab === 'seo' && <SEOTab />}
           {tab === 'sql' && <SQLTab />}
@@ -391,6 +393,95 @@ function VerifyTab() {
           ))}
         </div>
       </div>
+    </div>
+  )
+}
+
+function MessagesTab() {
+  const { showToast } = useApp()
+  const [messages, setMessages] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => { load() }, [])
+
+  async function load() {
+    setLoading(true)
+    const { data, error } = await supabase
+      .from('contact_messages')
+      .select('*')
+      .order('created_at', { ascending: false })
+    if (error) showToast('Could not load messages — run the SQL Setup step first', '✕')
+    setMessages(data || [])
+    setLoading(false)
+  }
+
+  async function markRead(m) {
+    if (m.read) return
+    setMessages(prev => prev.map(x => x.id === m.id ? { ...x, read: true } : x))
+    await supabase.from('contact_messages').update({ read: true }).eq('id', m.id)
+  }
+
+  async function remove(id) {
+    if (!window.confirm('Delete this message?')) return
+    await supabase.from('contact_messages').delete().eq('id', id)
+    setMessages(prev => prev.filter(x => x.id !== id))
+  }
+
+  if (loading) return <Loader />
+
+  const unreadCount = messages.filter(m => !m.read).length
+
+  return (
+    <div style={{ padding: 24 }}>
+      <div style={{ marginBottom: 20 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 800, color: '#1a1a2e', marginBottom: 4 }}>Contact Messages</h3>
+        <p style={{ fontSize: 12, color: '#9ca3af' }}>{unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'}</p>
+      </div>
+
+      {messages.length === 0 ? (
+        <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', padding: 32, textAlign: 'center', color: '#9ca3af', fontSize: 13 }}>
+          No messages yet
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {messages.map(m => (
+            <div
+              key={m.id}
+              onClick={() => markRead(m)}
+              style={{
+                background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb',
+                padding: '14px 16px', cursor: m.read ? 'default' : 'pointer',
+                borderLeft: m.read ? '1px solid #e5e7eb' : '3px solid #1d3a6e',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 6 }}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 13.5, fontWeight: m.read ? 600 : 800, color: '#1a1a2e' }}>{m.subject}</div>
+                  <div style={{ fontSize: 12, color: '#9ca3af' }}>{m.name} · {m.email}</div>
+                </div>
+                <div style={{ fontSize: 11, color: '#9ca3af', flexShrink: 0 }}>
+                  {new Date(m.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </div>
+              </div>
+              <p style={{ fontSize: 13, color: '#4b5563', margin: '0 0 10px', whiteSpace: 'pre-wrap' }}>{m.message}</p>
+              <div style={{ display: 'flex', gap: 8 }} onClick={e => e.stopPropagation()}>
+                <a
+                  href={`mailto:${m.email}?subject=${encodeURIComponent('Re: ' + m.subject)}`}
+                  style={{ padding: '5px 12px', borderRadius: 99, border: '1px solid #e5e7eb', background: '#f9fafb', color: '#1d3a6e', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}
+                >
+                  Reply via Email
+                </a>
+                <button
+                  onClick={() => remove(m.id)}
+                  style={{ padding: '5px 12px', borderRadius: 99, border: '1px solid #fca5a5', background: '#fff5f5', color: '#dc2626', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -791,6 +882,47 @@ DO $$ BEGIN
   CREATE POLICY "messages_delete_own" ON public.messages
   FOR DELETE USING (auth.uid() = sender_id OR receiver_phone = (auth.jwt() ->> 'phone'));
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;`,
+
+    contactMessages: `-- Contact Us messages: stores every submission from the Contact page.
+-- Previously the form only showed a fake "Message sent!" toast and never
+-- saved anything — anyone who contacted you was silently ignored. This
+-- creates a table for it. Anyone (including logged-out visitors) can INSERT
+-- a message — that's the point of a public contact form — but only the
+-- admin can read, mark as read, or delete messages. Change the email below
+-- if your admin address differs.
+
+CREATE TABLE IF NOT EXISTS public.contact_messages (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  email text NOT NULL,
+  subject text NOT NULL,
+  message text NOT NULL,
+  read boolean NOT NULL DEFAULT false,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  CREATE POLICY "contact_messages_insert_anyone" ON public.contact_messages
+  FOR INSERT TO anon, authenticated WITH CHECK (true);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "contact_messages_select_admin" ON public.contact_messages
+  FOR SELECT USING (auth.jwt() ->> 'email' = 'rushikesh.reddypally@gmail.com');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "contact_messages_update_admin" ON public.contact_messages
+  FOR UPDATE USING (auth.jwt() ->> 'email' = 'rushikesh.reddypally@gmail.com')
+  WITH CHECK (auth.jwt() ->> 'email' = 'rushikesh.reddypally@gmail.com');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE POLICY "contact_messages_delete_admin" ON public.contact_messages
+  FOR DELETE USING (auth.jwt() ->> 'email' = 'rushikesh.reddypally@gmail.com');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;`,
   }
 
   function copy(key, text) {
@@ -805,7 +937,7 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;`,
         <strong>Important:</strong> Run these SQL statements in your <a href="https://supabase.com/dashboard" target="_blank" rel="noreferrer" style={{ color: '#1d3a6e' }}>Supabase SQL Editor</a> to enable admin operations. Without them, admin delete will be blocked by RLS.
       </div>
 
-      {Object.entries({ lockdownProfiles: '🔒 URGENT: Lock Down Profiles Table', adminDelete: 'Admin Delete Policy', adminUpdate: 'Admin Update Policy', extrasColumn: 'Add Extras Column', verifiedProfiles: 'Seller Verification (profiles table)', profileExtraFields: 'Profile Extra Fields (DOB, Nationality, Gender)', addressesTable: 'Saved Addresses Table', verificationDocs: 'Verification Docs (Aadhaar + Selfie)', messagesDeleteOwn: 'Messages Delete Policy (for account deletion)' }).map(([key, label]) => (
+      {Object.entries({ lockdownProfiles: '🔒 URGENT: Lock Down Profiles Table', adminDelete: 'Admin Delete Policy', adminUpdate: 'Admin Update Policy', extrasColumn: 'Add Extras Column', verifiedProfiles: 'Seller Verification (profiles table)', profileExtraFields: 'Profile Extra Fields (DOB, Nationality, Gender)', addressesTable: 'Saved Addresses Table', verificationDocs: 'Verification Docs (Aadhaar + Selfie)', messagesDeleteOwn: 'Messages Delete Policy (for account deletion)', contactMessages: '📨 Contact Us Messages Table' }).map(([key, label]) => (
         <div key={key} style={{ marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1a1a2e', margin: 0 }}>{label}</h4>
