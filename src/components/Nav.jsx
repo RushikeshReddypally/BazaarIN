@@ -10,6 +10,17 @@ import CartIcon from './icons/CartIcon'
 import HeartIcon from './icons/HeartIcon'
 import ChatIcon from './icons/ChatIcon'
 import BellIcon from './icons/BellIcon'
+import MapPinIcon from './icons/MapPinIcon'
+import SearchIcon from './icons/SearchIcon'
+import PostIcon from './icons/PostIcon'
+import AdsIcon from './icons/AdsIcon'
+import ProfileIcon from './icons/ProfileIcon'
+import SignOutIcon from './icons/SignOutIcon'
+import DeleteIcon from './icons/DeleteIcon'
+import ShieldIcon from './icons/ShieldIcon'
+import GpsIcon from './icons/GpsIcon'
+import HamburgerIcon from './icons/HamburgerIcon'
+import ChevronIcon from './icons/ChevronIcon'
 
 const GRAD_BG = {
   li1: 'linear-gradient(145deg,#ece4f0,#ddd4e8)',
@@ -68,9 +79,7 @@ function NavSearch() {
 
   return (
     <div ref={wrapRef} className="nav-search" style={{ position: 'relative' }}>
-      <svg className="nav-search-icon" fill="none" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-        <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-      </svg>
+      <SearchIcon size={15} className="nav-search-icon" />
       <input
         type="text"
         placeholder="Search mobiles, cars, property…"
@@ -245,10 +254,7 @@ function HamburgerMenu() {
 
           {/* Current city display */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 18px 10px' }}>
-            <svg width="14" height="14" fill="#e8473f" stroke="none" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
-              <path d="M12 2a7 7 0 0 1 7 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 0 1 7-7z"/>
-              <circle cx="12" cy="9" r="2.5" fill="#fff"/>
-            </svg>
+            <MapPinIcon size={14} filled style={{ flexShrink: 0 }} />
             <span style={{ fontSize: 14, fontWeight: 700, color: '#1a1a2e', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {activeLocation === 'all' ? 'All India' : activeLocation}
             </span>
@@ -272,10 +278,7 @@ function HamburgerMenu() {
             {geoLocating ? (
               <div style={{ width: 16, height: 16, border: '2px solid #c9b8f0', borderTopColor: '#4a4e69', borderRadius: '50%', animation: 'spin 0.7s linear infinite', flexShrink: 0 }} />
             ) : (
-              <svg width="15" height="15" fill="none" stroke="#4a4e69" strokeWidth="2.2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
-                <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
-                <circle cx="12" cy="12" r="8" strokeOpacity=".3"/>
-              </svg>
+              <GpsIcon size={15} style={{ flexShrink: 0, color: '#4a4e69' }} />
             )}
             <span style={{ fontSize: 13, fontWeight: 600, color: '#4a4e69' }}>
               {geoLocating ? 'Detecting your location…' : 'Use my location'}
@@ -302,8 +305,8 @@ function HamburgerMenu() {
                 <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>{user.email || user.phone}</div>
               </div>
 
-              <HamItem icon={<PostIcon />} label="Post Ad" onClick={() => act(() => setPostOpen(true))} accent />
-              <HamItem icon={<AdsIcon />} label="My Ads" onClick={() => act(() => setMyAdsOpen(true))} />
+              <HamItem icon={<PostIcon size={16} />} label="Post Ad" onClick={() => act(() => setPostOpen(true))} accent />
+              <HamItem icon={<AdsIcon size={16} />} label="My Ads" onClick={() => act(() => setMyAdsOpen(true))} />
               <HamItem icon={<HeartIcon size={16} filled={savedCount > 0} />} label="Wishlist" badge={savedCount} onClick={() => act(() => setFavouritesOpen(true))} />
               <HamItem icon={<CartIcon size={16} />} label="View Cart" badge={cart.length} onClick={() => act(() => { setActiveListing(null); setCartOpen(true) })} />
               <HamItem icon={<ChatIcon size={16} />} label="Chats" onClick={() => act(() => { setNotifOpen(false); setMessagesOpen(true) })} />
@@ -311,16 +314,16 @@ function HamburgerMenu() {
 
               <div style={{ height: 1, background: '#f3f4f6', margin: '6px 0' }} />
 
-              <HamItem icon={<ProfileIcon />} label="Profile" onClick={() => act(() => { setActiveListing(null); setCartOpen(false); setProfileOpen(true) })} />
+              <HamItem icon={<ProfileIcon size={16} />} label="Profile" onClick={() => act(() => { setActiveListing(null); setCartOpen(false); setProfileOpen(true) })} />
               {(isAdminUser || isSEOUser) && (
-                <HamItem icon={<ShieldIcon />} label={isAdminUser ? 'Admin Panel' : 'SEO Panel'} onClick={() => act(() => setAdminOpen(true))} />
+                <HamItem icon={<ShieldIcon size={16} />} label={isAdminUser ? 'Admin Panel' : 'SEO Panel'} onClick={() => act(() => setAdminOpen(true))} />
               )}
-              <HamItem icon={<SignOutIcon />} label="Sign Out" onClick={() => act(logout)} />
+              <HamItem icon={<SignOutIcon size={16} />} label="Sign Out" onClick={() => act(logout)} />
 
               <div style={{ height: 1, background: '#f3f4f6', margin: '6px 0' }} />
 
               {!confirmDelete ? (
-                <HamItem icon={<DeleteIcon />} label="Delete Account" danger onClick={() => setConfirmDelete(true)} />
+                <HamItem icon={<DeleteIcon size={16} />} label="Delete Account" danger onClick={() => setConfirmDelete(true)} />
               ) : (
                 <div style={{ padding: '12px 18px', background: '#fff5f5', borderTop: '1px solid #fee2e2' }}>
                   <p style={{ fontSize: 12.5, color: '#991b1b', fontWeight: 600, marginBottom: 10 }}>
@@ -355,7 +358,7 @@ function HamburgerMenu() {
                 </button>
               </div>
               <HamItem icon={<CartIcon size={16} />} label="View Cart" badge={cart.length} onClick={() => act(() => { setActiveListing(null); setCartOpen(true) })} />
-              <HamItem icon={<PostIcon />} label="Post Ad" onClick={() => act(() => setLoginOpen(true))} accent />
+              <HamItem icon={<PostIcon size={16} />} label="Post Ad" onClick={() => act(() => setLoginOpen(true))} accent />
             </>
           )}
         </div>
@@ -373,11 +376,7 @@ function HamburgerMenu() {
         aria-label="Menu"
         style={{ position: 'relative' }}
       >
-        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-          {open
-            ? <path d="M18 6 6 18M6 6l12 12" />
-            : <><path d="M4 6h16M4 12h16M4 18h16" /></>}
-        </svg>
+        <HamburgerIcon open={open} size={20} />
         {user && unreadCount > 0 && (
           <span style={{
             position: 'absolute', top: -2, right: -4,
@@ -396,25 +395,6 @@ function HamburgerMenu() {
   )
 }
 
-/* Small icon components */
-const PostIcon = () => (
-  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-)
-const AdsIcon = () => (
-  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8M8 8h8M8 16h5"/></svg>
-)
-const ProfileIcon = () => (
-  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-)
-const SignOutIcon = () => (
-  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-)
-const DeleteIcon = () => (
-  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-)
-const ShieldIcon = () => (
-  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-)
 
 function HamItem({ icon, label, badge, danger, accent, onClick }) {
   return (
@@ -509,9 +489,7 @@ function UserMenu() {
         {unreadCount > 0 && (
           <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#e8473f' }} />
         )}
-        <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', opacity: 0.7 }}>
-          <path d="m6 9 6 6 6-6" />
-        </svg>
+        <ChevronIcon open={open} size={10} style={{ opacity: 0.7 }} />
       </button>
 
       {open && createPortal(
@@ -666,7 +644,7 @@ export default function Nav() {
                 title={isAdminUser ? 'Admin Panel' : 'SEO Panel'}
                 style={{ background: 'linear-gradient(135deg,#1a1a2e,#2d3561)', color: '#fff', display: 'flex', alignItems: 'center', gap: 6 }}
               >
-                <ShieldIcon /> {isAdminUser ? 'Admin' : 'SEO'}
+                <ShieldIcon size={14} /> {isAdminUser ? 'Admin' : 'SEO'}
               </button>
             )}
             <UserMenu />
@@ -677,9 +655,7 @@ export default function Nav() {
 
         {/* Post Ad — web only via CSS */}
         <button className="btn btn-dark btn-sm nav-hide-mobile" onClick={() => user ? setPostOpen(true) : setLoginOpen(true)}>
-          <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path d="M12 5v14M5 12h14" />
-          </svg>
+          <PostIcon size={13} />
           Post Ad
         </button>
 

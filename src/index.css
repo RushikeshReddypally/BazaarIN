@@ -157,10 +157,10 @@ input,select,textarea{font-family:var(--font)}
 }
 .nav-search-icon{
   position:absolute;left:12px;top:50%;transform:translateY(-50%);
-  width:15px;height:15px;stroke:var(--lilac);pointer-events:none;
-  transition:stroke var(--t) var(--ease);
+  color:var(--lilac);pointer-events:none;
+  transition:color var(--t) var(--ease);
 }
-.nav-search:focus-within .nav-search-icon{stroke:var(--grape)}
+.nav-search:focus-within .nav-search-icon{color:var(--grape)}
 .nav-right{display:flex;align-items:center;gap:6px;margin-left:auto}
 .nav-city{
   display:flex;align-items:center;gap:5px;

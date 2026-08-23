@@ -1,25 +1,12 @@
 import { motion, useAnimation } from 'motion/react'
 import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react'
 
-const PIN_VARIANTS = {
-  normal: { y: 0 },
-  animate: {
-    y: [0, -5, -3],
-    transition: { duration: 0.5, times: [0, 0.6, 1] },
-  },
+const SEARCH_VARIANTS = {
+  normal: { x: 0, y: 0 },
+  animate: { x: [0, 0, -3, 0], y: [0, -4, 0, 0] },
 }
 
-const CIRCLE_VARIANTS = {
-  normal: { opacity: 1 },
-  animate: {
-    opacity: [0, 1],
-    pathLength: [0, 1],
-    pathOffset: [0.5, 0],
-    transition: { delay: 0.3, duration: 0.5, opacity: { duration: 0.1, delay: 0.3 } },
-  },
-}
-
-const MapPinIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 28, filled = false, ...props }, ref) => {
+const SearchIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
   const controls = useAnimation()
   const isControlledRef = useRef(false)
 
@@ -45,25 +32,25 @@ const MapPinIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 2
     <div className={className} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
       <motion.svg
         animate={controls}
-        fill={filled ? '#e8473f' : 'none'}
+        fill="none"
         height={size}
-        initial="normal"
-        stroke={filled ? '#e8473f' : 'currentColor'}
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="2"
-        variants={PIN_VARIANTS}
+        transition={{ duration: 1, bounce: 0.3 }}
+        variants={SEARCH_VARIANTS}
         viewBox="0 0 24 24"
         width={size}
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
-        <motion.circle animate={controls} cx="12" cy="10" initial="normal" r="3" fill={filled ? '#fff' : 'none'} variants={CIRCLE_VARIANTS} />
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.3-4.3" />
       </motion.svg>
     </div>
   )
 })
 
-MapPinIcon.displayName = 'MapPinIcon'
+SearchIcon.displayName = 'SearchIcon'
 
-export default MapPinIcon
+export default SearchIcon

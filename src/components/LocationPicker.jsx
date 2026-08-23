@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { useApp } from '../context/AppContext'
 import { states } from '../data/locations'
 import MapPinIcon from './icons/MapPinIcon'
+import GpsIcon from './icons/GpsIcon'
 
 const NOMINATIM = 'https://nominatim.openstreetmap.org/reverse'
 
@@ -164,11 +165,7 @@ export default function LocationPicker() {
                 animation: 'spin 0.7s linear infinite', flexShrink: 0,
               }} />
             ) : (
-              <svg width="16" height="16" fill="none" stroke="#4a4e69" strokeWidth="2.2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
-                <circle cx="12" cy="12" r="8" strokeOpacity=".25"/>
-              </svg>
+              <GpsIcon size={16} style={{ flexShrink: 0, color: '#4a4e69' }} />
             )}
             <div>
               <div style={{ fontSize: 13, fontWeight: 700, color: '#22223b' }}>
