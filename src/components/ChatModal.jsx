@@ -196,25 +196,46 @@ export function MessagesModal() {
 
   function close() { setMessagesOpen(false) }
 
+  if (!messagesOpen) return null
+
   return (
-    <div className={`overlay${messagesOpen ? ' open' : ''}`} style={{ zIndex: 1300 }} onClick={e => e.target === e.currentTarget && close()}>
-      <div className="modal modal-wide" style={{ maxWidth: 520, padding: 0, overflow: 'hidden' }}>
-        <div style={{ padding: '24px 24px 16px', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: 20, fontWeight: 800, color: '#1a1a2e' }}>Messages</div>
-          <button className="modal-x" onClick={close} style={{ position: 'static', width: 32, height: 32 }}>✕</button>
-        </div>
-        <div style={{ padding: '8px 0', minHeight: 200, maxHeight: 480, overflowY: 'auto' }}>
-          {user ? <InboxPane user={user} /> : (
-            <div style={{ textAlign: 'center', padding: '40px 24px' }}>
-              <div style={{ fontSize: 40, marginBottom: 12 }}>🔒</div>
-              <div style={{ color: '#6b7280', fontSize: 14, marginBottom: 16 }}>Sign in to see your messages</div>
-              <button onClick={() => { close(); setLoginOpen(true) }} style={{ padding: '10px 24px', borderRadius: 99, background: '#1d3a6e', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600 }}>
-                Sign In
-              </button>
-            </div>
-          )}
+    <div style={{
+      position: 'fixed', top: 62, left: 0, right: 0, bottom: 0,
+      zIndex: 1300, background: '#f5f6f7', overflowY: 'auto',
+      animation: 'msgPageIn 0.18s ease',
+    }}>
+      {/* Secondary bar: back button */}
+      <div style={{ position: 'sticky', top: 0, zIndex: 20, background: '#fff', borderBottom: '1px solid #e5e7eb' }}>
+        <div style={{ maxWidth: 720, margin: '0 auto', padding: '0 24px', height: 44, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            onClick={close}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#1d3a6e', background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
+          >
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
+            Back
+          </button>
+          <span style={{ color: '#d1d5db' }}>|</span>
+          <span style={{ fontSize: 12, color: '#9ca3af' }}>Messages</span>
         </div>
       </div>
+
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '24px 24px 60px' }}>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1a1a2e', margin: '0 0 20px' }}>Messages</h1>
+
+        {user ? <InboxPane user={user} /> : (
+          <div style={{ textAlign: 'center', padding: '40px 0' }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>🔒</div>
+            <div style={{ color: '#6b7280', fontSize: 14, marginBottom: 16 }}>Sign in to see your messages</div>
+            <button onClick={() => { close(); setLoginOpen(true) }} style={{ padding: '10px 24px', borderRadius: 99, background: '#1d3a6e', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600 }}>
+              Sign In
+            </button>
+          </div>
+        )}
+      </div>
+
+      <style>{`@keyframes msgPageIn { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: none } }`}</style>
     </div>
   )
 }

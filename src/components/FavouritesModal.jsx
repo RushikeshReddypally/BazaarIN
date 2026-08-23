@@ -36,12 +36,34 @@ export default function FavouritesModal() {
 
   function close() { setFavouritesOpen(false) }
 
+  if (!favouritesOpen) return null
+
   return (
-    <div className={`overlay${favouritesOpen ? ' open' : ''}`} style={{ zIndex: 1300 }} onClick={e => e.target === e.currentTarget && close()}>
-      <div className="modal modal-wide" style={{ maxWidth: 560, padding: '32px 28px 28px' }}>
-        <button className="modal-x" onClick={close}>✕</button>
-        <div className="modal-logo">Saved Items</div>
-        <p className="modal-sub">Your wishlist</p>
+    <div style={{
+      position: 'fixed', top: 62, left: 0, right: 0, bottom: 0,
+      zIndex: 1300, background: '#f5f6f7', overflowY: 'auto',
+      animation: 'favPageIn 0.18s ease',
+    }}>
+      {/* Secondary bar: back button */}
+      <div style={{ position: 'sticky', top: 0, zIndex: 20, background: '#fff', borderBottom: '1px solid #e5e7eb' }}>
+        <div style={{ maxWidth: 720, margin: '0 auto', padding: '0 24px', height: 44, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            onClick={close}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#1d3a6e', background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
+          >
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
+            Back
+          </button>
+          <span style={{ color: '#d1d5db' }}>|</span>
+          <span style={{ fontSize: 12, color: '#9ca3af' }}>Saved Items</span>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '24px 24px 60px' }}>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1a1a2e', margin: '0 0 4px' }}>Saved Items</h1>
+        <p style={{ fontSize: 13, color: '#9ca3af', margin: '0 0 20px' }}>Your wishlist</p>
 
         {!user ? (
           <div style={{ textAlign: 'center', padding: '40px 0' }}>
@@ -59,7 +81,7 @@ export default function FavouritesModal() {
             <div style={{ color: '#6b7280', fontSize: 14 }}>No saved items yet. Tap the heart on any listing!</div>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 460, overflowY: 'auto' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {items.map(listing => (
               <div key={listing.id} style={{
                 display: 'flex', gap: 14, alignItems: 'center',
@@ -108,6 +130,8 @@ export default function FavouritesModal() {
           </div>
         )}
       </div>
+
+      <style>{`@keyframes favPageIn { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: none } }`}</style>
     </div>
   )
 }
