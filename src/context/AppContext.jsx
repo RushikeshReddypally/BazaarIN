@@ -9,6 +9,10 @@ function getInitContentPage() {
   return SLUG_TO_PAGE[slug] || null
 }
 
+function getInitAdminOpen() {
+  return window.location.pathname === '/admin'
+}
+
 const AppContext = createContext(null)
 
 // Read initial category from URL path (e.g. /cars/mumbai → vehicles)
@@ -52,7 +56,7 @@ export function AppProvider({ children }) {
   const [cart, setCart] = useState(() => {
     try { return JSON.parse(localStorage.getItem('bt_cart') || '[]') } catch { return [] }
   })
-  const [adminOpen, setAdminOpenRaw] = useState(false)
+  const [adminOpen, setAdminOpenRaw] = useState(getInitAdminOpen)
   const [notifOpen, setNotifOpenRaw] = useState(false)
 
   // Every full-page/modal overlay in the app is mutually exclusive — opening one closes
@@ -80,7 +84,15 @@ export function AppProvider({ children }) {
   const setFavouritesOpen = useCallback(v => { if (v) closeAllOverlaysExcept('favourites'); setFavouritesOpenRaw(v) }, [closeAllOverlaysExcept])
   const setCartOpen = useCallback(v => { if (v) closeAllOverlaysExcept('cart'); setCartOpenRaw(v) }, [closeAllOverlaysExcept])
   const setNotifOpen = useCallback(v => { if (v) closeAllOverlaysExcept('notif'); setNotifOpenRaw(v) }, [closeAllOverlaysExcept])
-  const setAdminOpen = useCallback(v => { if (v) closeAllOverlaysExcept('admin'); setAdminOpenRaw(v) }, [closeAllOverlaysExcept])
+  const setAdminOpen = useCallback(v => {
+    if (v) closeAllOverlaysExcept('admin')
+    setAdminOpenRaw(v)
+    if (v) {
+      window.history.pushState(null, '', '/admin')
+    } else if (window.location.pathname === '/admin') {
+      window.history.pushState(null, '', buildPath(activeCategory, activeLocationRaw))
+    }
+  }, [activeCategory, activeLocationRaw, closeAllOverlaysExcept])
 
   // Synchronously detect if we need to restore a listing from URL — prevents home page flash
   const [restoringListing, setRestoringListing] = useState(
@@ -140,6 +152,7 @@ export function AppProvider({ children }) {
       const id = new URLSearchParams(window.location.search).get('listing') || parseListingId(window.location.pathname)
       if (!id) setActiveListingRaw(null)
       setActiveContentPageRaw(getInitContentPage())
+      setAdminOpenRaw(getInitAdminOpen())
       const { cat, loc } = parsePathname(window.location.pathname)
       setActiveCategory(cat)
       if (loc) setActiveLocationRaw(loc)
@@ -150,12 +163,12 @@ export function AppProvider({ children }) {
 
   // Sync URL path when category or location changes (not while a listing/content page is open)
   useEffect(() => {
-    if (activeListing || activeContentPage) return
+    if (activeListing || activeContentPage || adminOpen) return
     const path = buildPath(activeCategory, activeLocationRaw)
     if (window.location.pathname !== path) {
       window.history.replaceState(null, '', path)
     }
-  }, [activeCategory, activeLocationRaw, activeListing, activeContentPage])
+  }, [activeCategory, activeLocationRaw, activeListing, activeContentPage, adminOpen])
 
   // Fetch saved (favourites) count when user changes
   useEffect(() => {

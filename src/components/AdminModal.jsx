@@ -25,28 +25,35 @@ export default function AdminModal() {
   const visibleTabs = isAdminUser ? allTabs : allTabs.filter(t => t.id === 'seo')
 
   return (
-    <div
-      style={{ position: 'fixed', inset: 0, zIndex: 2100, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
-      onClick={e => e.target === e.currentTarget && setAdminOpen(false)}
-    >
-      <div style={{ background: '#f8f9fb', borderRadius: 16, width: '100%', maxWidth: 980, height: '92vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 32px 80px rgba(0,0,0,0.3)' }}>
-
-        {/* Header */}
-        <div style={{ background: 'linear-gradient(135deg,#1a1a2e,#2d3561)', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="18" height="18" fill="none" stroke="#fff" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            </div>
-            <div>
-              <div style={{ color: '#fff', fontSize: 16, fontWeight: 800 }}>{isAdminUser ? 'Admin Panel' : 'SEO Panel'}</div>
-              <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11 }}>BazaarTrade.in Management Console</div>
-            </div>
+    <div style={{
+      position: 'fixed', top: 62, left: 0, right: 0, bottom: 0,
+      zIndex: 1300, background: '#f8f9fb', overflowY: 'auto',
+      animation: 'adminPageIn 0.18s ease',
+    }}>
+      {/* Header + tabs stick together at the top of the scroll area */}
+      <div style={{ position: 'sticky', top: 0, zIndex: 20 }}>
+        <div style={{ background: 'linear-gradient(135deg,#1a1a2e,#2d3561)', padding: '14px 24px', display: 'flex', alignItems: 'center', gap: 14 }}>
+          <button
+            onClick={() => setAdminOpen(false)}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.75)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
+          >
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
+            Back
+          </button>
+          <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.15)', flexShrink: 0 }} />
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="18" height="18" fill="none" stroke="#fff" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
           </div>
-          <button onClick={() => setAdminOpen(false)} style={{ color: 'rgba(255,255,255,0.6)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, lineHeight: 1 }}>✕</button>
+          <div>
+            <div style={{ color: '#fff', fontSize: 16, fontWeight: 800 }}>{isAdminUser ? 'Admin Panel' : 'SEO Panel'}</div>
+            <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11 }}>BazaarTrade.in Management Console</div>
+          </div>
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', background: '#fff', borderBottom: '1px solid #e5e7eb', flexShrink: 0 }}>
+        <div style={{ display: 'flex', background: '#fff', borderBottom: '1px solid #e5e7eb', overflowX: 'auto' }}>
           {visibleTabs.map(t => (
             <button
               key={t.id}
@@ -56,25 +63,27 @@ export default function AdminModal() {
                 fontSize: 13, fontWeight: tab === t.id ? 700 : 500,
                 color: tab === t.id ? '#1d3a6e' : '#6b7280',
                 borderBottom: tab === t.id ? '2px solid #1d3a6e' : '2px solid transparent',
-                display: 'flex', alignItems: 'center', gap: 6,
+                display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0,
               }}
             >
               <span>{t.icon}</span> {t.label}
             </button>
           ))}
         </div>
-
-        {/* Content */}
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          {tab === 'dashboard' && <DashboardTab />}
-          {tab === 'listings' && <ListingsTab />}
-          {tab === 'verify' && <VerifyTab />}
-          {tab === 'messages' && <MessagesTab />}
-          {tab === 'blog' && <BlogTab />}
-          {tab === 'seo' && <SEOTab />}
-          {tab === 'sql' && <SQLTab />}
-        </div>
       </div>
+
+      {/* Content */}
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        {tab === 'dashboard' && <DashboardTab />}
+        {tab === 'listings' && <ListingsTab />}
+        {tab === 'verify' && <VerifyTab />}
+        {tab === 'messages' && <MessagesTab />}
+        {tab === 'blog' && <BlogTab />}
+        {tab === 'seo' && <SEOTab />}
+        {tab === 'sql' && <SQLTab />}
+      </div>
+
+      <style>{`@keyframes adminPageIn { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: none } }`}</style>
     </div>
   )
 }
