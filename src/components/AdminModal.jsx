@@ -28,7 +28,6 @@ export default function AdminModal() {
     <div style={{
       position: 'fixed', top: 62, left: 0, right: 0, bottom: 0,
       zIndex: 1300, background: '#f8f9fb', overflowY: 'auto',
-      animation: 'adminPageIn 0.18s ease',
     }}>
       {/* Header + tabs stick together at the top of the scroll area */}
       <div style={{ position: 'sticky', top: 0, zIndex: 20 }}>
@@ -73,7 +72,7 @@ export default function AdminModal() {
       </div>
 
       {/* Content */}
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', animation: 'adminPageIn 0.18s ease' }}>
         {tab === 'dashboard' && <DashboardTab />}
         {tab === 'listings' && <ListingsTab />}
         {tab === 'verify' && <VerifyTab />}

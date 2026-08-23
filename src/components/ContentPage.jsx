@@ -35,7 +35,6 @@ export default function ContentPage() {
     <div style={{
       position: 'fixed', top: 62, left: 0, right: 0, bottom: 0,
       zIndex: 1300, background: '#f5f6f7', overflowY: 'auto',
-      animation: 'contentPageIn 0.18s ease',
     }}>
       {/* ── Secondary bar: back button ── */}
       <div style={{ position: 'sticky', top: 0, zIndex: 20, background: '#fff', borderBottom: '1px solid #e5e7eb' }}>
@@ -54,7 +53,7 @@ export default function ContentPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 720, margin: '0 auto', padding: '24px 24px 60px' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '24px 24px 60px', animation: 'contentPageIn 0.18s ease' }}>
         <div style={{ background: '#fff', borderRadius: 14, border: '1.5px solid #e5e7eb', padding: '28px 32px' }}>
           <h1 style={{ fontSize: 22, fontWeight: 800, color: '#1a1a2e', letterSpacing: '-0.3px', margin: '0 0 8px' }}>
             {content.title}

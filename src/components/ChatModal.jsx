@@ -202,7 +202,6 @@ export function MessagesModal() {
     <div style={{
       position: 'fixed', top: 62, left: 0, right: 0, bottom: 0,
       zIndex: 1300, background: '#f5f6f7', overflowY: 'auto',
-      animation: 'msgPageIn 0.18s ease',
     }}>
       {/* Secondary bar: back button */}
       <div style={{ position: 'sticky', top: 0, zIndex: 20, background: '#fff', borderBottom: '1px solid #e5e7eb' }}>
@@ -221,7 +220,7 @@ export function MessagesModal() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 720, margin: '0 auto', padding: '24px 24px 60px' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '24px 24px 60px', animation: 'msgPageIn 0.18s ease' }}>
         <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1a1a2e', margin: '0 0 20px' }}>Messages</h1>
 
         {user ? <InboxPane user={user} /> : (
