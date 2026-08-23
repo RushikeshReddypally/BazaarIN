@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useApp } from '../context/AppContext'
 import { states } from '../data/locations'
+import MapPinIcon from './icons/MapPinIcon'
 
 const NOMINATIM = 'https://nominatim.openstreetmap.org/reverse'
 
@@ -129,10 +130,7 @@ export default function LocationPicker() {
   return (
     <>
       <button ref={btnRef} className="nav-city" onClick={toggle}>
-        <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-          <path d="M12 2a7 7 0 0 1 7 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 0 1 7-7z" />
-          <circle cx="12" cy="9" r="2.5" />
-        </svg>
+        <MapPinIcon size={13} />
         {activeLocation === 'all' ? 'All Cities' : activeLocation}
       </button>
 
