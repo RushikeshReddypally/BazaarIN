@@ -1,4 +1,5 @@
 import { useApp } from '../context/AppContext'
+import PostIcon from './icons/PostIcon'
 
 const steps = [
   { icon: '📸', num: '01', label: 'Snap a Photo' },
@@ -22,9 +23,7 @@ export default function SellCTA() {
             </p>
             <div style={{ display: 'flex', gap: 12, marginTop: 28, flexWrap: 'wrap' }}>
               <button className="btn btn-silk btn-lg" onClick={() => setPostOpen(true)}>
-                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
+                <PostIcon size={16} />
                 Post Free Ad
               </button>
               <a

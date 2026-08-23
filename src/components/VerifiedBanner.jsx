@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { useVerification } from '../hooks/useVerification'
 import VerificationRequestModal from './VerificationRequestModal'
+import VerifiedBadgeIcon from './icons/VerifiedBadgeIcon'
 
 function getName(user) {
   return user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'Anonymous'
@@ -45,10 +46,7 @@ export default function VerifiedBanner() {
         background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
         boxShadow: '0 2px 8px rgba(29,58,110,0.12)',
       }}>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="#1d4ed8">
-          <path d="M12 1l2.39 2.42 3.4-.24.24 3.4L21 8.97l-1.63 3.03L21 15.03l-2.97 1.39-.24 3.4-3.4-.24L12 22l-2.39-2.42-3.4.24-.24-3.4L3 15.03l1.63-3.03L3 8.97l2.97-1.39.24-3.4 3.4.24z"/>
-          <path d="M9.5 12.2l1.8 1.8 3.2-3.6" stroke="#fff" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+        <VerifiedBadgeIcon size={22} />
       </div>
 
       <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>

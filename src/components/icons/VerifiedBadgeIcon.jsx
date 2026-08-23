@@ -1,17 +1,12 @@
 import { motion, useAnimation } from 'motion/react'
 import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react'
 
-// Generic hover-animated SVG wrapper, matching the API/behavior of the
-// lucide-animated icons used elsewhere (forwardRef + imperative start/stop,
-// or automatic hover trigger when unused). Pass `variants`/`transition` and
-// the raw <path>/<circle> children to build a new animated icon without
-// repeating the boilerplate.
-const AnimatedIcon = forwardRef(({
-  onMouseEnter, onMouseLeave, className, size = 28,
-  variants, transition, fill = 'none', viewBox = '0 0 24 24',
-  stroke = 'currentColor', strokeWidth = '2',
-  children, ...props
-}, ref) => {
+const BADGE_VARIANTS = {
+  normal: { scale: 1, rotate: 0 },
+  animate: { scale: [1, 1.15, 1], rotate: [0, 15, 0] },
+}
+
+const VerifiedBadgeIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 22, ...props }, ref) => {
   const controls = useAnimation()
   const isControlledRef = useRef(false)
 
@@ -37,24 +32,20 @@ const AnimatedIcon = forwardRef(({
     <div className={className} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
       <motion.svg
         animate={controls}
-        fill={fill}
-        height={size}
-        stroke={stroke}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={strokeWidth}
-        transition={transition}
-        variants={variants}
-        viewBox={viewBox}
         width={size}
-        xmlns="http://www.w3.org/2000/svg"
+        height={size}
+        viewBox="0 0 24 24"
+        fill="#1d4ed8"
+        transition={{ duration: 0.5, ease: 'easeInOut' }}
+        variants={BADGE_VARIANTS}
       >
-        {children}
+        <path d="M12 1l2.39 2.42 3.4-.24.24 3.4L21 8.97l-1.63 3.03L21 15.03l-2.97 1.39-.24 3.4-3.4-.24L12 22l-2.39-2.42-3.4.24-.24-3.4L3 15.03l1.63-3.03L3 8.97l2.97-1.39.24-3.4 3.4.24z"/>
+        <path d="M9.5 12.2l1.8 1.8 3.2-3.6" stroke="#fff" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
       </motion.svg>
     </div>
   )
 })
 
-AnimatedIcon.displayName = 'AnimatedIcon'
+VerifiedBadgeIcon.displayName = 'VerifiedBadgeIcon'
 
-export default AnimatedIcon
+export default VerifiedBadgeIcon
