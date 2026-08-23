@@ -139,7 +139,7 @@ export default function ListingDetailModal() {
   const isSold = badge === 'Sold'
   const hasImages = images?.length > 0
   const total = images?.length ?? 0
-  const catIcon = categoryIcons[category] ?? categoryIcons['all']
+  const CatIcon = categoryIcons[category] ?? categoryIcons['all']
   const discount = original_price && price && original_price > price
     ? Math.round((1 - price / original_price) * 100) : null
   const postedDate = created_at
@@ -321,7 +321,7 @@ export default function ListingDetailModal() {
                 </>
               ) : (
                 <div style={{ color: 'rgba(0,0,0,0.15)', transform: 'scale(3.5)', display: 'flex' }}>
-                  {catIcon}
+                  <CatIcon />
                 </div>
               )}
             </div>
@@ -559,7 +559,7 @@ export default function ListingDetailModal() {
 
             {/* Category */}
             <div style={{ background: '#fff', borderRadius: 12, border: '1.5px solid #e5e7eb', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ width: 36, height: 36, borderRadius: 10, background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{catIcon}</span>
+              <span style={{ width: 36, height: 36, borderRadius: 10, background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CatIcon /></span>
               <div>
                 <div style={{ fontSize: 11, color: '#9ca3af', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Category</div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#1a1a2e', textTransform: 'capitalize', marginTop: 2 }}>{category}</div>
@@ -602,7 +602,7 @@ export default function ListingDetailModal() {
                   <div className={l.gradient || 'li2'} style={{ height: 130, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {l.images?.[0]
                       ? <img src={l.images[0]} alt={l.title} loading="lazy" decoding="async" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                      : <span style={{ color: 'rgba(0,0,0,0.2)', display: 'flex', transform: 'scale(1.8)' }}>{categoryIcons[l.category] ?? categoryIcons['all']}</span>
+                      : <span style={{ color: 'rgba(0,0,0,0.2)', display: 'flex', transform: 'scale(1.8)' }}>{(() => { const Icon = categoryIcons[l.category] ?? categoryIcons['all']; return <Icon /> })()}</span>
                     }
                     {l.images?.length > 1 && (
                       <div style={{ position: 'absolute', bottom: 6, left: 6, background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: 9, fontWeight: 600, padding: '2px 6px', borderRadius: 4 }}>

@@ -19,7 +19,7 @@ export default function ListingCard({ listing }) {
   } = listing
 
   const thumb = images?.[0] ?? null
-  const catIcon = categoryIcons[category] ?? categoryIcons['all']
+  const CatIcon = categoryIcons[category] ?? categoryIcons['all']
 
   async function handleSave(e) {
     e.stopPropagation()
@@ -42,7 +42,7 @@ export default function ListingCard({ listing }) {
         </button>
         {thumb
           ? <img src={thumb} alt={title} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
-          : <span style={{ color: 'rgba(0,0,0,0.3)', display: 'flex' }}>{catIcon}</span>
+          : <span style={{ color: 'rgba(0,0,0,0.3)', display: 'flex' }}><CatIcon /></span>
         }
         {images?.length > 1 && (
           <div style={{
