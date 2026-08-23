@@ -13,6 +13,18 @@ function getInitAdminOpen() {
   return window.location.pathname === '/admin'
 }
 
+function getInitCartOpen() {
+  return window.location.pathname === '/cart'
+}
+
+function getInitFavouritesOpen() {
+  return window.location.pathname === '/saved'
+}
+
+function getInitMessagesOpen() {
+  return window.location.pathname === '/messages'
+}
+
 const AppContext = createContext(null)
 
 // Read initial category from URL path (e.g. /cars/mumbai → vehicles)
@@ -38,8 +50,8 @@ export function AppProvider({ children }) {
   const [profileTab, setProfileTab] = useState('basic')
   const [activeContentPage, setActiveContentPageRaw] = useState(getInitContentPage)
   const [myAdsOpen, setMyAdsOpenRaw] = useState(false)
-  const [messagesOpen, setMessagesOpenRaw] = useState(false)
-  const [favouritesOpen, setFavouritesOpenRaw] = useState(false)
+  const [messagesOpen, setMessagesOpenRaw] = useState(getInitMessagesOpen)
+  const [favouritesOpen, setFavouritesOpenRaw] = useState(getInitFavouritesOpen)
   const [activeListing, setActiveListingRaw] = useState(null)
   const [chatListing, setChatListing] = useState(null)
   const [pendingAction, setPendingAction] = useState(null)
@@ -52,7 +64,7 @@ export function AppProvider({ children }) {
   const [user, setUser] = useState(null)
   const [unreadCount, setUnreadCount] = useState(0)
   const [savedCount, setSavedCount] = useState(0)
-  const [cartOpen, setCartOpenRaw] = useState(false)
+  const [cartOpen, setCartOpenRaw] = useState(getInitCartOpen)
   const [cart, setCart] = useState(() => {
     try { return JSON.parse(localStorage.getItem('bt_cart') || '[]') } catch { return [] }
   })
@@ -80,9 +92,33 @@ export function AppProvider({ children }) {
   const setPostOpen = useCallback(v => { if (v) closeAllOverlaysExcept('post'); setPostOpenRaw(v) }, [closeAllOverlaysExcept])
   const setProfileOpen = useCallback(v => { if (v) closeAllOverlaysExcept('profile'); setProfileOpenRaw(v) }, [closeAllOverlaysExcept])
   const setMyAdsOpen = useCallback(v => { if (v) closeAllOverlaysExcept('myAds'); setMyAdsOpenRaw(v) }, [closeAllOverlaysExcept])
-  const setMessagesOpen = useCallback(v => { if (v) closeAllOverlaysExcept('messages'); setMessagesOpenRaw(v) }, [closeAllOverlaysExcept])
-  const setFavouritesOpen = useCallback(v => { if (v) closeAllOverlaysExcept('favourites'); setFavouritesOpenRaw(v) }, [closeAllOverlaysExcept])
-  const setCartOpen = useCallback(v => { if (v) closeAllOverlaysExcept('cart'); setCartOpenRaw(v) }, [closeAllOverlaysExcept])
+  const setMessagesOpen = useCallback(v => {
+    if (v) closeAllOverlaysExcept('messages')
+    setMessagesOpenRaw(v)
+    if (v) {
+      window.history.pushState(null, '', '/messages')
+    } else if (window.location.pathname === '/messages') {
+      window.history.pushState(null, '', buildPath(activeCategory, activeLocationRaw))
+    }
+  }, [activeCategory, activeLocationRaw, closeAllOverlaysExcept])
+  const setFavouritesOpen = useCallback(v => {
+    if (v) closeAllOverlaysExcept('favourites')
+    setFavouritesOpenRaw(v)
+    if (v) {
+      window.history.pushState(null, '', '/saved')
+    } else if (window.location.pathname === '/saved') {
+      window.history.pushState(null, '', buildPath(activeCategory, activeLocationRaw))
+    }
+  }, [activeCategory, activeLocationRaw, closeAllOverlaysExcept])
+  const setCartOpen = useCallback(v => {
+    if (v) closeAllOverlaysExcept('cart')
+    setCartOpenRaw(v)
+    if (v) {
+      window.history.pushState(null, '', '/cart')
+    } else if (window.location.pathname === '/cart') {
+      window.history.pushState(null, '', buildPath(activeCategory, activeLocationRaw))
+    }
+  }, [activeCategory, activeLocationRaw, closeAllOverlaysExcept])
   const setNotifOpen = useCallback(v => { if (v) closeAllOverlaysExcept('notif'); setNotifOpenRaw(v) }, [closeAllOverlaysExcept])
   const setAdminOpen = useCallback(v => {
     if (v) closeAllOverlaysExcept('admin')
@@ -153,6 +189,9 @@ export function AppProvider({ children }) {
       if (!id) setActiveListingRaw(null)
       setActiveContentPageRaw(getInitContentPage())
       setAdminOpenRaw(getInitAdminOpen())
+      setCartOpenRaw(getInitCartOpen())
+      setFavouritesOpenRaw(getInitFavouritesOpen())
+      setMessagesOpenRaw(getInitMessagesOpen())
       const { cat, loc } = parsePathname(window.location.pathname)
       setActiveCategory(cat)
       if (loc) setActiveLocationRaw(loc)
@@ -163,12 +202,12 @@ export function AppProvider({ children }) {
 
   // Sync URL path when category or location changes (not while a listing/content page is open)
   useEffect(() => {
-    if (activeListing || activeContentPage || adminOpen) return
+    if (activeListing || activeContentPage || adminOpen || cartOpen || favouritesOpen || messagesOpen) return
     const path = buildPath(activeCategory, activeLocationRaw)
     if (window.location.pathname !== path) {
       window.history.replaceState(null, '', path)
     }
-  }, [activeCategory, activeLocationRaw, activeListing, activeContentPage, adminOpen])
+  }, [activeCategory, activeLocationRaw, activeListing, activeContentPage, adminOpen, cartOpen, favouritesOpen, messagesOpen])
 
   // Fetch saved (favourites) count when user changes
   useEffect(() => {
