@@ -4,6 +4,13 @@ import { useApp } from '../context/AppContext'
 import { supabase } from '../lib/supabase'
 import ListingCard from './ListingCard'
 import VerifiedBanner from './VerifiedBanner'
+import { categoryIcons } from '../data/categories.jsx'
+import ChevronIcon from './icons/ChevronIcon'
+import CheckIcon from './icons/CheckIcon'
+import SearchIcon from './icons/SearchIcon'
+import FilterIcon from './icons/FilterIcon'
+import ListViewIcon from './icons/ListViewIcon'
+import PostIcon from './icons/PostIcon'
 
 /* ── Inline filter pill dropdown ── */
 function FilterBtn({ label, options, value, onChange }) {
@@ -46,10 +53,7 @@ function FilterBtn({ label, options, value, onChange }) {
         }}
       >
         {active ? `${label}: ${value}` : label}
-        <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"
-          style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', opacity: 0.7 }}>
-          <path d="m6 9 6 6 6-6" />
-        </svg>
+        <ChevronIcon open={open} size={10} style={{ opacity: 0.7 }} />
       </button>
 
       {open && createPortal(
@@ -75,11 +79,7 @@ function FilterBtn({ label, options, value, onChange }) {
                     }}
                   >
                     {opt}
-                    {selected && (
-                      <svg width="13" height="13" fill="none" stroke="#1d3a6e" strokeWidth="2.5" viewBox="0 0 24 24">
-                        <path d="M20 6 9 17l-5-5" />
-                      </svg>
-                    )}
+                    {selected && <CheckIcon size={13} color="#1d3a6e" />}
                   </div>
                   {i < options.length - 1 && <div style={{ height: 1, background: '#f3f4f6', margin: '0 10px' }} />}
                 </div>
@@ -412,10 +412,7 @@ export default function Listings() {
 
           {/* Search */}
           <div style={{ position: 'relative', flexShrink: 0 }}>
-            <svg style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
-              width="13" height="13" fill="none" stroke="#9ca3af" strokeWidth="2.2" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-            </svg>
+            <SearchIcon size={13} style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#9ca3af' }} />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -454,9 +451,7 @@ export default function Listings() {
                 transition: 'all 0.15s ease',
               }}
             >
-              <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M3 6h18M7 12h10M11 18h2" />
-              </svg>
+              <FilterIcon size={13} />
               Filters
               {moreActiveCount > 0 && (
                 <span style={{
@@ -466,10 +461,7 @@ export default function Listings() {
                   {moreActiveCount}
                 </span>
               )}
-              <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"
-                style={{ transform: moreOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', opacity: 0.7 }}>
-                <path d="m6 9 6 6 6-6" />
-              </svg>
+              <ChevronIcon open={moreOpen} size={10} style={{ opacity: 0.7 }} />
             </button>
           )}
 
@@ -496,9 +488,7 @@ export default function Listings() {
               <option value="price-asc">Price: Low to High</option>
               <option value="price-desc">Price: High to Low</option>
             </select>
-            <svg className="sort-arrow" width="12" height="12" fill="none" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path d="m6 9 6 6 6-6" />
-            </svg>
+            <ChevronIcon open={false} size={12} className="sort-arrow" />
           </div>
 
           {/* Grid / List toggle — extreme right */}
@@ -508,19 +498,14 @@ export default function Listings() {
               onClick={() => changeView('grid')}
               title="Grid view"
             >
-              <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-                <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-              </svg>
+              <categoryIcons.all size={15} />
             </button>
             <button
               className={`view-toggle-btn${view === 'list' ? ' active' : ''}`}
               onClick={() => changeView('list')}
               title="List view"
             >
-              <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/>
-              </svg>
+              <ListViewIcon size={15} />
             </button>
           </div>
         </div>
@@ -579,9 +564,7 @@ export default function Listings() {
                   border: 'none', cursor: 'pointer', fontSize: 15, fontWeight: 700,
                 }}
               >
-                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
+                <PostIcon size={15} />
                 Post Free Ad
               </button>
             </div>

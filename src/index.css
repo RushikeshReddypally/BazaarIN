@@ -475,7 +475,7 @@ h2.sec-h small{
 }
 .sort-arrow{
   position:absolute;right:12px;top:50%;transform:translateY(-50%);
-  pointer-events:none;stroke:var(--lilac);
+  pointer-events:none;color:var(--lilac);
 }
 
 /* listing grid */
