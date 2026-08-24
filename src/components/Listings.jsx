@@ -32,7 +32,10 @@ function FilterBtn({ label, options, value, onChange }) {
   function toggle() {
     if (!open && btnRef.current) {
       const r = btnRef.current.getBoundingClientRect()
-      setPos({ top: r.bottom + window.scrollY + 6, left: r.left + window.scrollX, width: Math.max(r.width, 180) })
+      const width = Math.max(r.width, 180)
+      const maxLeft = window.innerWidth - width - 12
+      const left = Math.max(12, Math.min(r.left, maxLeft))
+      setPos({ top: r.bottom + 6, left, width })
     }
     setOpen(o => !o)
   }
@@ -58,10 +61,10 @@ function FilterBtn({ label, options, value, onChange }) {
 
       {open && createPortal(
         <div ref={dropRef} style={{
-          position: 'absolute', top: pos.top, left: pos.left,
+          position: 'fixed', top: pos.top, left: pos.left,
           background: '#fff', borderRadius: 12, border: '1.5px solid #e5e7eb',
           boxShadow: '0 8px 32px rgba(0,0,0,0.12)', zIndex: 9999,
-          minWidth: pos.width, overflow: 'hidden',
+          minWidth: pos.width, maxWidth: 'calc(100vw - 24px)', overflow: 'hidden',
         }}>
           <div style={{ padding: '6px 0', maxHeight: 280, overflowY: 'auto' }}>
             {options.map((opt, i) => {
@@ -95,14 +98,22 @@ function FilterBtn({ label, options, value, onChange }) {
 
 /* ── More Filters panel ── */
 function MoreFiltersPanel({ groups, activeSubFilters, onChange, activeCount, onClose, anchorRef }) {
-  const [pos, setPos] = useState({ top: 0, left: 0 })
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 340, maxHeight: 480 })
   const panelRef = useRef(null)
 
   useEffect(() => {
-    if (anchorRef.current) {
+    function place() {
+      if (!anchorRef.current) return
       const r = anchorRef.current.getBoundingClientRect()
-      setPos({ top: r.bottom + window.scrollY + 6, left: r.left + window.scrollX })
+      const width = Math.min(340, window.innerWidth - 24)
+      const maxLeft = window.innerWidth - width - 12
+      const left = Math.max(12, Math.min(r.left, maxLeft))
+      const maxHeight = Math.min(480, window.innerHeight - r.bottom - 20)
+      setPos({ top: r.bottom + 6, left, width, maxHeight })
     }
+    place()
+    window.addEventListener('resize', place)
+    return () => window.removeEventListener('resize', place)
   }, [anchorRef])
 
   useEffect(() => {
@@ -116,10 +127,10 @@ function MoreFiltersPanel({ groups, activeSubFilters, onChange, activeCount, onC
 
   return createPortal(
     <div ref={panelRef} style={{
-      position: 'absolute', top: pos.top, left: pos.left,
+      position: 'fixed', top: pos.top, left: pos.left,
       background: '#fff', borderRadius: 14, border: '1.5px solid #e5e7eb',
       boxShadow: '0 12px 40px rgba(0,0,0,0.14)', zIndex: 9999,
-      width: 340, maxHeight: 480, display: 'flex', flexDirection: 'column',
+      width: pos.width, maxHeight: Math.max(pos.maxHeight, 220), display: 'flex', flexDirection: 'column',
       overflow: 'hidden',
     }}>
       {/* Header */}

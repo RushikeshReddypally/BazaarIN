@@ -29,7 +29,7 @@ export default function LocationPicker() {
   const [open, setOpen] = useState(false)
   const [selectedState, setSelectedState] = useState(null)
   const [query, setQuery] = useState('')
-  const [pos, setPos] = useState({ top: 0, left: 0 })
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 290 })
   const [geoLocating, setGeoLocating] = useState(false)
   const [geoError, setGeoError] = useState('')
   const btnRef = useRef(null)
@@ -55,7 +55,10 @@ export default function LocationPicker() {
   function toggle() {
     if (!open && btnRef.current) {
       const rect = btnRef.current.getBoundingClientRect()
-      setPos({ top: rect.bottom + window.scrollY + 8, left: rect.left + window.scrollX })
+      const width = Math.min(290, window.innerWidth - 24)
+      const maxLeft = window.innerWidth - width - 12
+      const left = Math.max(12, Math.min(rect.left, maxLeft))
+      setPos({ top: rect.bottom + 8, left, width })
     }
     setOpen(o => !o)
     setSelectedState(null)
@@ -139,10 +142,11 @@ export default function LocationPicker() {
         <div
           ref={dropRef}
           style={{
-            position: 'absolute', top: pos.top, left: pos.left,
+            position: 'fixed', top: pos.top, left: pos.left,
             background: '#fff', borderRadius: 14, border: '1.5px solid #e8e4f0',
             boxShadow: '0 8px 32px rgba(74,78,105,0.18)',
-            width: 290, zIndex: 9999, overflow: 'hidden',
+            width: pos.width, maxHeight: 'calc(100vh - 80px)',
+            overflowX: 'hidden', overflowY: 'auto', zIndex: 9999,
           }}
         >
           {/* ── Use my location ── */}
