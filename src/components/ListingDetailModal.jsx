@@ -7,44 +7,26 @@ import { supabase } from '../lib/supabase'
 import { categoryIcons, categories } from '../data/categories.jsx'
 import { useSEO } from '../hooks/useSEO'
 import { buildListingPath, CAT_TO_SLUG, cityToSlug } from '../utils/routing'
+import ChevronLeftIcon from './icons/ChevronLeftIcon'
+import ChevronRightIcon from './icons/ChevronRightIcon'
+import HeartIcon from './icons/HeartIcon'
+import SpeechBubbleIcon from './icons/SpeechBubbleIcon'
+import DeleteIcon from './icons/DeleteIcon'
+import TagIcon from './icons/TagIcon'
+import MapPinIcon from './icons/MapPinIcon'
+import CalendarIcon from './icons/CalendarIcon'
+import BackArrowIcon from './icons/BackArrowIcon'
+import AlertTriangleIcon from './icons/AlertTriangleIcon'
+import ClockIcon from './icons/ClockIcon'
+import CartIcon from './icons/CartIcon'
+import FlagIcon from './icons/FlagIcon'
 
-const ChevL = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" /></svg>
-)
-const ChevR = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" /></svg>
-)
-const HeartIcon = ({ filled }) => (
-  <svg width="16" height="16" fill={filled ? '#e8473f' : 'none'} stroke={filled ? '#e8473f' : 'currentColor'} strokeWidth="2.2" viewBox="0 0 24 24">
-    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-  </svg>
-)
-const ChatIcon = () => (
-  <svg width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-  </svg>
-)
-const TrashIcon = () => (
-  <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-    <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6M9 6V4h6v2" />
-  </svg>
-)
-const TagIcon = () => (
-  <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-    <line x1="7" y1="7" x2="7.01" y2="7" strokeWidth="3" />
-  </svg>
-)
-const PinIcon = () => (
-  <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-    <path d="M12 2a7 7 0 0 1 7 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 0 1 7-7z" /><circle cx="12" cy="9" r="2.5" />
-  </svg>
-)
-const CalIcon = () => (
-  <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-    <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" />
-  </svg>
-)
+const ChevL = ChevronLeftIcon
+const ChevR = ChevronRightIcon
+const ChatIcon = SpeechBubbleIcon
+const TrashIcon = DeleteIcon
+const PinIcon = MapPinIcon
+const CalIcon = CalendarIcon
 
 export default function ListingDetailModal() {
   const {
@@ -213,9 +195,7 @@ export default function ListingDetailModal() {
               background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0,
             }}
           >
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path d="M19 12H5M12 5l-7 7 7 7" />
-            </svg>
+            <BackArrowIcon size={14} />
             Back
           </button>
           <span style={{ color: '#d1d5db' }}>|</span>
@@ -265,8 +245,8 @@ export default function ListingDetailModal() {
               {title}
             </h1>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 6, fontSize: 12, color: '#9ca3af' }}>
-              {location && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><PinIcon />{location}</span>}
-              {postedDate && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><CalIcon />Posted on {postedDate}</span>}
+              {location && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><PinIcon size={12} />{location}</span>}
+              {postedDate && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><CalIcon size={12} />Posted on {postedDate}</span>}
             </div>
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
@@ -309,8 +289,8 @@ export default function ListingDetailModal() {
                   />
                   {total > 1 && (
                     <>
-                      <button onClick={prev} style={arrowBtn('left')}><ChevL /></button>
-                      <button onClick={next} style={arrowBtn('right')}><ChevR /></button>
+                      <button onClick={prev} style={arrowBtn('left')}><ChevL size={20} /></button>
+                      <button onClick={next} style={arrowBtn('right')}><ChevR size={20} /></button>
                       <div style={{
                         position: 'absolute', bottom: 12, right: 14,
                         background: 'rgba(0,0,0,0.5)', color: '#fff',
@@ -377,10 +357,7 @@ export default function ListingDetailModal() {
               background: '#fffbeb', border: '1px solid #fde68a',
               fontSize: 12.5, color: '#92400e', display: 'flex', gap: 10, alignItems: 'flex-start',
             }}>
-              <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 1 }}>
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" strokeWidth="3" />
-              </svg>
+              <AlertTriangleIcon size={15} style={{ flexShrink: 0, marginTop: 1 }} />
               <span><strong>Safety tip:</strong> Never pay in advance. Always meet in a public place and inspect before buying.</span>
             </div>
           </div>
@@ -421,9 +398,7 @@ export default function ListingDetailModal() {
                         fontSize: 12.5, color: '#92400e',
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, marginBottom: 4 }}>
-                          <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
-                            <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
-                          </svg>
+                          <ClockIcon size={13} style={{ flexShrink: 0 }} />
                           Marked as Sold
                         </div>
                         <div style={{ lineHeight: 1.55, paddingLeft: 19 }}>
@@ -437,7 +412,7 @@ export default function ListingDetailModal() {
                         fontSize: 14, fontWeight: 700,
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
                       }}>
-                        <TagIcon /> Unmark as Sold
+                        <TagIcon size={15} /> Unmark as Sold
                       </button>
                       <button onClick={handleDelete} disabled={deleting} style={{
                         width: '100%', padding: '13px', borderRadius: 99,
@@ -446,7 +421,7 @@ export default function ListingDetailModal() {
                         fontSize: 14, fontWeight: 700,
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
                       }}>
-                        <TrashIcon /> {deleting ? 'Deleting…' : 'Delete Ad'}
+                        <TrashIcon size={15} /> {deleting ? 'Deleting…' : 'Delete Ad'}
                       </button>
                     </>
                   ) : (
@@ -457,7 +432,7 @@ export default function ListingDetailModal() {
                         fontSize: 14, fontWeight: 700, border: 'none', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
                       }}>
-                        <TagIcon /> Mark as Sold
+                        <TagIcon size={15} /> Mark as Sold
                       </button>
                       <button onClick={handleDelete} disabled={deleting} style={{
                         width: '100%', padding: '13px', borderRadius: 99,
@@ -466,7 +441,7 @@ export default function ListingDetailModal() {
                         fontSize: 14, fontWeight: 700,
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
                       }}>
-                        <TrashIcon /> {deleting ? 'Deleting…' : 'Delete Ad'}
+                        <TrashIcon size={15} /> {deleting ? 'Deleting…' : 'Delete Ad'}
                       </button>
                     </>
                   )}
@@ -483,7 +458,7 @@ export default function ListingDetailModal() {
                     onMouseEnter={e => e.currentTarget.style.background = '#22223b'}
                     onMouseLeave={e => e.currentTarget.style.background = '#1d3a6e'}
                   >
-                    <ChatIcon /> Chat With Seller
+                    <ChatIcon size={17} /> Chat With Seller
                   </button>
                   <button onClick={handleSave} style={{
                     width: '100%', padding: '13px', borderRadius: 99,
@@ -494,7 +469,7 @@ export default function ListingDetailModal() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                     transition: 'all 0.15s',
                   }}>
-                    <HeartIcon filled={saved} />
+                    <HeartIcon size={16} filled={saved} />
                     {saved ? 'Saved' : 'Save to Wishlist'}
                   </button>
                   {/* Add to Cart */}
@@ -512,9 +487,7 @@ export default function ListingDetailModal() {
                             transition: 'all 0.15s',
                           }}
                         >
-                          <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
-                          </svg>
+                          <CartIcon size={15} />
                           Add to Cart
                         </button>
                       )
@@ -532,9 +505,7 @@ export default function ListingDetailModal() {
                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                           }}
                         >
-                          <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
-                          </svg>
+                          <CartIcon size={15} />
                           In Cart · View Cart
                         </button>
                         <button
@@ -546,9 +517,7 @@ export default function ListingDetailModal() {
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                           }}
                         >
-                          <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                            <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6M9 6V4h6v2" />
-                          </svg>
+                          <DeleteIcon size={15} />
                         </button>
                       </div>
                     )
@@ -569,9 +538,7 @@ export default function ListingDetailModal() {
             {/* Report */}
             {!isOwner && (
               <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: '#9ca3af', display: 'flex', alignItems: 'center', gap: 5, padding: '4px 0' }}>
-                <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><line x1="4" y1="22" x2="4" y2="15" />
-                </svg>
+                <FlagIcon size={12} />
                 Report this ad
               </button>
             )}
@@ -615,7 +582,7 @@ export default function ListingDetailModal() {
                     <div style={{ fontSize: 12.5, fontWeight: 700, color: '#1a1a2e', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 4 }}>{l.title}</div>
                     <div style={{ fontSize: 15, fontWeight: 900, color: '#e8473f' }}>{formatPriceFull(l.price)}</div>
                     <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 3, display: 'flex', alignItems: 'center', gap: 3 }}>
-                      <PinIcon />{l.location}
+                      <PinIcon size={12} />{l.location}
                     </div>
                   </div>
                 </div>
