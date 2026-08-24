@@ -56,9 +56,9 @@ export default function LocationPicker() {
     if (!open && btnRef.current) {
       const rect = btnRef.current.getBoundingClientRect()
       const width = Math.min(290, window.innerWidth - 24)
-      const maxLeft = window.innerWidth - width - 12
-      const left = Math.max(12, Math.min(rect.left, maxLeft))
-      setPos({ top: rect.bottom + 8, left, width })
+      const maxLeft = window.scrollX + window.innerWidth - width - 12
+      const left = Math.max(window.scrollX + 12, Math.min(rect.left + window.scrollX, maxLeft))
+      setPos({ top: rect.bottom + window.scrollY + 8, left, width })
     }
     setOpen(o => !o)
     setSelectedState(null)
@@ -142,7 +142,7 @@ export default function LocationPicker() {
         <div
           ref={dropRef}
           style={{
-            position: 'fixed', top: pos.top, left: pos.left,
+            position: 'absolute', top: pos.top, left: pos.left,
             background: '#fff', borderRadius: 14, border: '1.5px solid #e8e4f0',
             boxShadow: '0 8px 32px rgba(74,78,105,0.18)',
             width: pos.width, maxHeight: 'calc(100vh - 80px)',
