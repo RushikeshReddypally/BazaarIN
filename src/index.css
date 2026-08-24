@@ -1101,7 +1101,7 @@ footer{
   .hero-desc{font-size:15px}
   .hero-actions{flex-direction:column;align-items:stretch}
   .hero-actions .btn{justify-content:center}
-  .hero-trust{flex-wrap:wrap;gap:8px;margin-top:28px;padding-top:24px}
+  .hero-trust{display:grid;grid-template-columns:1fr 1fr;gap:12px 8px;margin-top:28px;padding-top:24px}
 
   /* Category strip */
   #categories{padding:28px 0}
