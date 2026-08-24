@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { supabase } from '../lib/supabase'
+import SendIcon from './icons/SendIcon'
 
 const contactCards = [
   { icon: '💬', title: 'In-App Chat',    sub: 'Message sellers directly from any listing', href: '#listings' },
@@ -88,9 +89,7 @@ export default function Contact() {
 
             <button type="submit" className="fr-submit" disabled={submitting} style={{ opacity: submitting ? 0.7 : 1, cursor: submitting ? 'default' : 'pointer' }}>
               {submitting ? 'Sending…' : 'Send Message'}
-              <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path d="m22 2-7 20-4-9-9-4 20-7z" />
-              </svg>
+              <SendIcon size={15} />
             </button>
             <p className="fr-privacy">By submitting, you agree to our <a href="#">Privacy Policy</a></p>
           </form>

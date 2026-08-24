@@ -3,6 +3,8 @@ import { useApp } from '../context/AppContext'
 import { categories } from '../data/categories.jsx'
 import { supabase } from '../lib/supabase'
 import { states } from '../data/locations'
+import UploadIcon from './icons/UploadIcon'
+import PostIcon from './icons/PostIcon'
 
 // iPhones default to HEIC/HEIF, which no browser except Safari can render —
 // convert to JPEG on selection so previews and stored photos both display everywhere.
@@ -420,7 +422,7 @@ export default function PostAdModal() {
               ))}
               {previews.length < 10 && (
                 <button type="button" onClick={() => fileRef.current?.click()} style={{ width: 80, height: 80, borderRadius: 10, border: '2px dashed #d1d5db', background: '#f9fafb', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, cursor: 'pointer', color: '#9ca3af', fontSize: 10, fontWeight: 600, flexShrink: 0 }}>
-                  <svg width="22" height="22" fill="none" stroke="#9ca3af" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <UploadIcon size={22} stroke="#9ca3af" strokeWidth="1.8" />
                   {previews.length === 0 ? 'Add Photo' : 'Add More'}
                 </button>
               )}
@@ -514,7 +516,7 @@ export default function PostAdModal() {
           )}
 
           <button type="submit" className="fr-submit" disabled={submitting}>
-            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+            <PostIcon size={15} />
             {submitting ? 'Posting…' : 'Post Ad for Free'}
           </button>
         </form>

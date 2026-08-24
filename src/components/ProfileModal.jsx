@@ -2,6 +2,7 @@ import { useApp } from '../context/AppContext'
 import BasicInfoSection from './profile/BasicInfoSection'
 import AddressesSection from './profile/AddressesSection'
 import SecuritySection from './profile/SecuritySection'
+import BackArrowIcon from './icons/BackArrowIcon'
 
 const NAV_GROUPS = [
   { label: 'Profile', items: [{ id: 'basic', label: 'Basic Info' }, { id: 'addresses', label: 'My Addresses' }] },
@@ -28,9 +29,7 @@ export default function ProfileModal() {
             onClick={close}
             style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#1d3a6e', background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
           >
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path d="M19 12H5M12 5l-7 7 7 7" />
-            </svg>
+            <BackArrowIcon size={14} />
             Back
           </button>
           <span style={{ color: '#d1d5db' }}>|</span>

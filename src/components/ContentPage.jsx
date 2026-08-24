@@ -1,6 +1,7 @@
 import { useApp } from '../context/AppContext'
 import { useSEO } from '../hooks/useSEO'
 import { CONTENT, PAGE_SLUGS } from '../data/contentPages'
+import BackArrowIcon from './icons/BackArrowIcon'
 
 function renderBody(text) {
   return text.split('\n').map((line, i) => {
@@ -43,9 +44,7 @@ export default function ContentPage() {
             onClick={() => setActiveContentPage(null)}
             style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#1d3a6e', background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
           >
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path d="M19 12H5M12 5l-7 7 7 7" />
-            </svg>
+            <BackArrowIcon size={14} />
             Back
           </button>
           <span style={{ color: '#d1d5db' }}>|</span>

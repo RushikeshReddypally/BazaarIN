@@ -3,6 +3,8 @@ import { useApp } from '../context/AppContext'
 import { supabase } from '../lib/supabase'
 import { formatPrice } from '../utils/format'
 import { categories } from '../data/categories.jsx'
+import BackArrowIcon from './icons/BackArrowIcon'
+import PencilIcon from './icons/PencilIcon'
 
 /* ── SEO preview helper ───────────────────────────────── */
 const SITE_URL = 'https://www.bazaartrade.in'
@@ -36,14 +38,12 @@ export default function AdminModal() {
             onClick={() => setAdminOpen(false)}
             style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.75)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
           >
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path d="M19 12H5M12 5l-7 7 7 7" />
-            </svg>
+            <BackArrowIcon size={14} />
             Back
           </button>
           <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.15)', flexShrink: 0 }} />
           <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <svg width="18" height="18" fill="none" stroke="#fff" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <PencilIcon size={18} stroke="#fff" />
           </div>
           <div>
             <div style={{ color: '#fff', fontSize: 16, fontWeight: 800 }}>{isAdminUser ? 'Admin Panel' : 'SEO Panel'}</div>

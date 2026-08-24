@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAddresses } from '../../hooks/useAddresses'
 import AddressMap from './AddressMap'
+import MapPinIcon from '../icons/MapPinIcon'
 
 const PRESET_LABELS = ['Home', 'Work']
 
@@ -127,9 +128,7 @@ export default function AddressesSection({ user, showToast }) {
           {addresses.map(addr => (
             <div key={addr.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', border: '1.5px solid #e5e7eb', borderRadius: 10 }}>
               <div style={{ width: 36, height: 36, borderRadius: 9, background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <svg width="16" height="16" fill="none" stroke="#1d3a6e" strokeWidth="2" viewBox="0 0 24 24">
-                  <path d="M12 2a7 7 0 0 1 7 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 0 1 7-7z" /><circle cx="12" cy="9" r="2.5" />
-                </svg>
+                <MapPinIcon size={16} style={{ color: '#1d3a6e' }} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

@@ -1,5 +1,6 @@
 import { useApp } from '../context/AppContext'
 import { locations } from '../data/locations'
+import ChevronRightIcon from './icons/ChevronRightIcon'
 
 export default function Locations() {
   const { showToast } = useApp()
@@ -11,9 +12,7 @@ export default function Locations() {
           <h2 className="sec-h"><small>Near you</small>Browse by City</h2>
           <a href="#" className="sec-link">
             All cities
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path d="m9 18 6-6-6-6" />
-            </svg>
+            <ChevronRightIcon size={14} />
           </a>
         </div>
 

@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { states } from '../data/locations'
+import MapPinIcon from './icons/MapPinIcon'
+import GpsIcon from './icons/GpsIcon'
+import SearchIcon from './icons/SearchIcon'
 
 const NOMINATIM = 'https://nominatim.openstreetmap.org/reverse'
 
@@ -130,10 +133,7 @@ export default function WelcomeModal() {
         }}>
           {/* India pin icon */}
           <div style={{ fontSize: 36, marginBottom: 10 }}>
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style={{ display: 'inline-block' }}>
-              <path d="M12 2a7 7 0 0 1 7 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 0 1 7-7z" fill="#e8473f" stroke="none"/>
-              <circle cx="12" cy="9" r="2.5" fill="#fff"/>
-            </svg>
+            <MapPinIcon size={40} filled style={{ display: 'inline-block' }} />
           </div>
           <h2 style={{ color: '#fff', fontSize: 20, fontWeight: 800, lineHeight: 1.3, margin: 0 }}>
             {step === 'manual' ? 'Choose your city' : 'Welcome to BazaarTrade.in'}
@@ -190,10 +190,7 @@ export default function WelcomeModal() {
                   </>
                 ) : (
                   <>
-                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
-                      <circle cx="12" cy="12" r="8" strokeOpacity=".3"/>
-                    </svg>
+                    <GpsIcon size={16} />
                     Use my location
                   </>
                 )}
@@ -242,10 +239,7 @@ export default function WelcomeModal() {
               {/* Search */}
               <div style={{ padding: '14px 20px 10px', borderBottom: '1px solid #f3f4f6' }}>
                 <div style={{ position: 'relative' }}>
-                  <svg style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}
-                    width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                  </svg>
+                  <SearchIcon size={15} style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
                   <input
                     autoFocus
                     value={query}

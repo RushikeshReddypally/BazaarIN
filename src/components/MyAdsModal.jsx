@@ -3,6 +3,8 @@ import { useApp } from '../context/AppContext'
 import { supabase } from '../lib/supabase'
 import { formatPriceFull } from '../utils/format'
 import { states } from '../data/locations'
+import ClockIcon from './icons/ClockIcon'
+import TagIcon from './icons/TagIcon'
 
 function LocationInput({ value, onChange }) {
   const [query, setQuery] = useState(value || '')
@@ -270,9 +272,7 @@ function AdRow({ ad, onView, onEdit, onToggleSold, onDelete, deleting }) {
             fontSize: 11, color: remaining === 'expired' ? '#dc2626' : '#92400e',
             display: 'inline-flex', alignItems: 'center', gap: 5,
           }}>
-            <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
-            </svg>
+            <ClockIcon size={10} />
             {remaining === 'expired'
               ? 'Expired — you can delete this now'
               : `Auto-removes in ${remaining} · Unmark to keep`}
@@ -398,10 +398,7 @@ export default function MyAdsModal() {
               background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center',
               marginBottom: 16,
             }}>
-              <svg width="24" height="24" fill="none" stroke="#d97706" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-                <line x1="7" y1="7" x2="7.01" y2="7" strokeWidth="3" />
-              </svg>
+              <TagIcon size={24} stroke="#d97706" />
             </div>
             <div style={{ fontSize: 18, fontWeight: 800, color: '#1a1a2e', marginBottom: 10 }}>
               Mark as Sold?

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import CameraIcon from './icons/CameraIcon'
 
 const STEPS = [
   { key: 'aadhaar', title: 'Aadhaar Card', hint: 'Frame your Aadhaar card clearly and take a photo', facingMode: 'environment' },
@@ -158,10 +159,7 @@ export default function VerificationRequestModal({ user, onClose, onSubmit, show
             </>
           ) : cameraError ? (
             <div style={{ textAlign: 'center', color: '#f3f4f6', padding: 20 }}>
-              <svg width="34" height="34" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" style={{ marginBottom: 8, opacity: 0.7 }}>
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                <circle cx="12" cy="13" r="4" />
-              </svg>
+              <CameraIcon size={34} strokeWidth="1.5" style={{ marginBottom: 8, opacity: 0.7 }} />
               <div style={{ fontSize: 12.5, opacity: 0.85 }}>Camera unavailable — upload a photo instead</div>
             </div>
           ) : (

@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css'
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
+import GpsIcon from '../icons/GpsIcon'
 
 // Vite bundles Leaflet's default marker images under a hash, breaking its relative-path lookup — point it at the imported assets instead.
 delete L.Icon.Default.prototype._getIconUrl
@@ -80,9 +81,7 @@ export default function AddressMap({ lat, lng, onChange }) {
           display: 'flex', alignItems: 'center', gap: 6,
         }}
       >
-        <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8" strokeOpacity=".3"/>
-        </svg>
+        <GpsIcon size={13} />
         {locating ? 'Locating…' : 'Locate Me'}
       </button>
     </div>
