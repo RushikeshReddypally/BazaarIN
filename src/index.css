@@ -277,6 +277,27 @@ h1.hero-h span{
 }
 .hero-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 .hero-cta{width:210px;height:54px;box-sizing:border-box;justify-content:center}
+
+/* Verified banner */
+.vb{
+  display:flex;align-items:center;gap:16px;
+  background:linear-gradient(135deg,#eff6ff,#f0f7ff);
+  border:1px solid #bfdbfe;border-radius:99px;
+  padding:16px 20px;margin-bottom:28px;
+}
+.vb-icon{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;
+  background:#fff;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(29,58,110,.12);
+}
+.vb-text{flex:1;min-width:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.vb-title{font-size:15px;font-weight:800;color:#1a1a2e}
+.vb-sub{font-size:13px;color:#6b7280;display:flex;align-items:center;gap:10px}
+.vb-divider{color:#bfdbfe}
+.vb-btn{
+  flex-shrink:0;padding:10px 22px;border-radius:99px;border:none;
+  font-size:13.5px;font-weight:700;
+}
 .hero-trust{
   display:flex;align-items:center;gap:10px;
   margin-top:40px;padding-top:32px;
@@ -475,7 +496,10 @@ h2.sec-h small{
   cursor:pointer;outline:none;
 }
 .sort-arrow{
-  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  /* top uses calc() instead of transform:translateY(-50%) because the icon
+     is a motion.svg that manages its own `transform` for the open/close
+     rotation animation, which silently overrides any transform set via CSS. */
+  position:absolute;right:12px;top:calc(50% - 6px);
   pointer-events:none;color:var(--lilac);
 }
 
@@ -1104,6 +1128,13 @@ footer{
   .hero-actions .btn{justify-content:center}
   .hero-cta{width:100%;height:52px}
   .hero-trust{display:grid;grid-template-columns:1fr 1fr;gap:12px 8px;margin-top:28px;padding-top:24px}
+
+  /* Verified banner */
+  .vb{flex-direction:column;align-items:flex-start;border-radius:20px;padding:16px 18px;gap:10px}
+  .vb-text{flex-direction:column;align-items:flex-start;gap:4px}
+  .vb-divider{display:none}
+  .vb-sub{gap:0}
+  .vb-btn{width:100%;text-align:center}
 
   /* Category strip */
   #categories{padding:28px 0}

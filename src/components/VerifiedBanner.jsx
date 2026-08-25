@@ -35,27 +35,18 @@ export default function VerifiedBanner() {
   const buttonLabel = isVerified ? 'Verified ✓' : isPending ? 'Pending review' : 'Get Started'
 
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: 16,
-      background: 'linear-gradient(135deg,#eff6ff,#f0f7ff)',
-      border: '1px solid #bfdbfe', borderRadius: 99,
-      padding: '16px 20px', marginBottom: 28,
-    }}>
-      <div style={{
-        width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
-        background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: '0 2px 8px rgba(29,58,110,0.12)',
-      }}>
+    <div className="vb">
+      <div className="vb-icon">
         <VerifiedBadgeIcon size={22} />
       </div>
 
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 15, fontWeight: 800, color: '#1a1a2e' }}>
+      <div className="vb-text">
+        <span className="vb-title">
           {isVerified ? "You're a verified seller" : 'Got a verified badge yet?'}
         </span>
         {!isVerified && (
-          <span style={{ fontSize: 13, color: '#6b7280', display: 'flex', alignItems: 'center', gap: 10 }}>
-            Get more visibility <span style={{ color: '#bfdbfe' }}>|</span> Enhance your credibility
+          <span className="vb-sub">
+            Get more visibility <span className="vb-divider">|</span> Enhance your credibility
           </span>
         )}
       </div>
@@ -63,11 +54,10 @@ export default function VerifiedBanner() {
       <button
         onClick={handleClick}
         disabled={isPending}
+        className="vb-btn"
         style={{
-          flexShrink: 0, padding: '10px 22px', borderRadius: 99,
-          border: 'none', background: isVerified ? '#059669' : '#fff',
+          background: isVerified ? '#059669' : '#fff',
           color: isVerified ? '#fff' : '#1a1a2e',
-          fontSize: 13.5, fontWeight: 700,
           cursor: isPending ? 'default' : 'pointer',
           boxShadow: isVerified ? 'none' : '0 1px 4px rgba(0,0,0,0.08)',
           opacity: isPending ? 0.7 : 1,
