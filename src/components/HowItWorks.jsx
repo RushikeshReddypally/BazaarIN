@@ -89,9 +89,9 @@ export default function HowItWorks() {
             </div>
 
             <div className="cw-input-row">
-              <button className="cw-attach"><PaperclipIcon size={15} /></button>
+              <button className="cw-attach"><PaperclipIcon size={18} /></button>
               <input className="cw-in" type="text" placeholder="Type a message…" />
-              <button className="cw-send"><SendIcon size={15} /></button>
+              <button className="cw-send"><SendIcon size={18} /></button>
             </div>
           </div>
         </div>
