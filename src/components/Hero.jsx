@@ -63,11 +63,11 @@ export default function Hero() {
           </p>
 
           <div className="hero-actions">
-            <button className="btn btn-dark btn-lg" style={{ width: 210, height: 54, boxSizing: 'border-box', justifyContent: 'center' }} onClick={() => setPostOpen(true)}>
+            <button className="btn btn-dark btn-lg hero-cta" onClick={() => setPostOpen(true)}>
               <PostIcon size={16} />
               Post Free Ad
             </button>
-            <a href="#listings" className="btn btn-ghost btn-lg" style={{ width: 210, height: 54, boxSizing: 'border-box', justifyContent: 'center' }}>Browse Listings</a>
+            <a href="#listings" className="btn btn-ghost btn-lg hero-cta">Browse Listings</a>
           </div>
 
           <div className="hero-trust" style={{ gap: 16 }}>
