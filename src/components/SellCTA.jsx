@@ -21,14 +21,14 @@ export default function SellCTA() {
             <p className="sell-sub">
               Post your first ad in under 2 minutes. No listing fees, no commissions — just connect and sell.
             </p>
-            <div style={{ display: 'flex', gap: 12, marginTop: 28, flexWrap: 'wrap' }}>
-              <button className="btn btn-silk btn-lg" onClick={() => setPostOpen(true)}>
+            <div className="sell-actions">
+              <button className="btn btn-silk btn-lg hero-cta" onClick={() => setPostOpen(true)}>
                 <PostIcon size={16} />
                 Post Free Ad
               </button>
               <a
                 href="#how"
-                className="btn btn-ghost btn-lg"
+                className="btn btn-ghost btn-lg hero-cta"
                 style={{ color: 'rgba(255,255,255,.7)', borderColor: 'rgba(255,255,255,.2)' }}
               >
                 How it works
