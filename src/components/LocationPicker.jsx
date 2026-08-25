@@ -45,6 +45,28 @@ export default function LocationPicker() {
     return () => document.removeEventListener('mousedown', handleMouseDown)
   }, [])
 
+  // Keep the dropdown glued to its button — recompute on every scroll/resize
+  // while open instead of trusting a single measurement taken at open-time,
+  // which can go stale if the page (or a parent drawer) moves afterward.
+  useEffect(() => {
+    if (!open) return
+    function place() {
+      if (!btnRef.current) return
+      const rect = btnRef.current.getBoundingClientRect()
+      const width = Math.min(290, window.innerWidth - 24)
+      const maxLeft = window.innerWidth - width - 12
+      const left = Math.max(12, Math.min(rect.left, maxLeft))
+      setPos({ top: rect.bottom + 8, left, width })
+    }
+    place()
+    window.addEventListener('scroll', place, true)
+    window.addEventListener('resize', place)
+    return () => {
+      window.removeEventListener('scroll', place, true)
+      window.removeEventListener('resize', place)
+    }
+  }, [open])
+
   function close() {
     setOpen(false)
     setSelectedState(null)
@@ -53,13 +75,6 @@ export default function LocationPicker() {
   }
 
   function toggle() {
-    if (!open && btnRef.current) {
-      const rect = btnRef.current.getBoundingClientRect()
-      const width = Math.min(290, window.innerWidth - 24)
-      const maxLeft = window.scrollX + window.innerWidth - width - 12
-      const left = Math.max(window.scrollX + 12, Math.min(rect.left + window.scrollX, maxLeft))
-      setPos({ top: rect.bottom + window.scrollY + 8, left, width })
-    }
     setOpen(o => !o)
     setSelectedState(null)
     setQuery('')
@@ -142,7 +157,7 @@ export default function LocationPicker() {
         <div
           ref={dropRef}
           style={{
-            position: 'absolute', top: pos.top, left: pos.left,
+            position: 'fixed', top: pos.top, left: pos.left,
             background: '#fff', borderRadius: 14, border: '1.5px solid #e8e4f0',
             boxShadow: '0 8px 32px rgba(74,78,105,0.18)',
             width: pos.width, maxHeight: 'calc(100vh - 80px)',
