@@ -308,7 +308,6 @@ function HamburgerMenu() {
               <HamItem icon={<PostIcon size={16} />} label="Post Ad" onClick={() => act(() => setPostOpen(true))} accent />
               <HamItem icon={<AdsIcon size={16} />} label="My Ads" onClick={() => act(() => setMyAdsOpen(true))} />
               <HamItem icon={<HeartIcon size={16} filled={savedCount > 0} />} label="Wishlist" badge={savedCount} onClick={() => act(() => setFavouritesOpen(true))} />
-              <HamItem icon={<CartIcon size={16} />} label="View Cart" badge={cart.length} onClick={() => act(() => { setActiveListing(null); setCartOpen(true) })} />
               <HamItem icon={<ChatIcon size={16} />} label="Chats" onClick={() => act(() => { setNotifOpen(false); setMessagesOpen(true) })} />
               <HamItem icon={<BellIcon size={16} />} label="Notifications" badge={unreadCount} onClick={() => act(() => { setMessagesOpen(false); setNotifOpen(true) })} />
 
@@ -357,7 +356,6 @@ function HamburgerMenu() {
                   Sign In
                 </button>
               </div>
-              <HamItem icon={<CartIcon size={16} />} label="View Cart" badge={cart.length} onClick={() => act(() => { setActiveListing(null); setCartOpen(true) })} />
               <HamItem icon={<PostIcon size={16} />} label="Post Ad" onClick={() => act(() => setLoginOpen(true))} accent />
             </>
           )}
