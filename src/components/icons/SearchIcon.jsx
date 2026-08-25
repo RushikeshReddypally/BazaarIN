@@ -6,7 +6,7 @@ const SEARCH_VARIANTS = {
   animate: { x: [0, 0, -3, 0], y: [0, -4, 0, 0] },
 }
 
-const SearchIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const SearchIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 28, style, ...props }, ref) => {
   const controls = useAnimation()
   const isControlledRef = useRef(false)
 
@@ -29,7 +29,7 @@ const SearchIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 2
   }, [controls, onMouseLeave])
 
   return (
-    <div className={className} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
+    <div className={className} style={{ lineHeight: 0, ...style }} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
       <motion.svg
         animate={controls}
         fill="none"

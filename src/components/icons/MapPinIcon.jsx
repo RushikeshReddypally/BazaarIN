@@ -19,7 +19,7 @@ const CIRCLE_VARIANTS = {
   },
 }
 
-const MapPinIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 28, filled = false, ...props }, ref) => {
+const MapPinIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 28, filled = false, style, ...props }, ref) => {
   const controls = useAnimation()
   const isControlledRef = useRef(false)
 
@@ -42,7 +42,7 @@ const MapPinIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 2
   }, [controls, onMouseLeave])
 
   return (
-    <div className={className} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
+    <div className={className} style={{ lineHeight: 0, ...style }} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
       <motion.svg
         animate={controls}
         fill={filled ? '#e8473f' : 'none'}

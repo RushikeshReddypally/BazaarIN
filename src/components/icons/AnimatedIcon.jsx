@@ -10,7 +10,7 @@ const AnimatedIcon = forwardRef(({
   onMouseEnter, onMouseLeave, className, size = 28,
   variants, transition, fill = 'none', viewBox = '0 0 24 24',
   stroke = 'currentColor', strokeWidth = '2',
-  children, ...props
+  children, style, ...props
 }, ref) => {
   const controls = useAnimation()
   const isControlledRef = useRef(false)
@@ -34,7 +34,7 @@ const AnimatedIcon = forwardRef(({
   }, [controls, onMouseLeave])
 
   return (
-    <div className={className} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
+    <div className={className} style={{ lineHeight: 0, ...style }} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
       <motion.svg
         animate={controls}
         fill={fill}

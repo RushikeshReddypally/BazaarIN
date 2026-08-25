@@ -6,7 +6,7 @@ const HEART_VARIANTS = {
   animate: { scale: [1, 1.08, 1] },
 }
 
-const HeartIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 28, filled = false, ...props }, ref) => {
+const HeartIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 28, filled = false, style, ...props }, ref) => {
   const controls = useAnimation()
   const isControlledRef = useRef(false)
 
@@ -29,7 +29,7 @@ const HeartIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 28
   }, [controls, onMouseLeave])
 
   return (
-    <div className={className} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
+    <div className={className} style={{ lineHeight: 0, ...style }} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
       <motion.svg
         animate={controls}
         fill={filled ? '#e8473f' : 'none'}

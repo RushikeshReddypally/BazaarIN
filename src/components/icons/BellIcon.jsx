@@ -6,7 +6,7 @@ const BELL_VARIANTS = {
   animate: { rotate: [0, -10, 10, -10, 0] },
 }
 
-const BellIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const BellIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 28, style, ...props }, ref) => {
   const controls = useAnimation()
   const isControlledRef = useRef(false)
 
@@ -29,7 +29,7 @@ const BellIcon = forwardRef(({ onMouseEnter, onMouseLeave, className, size = 28,
   }, [controls, onMouseLeave])
 
   return (
-    <div className={className} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
+    <div className={className} style={{ lineHeight: 0, ...style }} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
       <motion.svg
         animate={controls}
         fill="none"
