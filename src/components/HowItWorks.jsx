@@ -1,3 +1,6 @@
+import PaperclipIcon from './icons/PaperclipIcon'
+import SendIcon from './icons/SendIcon'
+
 const steps = [
   {
     title: 'Create a free account',
@@ -86,9 +89,9 @@ export default function HowItWorks() {
             </div>
 
             <div className="cw-input-row">
-              <button className="cw-attach">📎</button>
+              <button className="cw-attach"><PaperclipIcon size={15} /></button>
               <input className="cw-in" type="text" placeholder="Type a message…" />
-              <button className="cw-send">➤</button>
+              <button className="cw-send"><SendIcon size={15} /></button>
             </div>
           </div>
         </div>
