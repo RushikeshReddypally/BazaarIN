@@ -421,6 +421,7 @@ h1.hero-h span{
 .cats-scroll{
   display:flex;gap:10px;overflow-x:auto;padding:4px 5%;
   scrollbar-width:none;-ms-overflow-style:none;
+  justify-content:safe center;
 }
 .cats-scroll::-webkit-scrollbar{display:none}
 .cat-chip{
