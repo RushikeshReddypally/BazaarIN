@@ -435,7 +435,7 @@ function UserMenu() {
   } = useApp()
   const { isVerified } = useVerification(user)
   const [open, setOpen] = useState(false)
-  const [pos, setPos] = useState({ top: 0, right: 0 })
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 220 })
   const btnRef = useRef(null)
   const menuRef = useRef(null)
 
@@ -450,7 +450,9 @@ function UserMenu() {
   function toggle() {
     if (!open && btnRef.current) {
       const r = btnRef.current.getBoundingClientRect()
-      setPos({ top: r.bottom + window.scrollY + 8, right: window.innerWidth - r.right })
+      const width = 220
+      const left = Math.max(12, Math.min(r.right - width, window.innerWidth - width - 12))
+      setPos({ top: r.bottom + window.scrollY + 8, left, width })
     }
     setOpen(o => !o)
   }
@@ -492,9 +494,9 @@ function UserMenu() {
 
       {open && createPortal(
         <div ref={menuRef} style={{
-          position: 'absolute', top: pos.top, right: pos.right,
+          position: 'absolute', top: pos.top, left: pos.left, width: pos.width,
           background: '#fff', borderRadius: 12, border: '1.5px solid #e5e7eb',
-          boxShadow: '0 12px 40px rgba(0,0,0,0.13)', zIndex: 9999, minWidth: 200, overflow: 'hidden',
+          boxShadow: '0 12px 40px rgba(0,0,0,0.13)', zIndex: 9999, overflow: 'hidden',
         }}>
           {items.map(item => (
             <button
